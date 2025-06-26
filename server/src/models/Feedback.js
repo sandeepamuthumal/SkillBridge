@@ -1,0 +1,44 @@
+import mongoose from 'mongoose';
+
+const feedbackSchema = new mongoose.Schema({
+    applicationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Application',
+        required: true
+    },
+    employerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Employer',
+        required: true
+    },
+    jobSeekerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'JobSeeker',
+        required: true
+    },
+    rating: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true
+    },
+    feedback: {
+        type: String,
+        required: true,
+        maxlength: 1000
+    },
+    strengths: [String],
+    areasForImprovement: [String],
+    wouldRecommend: {
+        type: Boolean,
+        default: false
+    },
+    isPublic: {
+        type: Boolean,
+        default: false
+    }
+}, {
+    timestamps: true
+});
+
+export default mongoose.model('Feedback', feedbackSchema);
