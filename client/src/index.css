@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter";
+}
+
+@layer base {
+     :root {
+        --background: 0 0% 100%;
+        /* #F9FAFB */
+        --foreground: 0 0% 3.9%;
+        /* #1E293B */
+        --card: 0 0% 100%;
+        /* #FFFFFF */
+        --card-foreground: 0 0% 3.9%;
+        /* #1E293B */
+        --popover: 0 0% 100%;
+        /* #FFFFFF */
+        --popover-foreground: 0 0% 3.9%;
+        /* #1E293B */
+        --primary: 0 0% 9%;
+        /* #3B82F6 */
+        --primary-foreground: 0 0% 98%;
+        --secondary: 0 0% 96.1%;
+        /* #64748B */
+        --secondary-foreground: 0 0% 9%;
+        --muted: 0 0% 96.1%;
+        /* #F8FAFC */
+        --muted-foreground: 0 0% 45.1%;
+        /* #6B7280 */
+        --accent: 0 0% 96.1%;
+        /* #10B981 */
+        --accent-foreground: 0 0% 9%;
+        --destructive: 0 84.2% 60.2%;
+        /* #EF4444 */
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 89.8%;
+        /* #E5E7EB */
+        --input: 0 0% 89.8%;
+        /* #E5E7EB */
+        --ring: 0 0% 3.9%;
+        /* #3B82F6 */
+        --radius: 0.5rem;
+        --chart-1: 12 76% 61%;
+        --chart-2: 173 58% 39%;
+        --chart-3: 197 37% 24%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+        --sidebar-background: 0 0% 98%;
+        --sidebar-foreground: 240 5.3% 26.1%;
+        --sidebar-primary: 240 5.9% 10%;
+        --sidebar-primary-foreground: 0 0% 98%;
+        --sidebar-accent: 240 4.8% 95.9%;
+        --sidebar-accent-foreground: 240 5.9% 10%;
+        --sidebar-border: 220 13% 91%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+    }
+    .dark {
+        --background: 0 0% 3.9%;
+        /* #0F172A */
+        --foreground: 0 0% 98%;
+        /* #F8FAFC */
+        --card: 0 0% 3.9%;
+        /* #1E293B */
+        --card-foreground: 0 0% 98%;
+        /* #F8FAFC */
+        --popover: 0 0% 3.9%;
+        /* #1E293B */
+        --popover-foreground: 0 0% 98%;
+        /* #F8FAFC */
+        --primary: 0 0% 98%;
+        /* #3B82F6 */
+        --primary-foreground: 0 0% 9%;
+        --secondary: 0 0% 14.9%;
+        /* #334155 */
+        --secondary-foreground: 0 0% 98%;
+        /* #F8FAFC */
+        --muted: 0 0% 14.9%;
+        /* #1E293B */
+        --muted-foreground: 0 0% 63.9%;
+        /* #94A3B8 */
+        --accent: 0 0% 14.9%;
+        /* #10B981 */
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 62.8% 30.6%;
+        /* #EF4444 */
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 14.9%;
+        /* #334155 */
+        --input: 0 0% 14.9%;
+        /* #334155 */
+        --ring: 0 0% 83.1%;
+        /* #3B82F6 */
+        --chart-1: 220 70% 50%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 30 80% 55%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
+        --sidebar-background: 240 5.9% 10%;
+        --sidebar-foreground: 240 4.8% 95.9%;
+        --sidebar-primary: 224.3 76.3% 48%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 240 3.7% 15.9%;
+        --sidebar-accent-foreground: 240 4.8% 95.9%;
+        --sidebar-border: 240 3.7% 15.9%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+
+/* Custom scrollbar */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
