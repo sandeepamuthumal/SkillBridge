@@ -1,112 +1,79 @@
-import { useState } from 'react'
-import {
-  Menu,
-  X,
-  Building2,
-} from "lucide-react";
-function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+import React, { useState } from 'react';
+import { Users, Briefcase, Home } from 'lucide-react';
+import { Button } from '../ui/button'; 
 
-  const navigation = [
-    { name: "Home", href: "/", current: true },
-    { name: "Jobs", href: "/jobs", current: false },
-    { name: "Companies", href: "/companies", current: false },
-    { name: "Professionals", href: "/professionals", current: false },
-    { name: "About", href: "/about", current: false },
-  ];
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
-      {/* Header */}
-      <header className="bg-surface shadow-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-white" />
-                </div>
-                <span className="ml-2 text-xl font-bold text-text">
-                  SkillBridge
-                </span>
-              </div>
+    <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Users className="h-5 w-5 text-white" />
             </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    item.current
-                      ? "text-primary-600 bg-primary-50"
-                      : "text-secondary-600 hover:text-primary-600 hover:bg-primary-50"
-                  }`}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </nav>
-
-            {/* Desktop Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <button className="text-secondary-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                Sign In
-              </button>
-              <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                Get Started
-              </button>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-secondary-600 hover:text-primary-600 p-2"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
+            <span className="text-xl font-bold text-gray-900">SkillBridge</span>
           </div>
 
-          {/* Mobile Navigation */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border">
-              <div className="space-y-2">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      item.current
-                        ? "text-primary-600 bg-primary-50"
-                        : "text-secondary-600 hover:text-primary-600 hover:bg-primary-50"
-                    }`}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-                <div className="pt-4 space-y-2">
-                  <button className="block w-full text-left px-3 py-2 text-secondary-600 hover:text-primary-600 text-base font-medium">
-                    Sign In
-                  </button>
-                  <button className="block w-full bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-md text-base font-medium transition-colors">
-                    Get Started
-                  </button>
-                </div>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+              <Home className="h-4 w-4" />
+              Home
+            </a>
+            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Jobs</a>
+            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Companies</a>
+            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Professionals</a>
+            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button variant="ghost" className="text-gray-700">
+              Sign In
+            </Button>
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              Get Started
+            </Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <div className="w-6 h-6 flex flex-col justify-center space-y-1">
+              <div className={`h-0.5 bg-gray-600 transition-all ${isOpen ? 'rotate-45 translate-y-1' : ''}`}></div>
+              <div className={`h-0.5 bg-gray-600 transition-all ${isOpen ? 'opacity-0' : ''}`}></div>
+              <div className={`h-0.5 bg-gray-600 transition-all ${isOpen ? '-rotate-45 -translate-y-1' : ''}`}></div>
+            </div>
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden border-t border-gray-200 py-4">
+            <div className="flex flex-col space-y-4">
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">How it Works</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Success Stories</a>
+              <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
+                <Button variant="ghost" className="text-gray-700 justify-start">
+                  Sign In
+                </Button>
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 justify-start">
+                  Get Started
+                </Button>
               </div>
             </div>
-          )}
-        </div>
-      </header>
-    </>
-  )
-}
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+};
 
-export default Header
+export default Navbar;
