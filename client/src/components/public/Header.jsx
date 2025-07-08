@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Users, Briefcase, Home } from 'lucide-react';
 import { Button } from '../ui/button'; 
+import { Link } from 'react-router-dom';
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,14 +21,14 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <a href="/home" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
               <Home className="h-4 w-4" />
               Home
             </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Jobs</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Companies</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Professionals</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+            <a href="/jobs" className="text-gray-700 hover:text-blue-600 transition-colors">Jobs</a>
+            <a href="/companies" className="text-gray-700 hover:text-blue-600 transition-colors">Companies</a>
+            <a href="/professionals" className="text-gray-700 hover:text-blue-600 transition-colors">Professionals</a>
+            <a href="/about" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
           </div>
 
           {/* CTA Buttons */}
