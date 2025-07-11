@@ -17,6 +17,14 @@ const jobSeekerSchema = new mongoose.Schema({
         trim: true,
         maxlength: 500
     },
+    university: {
+        type: String,
+        trim: true
+    },
+    fieldOfStudy: {
+        type: String,
+        trim: true
+    },
     resumeUrl: {
         type: String,
         trim: true

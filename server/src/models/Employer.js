@@ -47,7 +47,7 @@ const employerSchema = new mongoose.Schema({
         min: 1800,
         max: new Date().getFullYear()
     },
-    headquarters: {
+    contactPersonName: {
         type: String,
         trim: true
     },

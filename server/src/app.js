@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { globalErrorHandler } from './middlewares/global-error-handler.js';
+import authRouter from './routes/auth.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -40,5 +42,10 @@ if (process.env.NODE_ENV === 'development') {
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Routes
+app.use("/api/auth", authRouter);
+
+app.use(globalErrorHandler);
 
 export { app };

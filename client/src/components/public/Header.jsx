@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Briefcase, Home } from 'lucide-react';
-import { Button } from '../ui/button'; 
+import { Button } from '../ui/button';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <a href="/" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
               <Home className="h-4 w-4" />
               Home
             </a>
@@ -31,9 +32,11 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-gray-700">
-              Sign In
-            </Button>
+            <Link to="/signin">
+              <Button variant="ghost" className="text-gray-700">
+                Sign In
+              </Button>
+            </Link>
             <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               Get Started
             </Button>
