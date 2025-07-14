@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to SkillBridge!</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; padding: 15px 30px; background: #2ecc71; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+        .feature { background: white; padding: 20px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #2ecc71; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Welcome to SkillBridge!</h1>
+            <h2>Your journey starts now, {{name}}!</h2>
+        </div>
+        <div class="content">
+            <p>Congratulations! Your email has been verified and your SkillBridge account is now active.</p>
+            
+            {{#if (eq userType "Student")}}
+            <div class="feature">
+                <h3>🎓 For Students</h3>
+                <ul>
+                    <li>Browse internships and entry-level positions</li>
+                    <li>Connect with leading companies and startups</li>
+                    <li>Build your professional profile</li>
+                    <li>Apply to opportunities that match your skills</li>
+                </ul>
+            </div>
+            {{else}}
+            <div class="feature">
+                <h3>💼 For Employers</h3>
+                <ul>
+                    <li>Post internship and job opportunities</li>
+                    <li>Access talented undergraduate students</li>
+                    <li>Build your company brand on campus</li>
+                    <li>Connect with the next generation of talent</li>
+                </ul>
+            </div>
+            {{/if}}
+            
+            <p>Ready to get started?</p>
+            <a href="{{dashboardUrl}}" class="button">Go to Dashboard</a>
+            
+            <hr style="margin: 30px 0;">
+            <h3>Next Steps:</h3>
+            <ol>
+                <li>Complete your profile with all relevant information</li>
+                <li>Upload a professional profile picture</li>
+                {{#if (eq userType "Student")}}
+                <li>Add your skills, projects, and academic achievements</li>
+                <li>Start browsing and applying to opportunities</li>
+                {{else}}
+                <li>Add your company information and verify your business</li>
+                <li>Post your first job or internship opportunity</li>
+                {{/if}}
+            </ol>
+            
+            <p>If you have any questions, don't hesitate to reach out to our support team.</p>
+        </div>
+        <div class="footer">
+            <p>Need help getting started? Visit our <a href="{{loginUrl}}">Help Center</a></p>
+            <p>© 2024 SkillBridge. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - SkillBridge</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; padding: 15px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 SkillBridge</h1>
+            <h2>Welcome, {{name}}!</h2>
+        </div>
+        <div class="content">
+            <h3>Verify Your Email Address</h3>
+            <p>Thank you for joining SkillBridge as a {{userType}}! To complete your registration and access your account, please verify your email address.</p>
+            
+            <p>Click the button below to verify your email:</p>
+            <a href="{{verificationUrl}}" class="button">Verify Email Address</a>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> This verification link will expire in {{expiresIn}}. If you don't verify your email within this time, you'll need to request a new verification email.
+            </div>
+            
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #667eea;">{{verificationUrl}}</p>
+            
+            <hr style="margin: 30px 0;">
+            <p><strong>Why do we require email verification?</strong></p>
+            <ul>
+                <li>To ensure you're a legitimate student/employer</li>
+                <li>To maintain platform security and trust</li>
+                <li>To send you important account notifications</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>If you didn't create this account, please ignore this email.</p>
+            <p>© 2024 SkillBridge. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

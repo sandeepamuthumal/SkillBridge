@@ -1,5 +1,5 @@
-import verifyToken from '../utils/jwt';
-import User from "../models/User";
+import {verifyToken} from '../utils/jwt.js';
+import User from "../models/User.js";
 
 const auth = async(req, res, next) => {
     try {
@@ -35,4 +35,4 @@ const authorize = (...roles) => {
     };
 };
 
-module.exports = { auth, authorize };
+export { auth, authorize };
