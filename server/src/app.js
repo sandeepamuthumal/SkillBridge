@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { globalErrorHandler } from './middlewares/global-error-handler.js';
 import authRouter from './routes/auth.js';
+import apiRouter from './routes/api.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -44,6 +45,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
+app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 
 app.use(globalErrorHandler);
