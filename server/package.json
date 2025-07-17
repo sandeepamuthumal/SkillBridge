@@ -25,7 +25,8 @@
         "morgan": "^1.10.0",
         "multer": "^2.0.1",
         "nodemailer": "^7.0.5",
-        "nodemailer-express-handlebars": "^7.0.0"
+        "nodemailer-express-handlebars": "^7.0.0",
+        "resend": "^4.6.0"
     },
     "devDependencies": {
         "concurrently": "^9.1.2",

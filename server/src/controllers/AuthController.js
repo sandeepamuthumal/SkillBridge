@@ -83,7 +83,7 @@ export const signUpEmployer = async(req, res, next) => {
         const employerData = {
             userId: user._id,
             companyName: req.body.companyName,
-            contactName: req.body.contactName,
+            contactPersonName: req.body.contactPersonName,
             companySize: req.body.companySize,
             industry: req.body.industry
         };

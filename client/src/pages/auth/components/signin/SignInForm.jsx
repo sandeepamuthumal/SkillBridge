@@ -1,16 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import GoogleButton from "../GoogleButton";
+import PasswordInput from "@/components/ui/PasswordInput";
 
 const SignInForm = ({ 
   role, 
   title, 
   subtitle, 
   primaryColor, 
-  onGoogleSignIn, 
-  onEmailSignIn, 
+  onSignIn, 
   onForgotPassword,
   handleChange,
   form,
@@ -33,13 +31,13 @@ const SignInForm = ({
 
  
   //handle loading
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
@@ -47,19 +45,8 @@ const SignInForm = ({
         <h3 className={`font-semibold ${colors.title}`}>{title}</h3>
         <p className="text-sm text-gray-600">{subtitle}</p>
       </div>
-      
-      <GoogleButton onClick={onGoogleSignIn} />
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-500">Or continue with</span>
-        </div>
-      </div>
-
-      <form onSubmit={onEmailSignIn} className="space-y-4">
+      <form onSubmit={onSignIn} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor={`${role}-email`}>Email</Label>
           <Input
@@ -75,12 +62,11 @@ const SignInForm = ({
         </div>
         <div className="space-y-2">
           <Label htmlFor={`${role}-password`}>Password</Label>
-          <Input
+          <PasswordInput
             id={`${role}-password`}
             name="password"
             onChange={handleChange}
             value={form.password}
-            type="password"
             placeholder="Enter your password"
             required
             className="h-11"
@@ -100,7 +86,14 @@ const SignInForm = ({
           </button>
         </div>
         <Button type="submit" className={`w-full ${colors.button} h-11`}>
-          Sign In
+          {loading ? (
+            <>
+              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+              <span>Loading</span>
+            </>
+          ) : (
+            "Sign In"
+          )}
         </Button>
       </form>
     </>
