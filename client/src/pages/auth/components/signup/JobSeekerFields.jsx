@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
+import { Controller } from 'react-hook-form';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import PasswordInput from "@/components/ui/PasswordInput";
 
-const JobSeekerFields = ({ primaryColor, handleChange, form }) => {
+const JobSeekerFields = ({ control, errors, primaryColor }) => {
   const colorClasses = {
     blue: { link: "text-blue-600" },
     purple: { link: "text-purple-600" }
@@ -15,118 +17,178 @@ const JobSeekerFields = ({ primaryColor, handleChange, form }) => {
     <>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="firstName">First Name</Label>
-          <Input
-            id="firstName"
+          <Label htmlFor="firstName">First Name *</Label>
+          <Controller
             name="firstName"
-            placeholder="John"
-            onChange={handleChange}
-            value={form.firstName}
-            required
-            className="h-11"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="firstName"
+                placeholder="John"
+                className={`h-11 ${errors.firstName ? 'border-red-500' : ''}`}
+              />
+            )}
           />
+          {errors.firstName && (
+            <p className="text-sm text-red-500">{errors.firstName.message}</p>
+          )}
         </div>
+        
         <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input
-            id="lastName"
+          <Label htmlFor="lastName">Last Name *</Label>
+          <Controller
             name="lastName"
-            placeholder="Doe"
-            onChange={handleChange}
-            value={form.lastName}
-            required
-            className="h-11"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="lastName"
+                placeholder="Doe"
+                className={`h-11 ${errors.lastName ? 'border-red-500' : ''}`}
+              />
+            )}
           />
+          {errors.lastName && (
+            <p className="text-sm text-red-500">{errors.lastName.message}</p>
+          )}
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
+        <Label htmlFor="email">Email *</Label>
+        <Controller
           name="email"
-          type="email"
-          placeholder="john@university.edu"
-          onChange={handleChange}
-          value={form.email}
-          required
-          className="h-11"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="email"
+              type="email"
+              placeholder="john@uoc.lk"
+              className={`h-11 ${errors.email ? 'border-red-500' : ''}`}
+            />
+          )}
         />
+        {errors.email && (
+          <p className="text-sm text-red-500">{errors.email.message}</p>
+        )}
+        {/* <p className="text-xs text-gray-500">
+          Use your official university email address
+        </p> */}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="university">University <span className="text-gray-500">(optional)</span></Label>
-        <Select
-          onValueChange={(value) => handleChange({ target: { name: "university", value } })}
-          value={form.university}>
-          <SelectTrigger className="h-11">
-            <SelectValue placeholder="Select your university" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="usj">University of Sri Jayewardenepura</SelectItem>
-            <SelectItem value="uoc">University of Colombo</SelectItem>
-            <SelectItem value="uom">University of Moratuwa</SelectItem>
-            <SelectItem value="uop">University of Peradeniya</SelectItem>
-            <SelectItem value="uok">University of Kelaniya</SelectItem>
-            <SelectItem value="uor">University of Ruhuna</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label htmlFor="university">University *</Label>
+        <Controller
+          name="university"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className={`h-11 ${errors.university ? 'border-red-500' : ''}`}>
+                <SelectValue placeholder="Select your university" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="University of Sri Jayewardenepura">University of Sri Jayewardenepura</SelectItem>
+                <SelectItem value="University of Colombo">University of Colombo</SelectItem>
+                <SelectItem value="University of Moratuwa">University of Moratuwa</SelectItem>
+                <SelectItem value="University of Peradeniya">University of Peradeniya</SelectItem>
+                <SelectItem value="University of Kelaniya">University of Kelaniya</SelectItem>
+                <SelectItem value="University of Ruhuna">University of Ruhuna</SelectItem>
+                <SelectItem value="Sabaragamuwa University">Sabaragamuwa University</SelectItem>
+                <SelectItem value="NSBM Green University">NSBM Green University</SelectItem>
+                <SelectItem value="SLIIT">Sri Lanka Institute of Information Technology</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.university && (
+          <p className="text-sm text-red-500">{errors.university.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="degree">Field of Study </Label>
-        <Input
-          id="degree"
+        <Label htmlFor="fieldOfStudy">Field of Study *</Label>
+        <Controller
           name="fieldOfStudy"
-          placeholder="Computer Science"
-          onChange={handleChange}
-          value={form.fieldOfStudy}
-          required
-          className="h-11"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="fieldOfStudy"
+              placeholder="Computer Science"
+              className={`h-11 ${errors.fieldOfStudy ? 'border-red-500' : ''}`}
+            />
+          )}
         />
+        {errors.fieldOfStudy && (
+          <p className="text-sm text-red-500">{errors.fieldOfStudy.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
+        <Label htmlFor="password">Password *</Label>
+        <Controller
           name="password"
-          type="password"
-          onChange={handleChange}
-          value={form.password}
-          placeholder="Create a strong password"
-          required
-          className="h-11"
+          control={control}
+          render={({ field }) => (
+            <PasswordInput
+            {...field}
+              id="password"
+              name="password"
+              placeholder="Create a strong password"
+              className={`h-11 ${errors.password ? 'border-red-500' : ''}`}
+              required
+            />
+          )}
         />
+        {errors.password && (
+          <p className="text-sm text-red-500">{errors.password.message}</p>
+        )}
+        <p className="text-xs text-gray-500">
+          Must contain uppercase, lowercase, number and special character
+        </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
+        <Label htmlFor="confirmPassword">Confirm Password *</Label>
+        <Controller
           name="confirmPassword"
-          type="password"
-          onChange={handleChange}
-          value={form.confirmPassword}
-          placeholder="Confirm your password"
-          required
-          className="h-11"
+          control={control}
+          render={({ field }) => (
+            <PasswordInput
+              {...field}
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="Confirm your password"
+              className={`h-11 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+              required
+            />
+          )}
         />
+        {errors.confirmPassword && (
+          <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+        )}
       </div>
 
       <div className="flex items-start space-x-2">
-        <input type="checkbox" className="mt-1 rounded" required />
-        <p className="text-sm text-gray-600">
+        <input 
+          type="checkbox" 
+          className="mt-1 rounded" 
+          required 
+          id="terms-jobseeker"
+        />
+        <Label htmlFor="terms-jobseeker" className="text-sm text-gray-600 cursor-pointer">
           I agree to the{" "}
-          <Link to="/terms" className={`${colors.link} hover:underline`}>
+          <a href="/terms" className={`${colors.link} hover:underline`} target="_blank" rel="noopener noreferrer">
             Terms of Service
-          </Link>{" "}
+          </a>{" "}
           and{" "}
-          <Link to="/privacy" className={`${colors.link} hover:underline`}>
+          <a href="/privacy" className={`${colors.link} hover:underline`} target="_blank" rel="noopener noreferrer">
             Privacy Policy
-          </Link>
-        </p>
+          </a>
+        </Label>
       </div>
     </>
   );

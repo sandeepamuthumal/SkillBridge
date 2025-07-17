@@ -5,75 +5,67 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SignUpHeader from "./components/signup/SignUpHeader";
 import SignUpForm from "./components/signup/SignUpForm";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const [activeRole, setActiveRole] = useState("jobseeker");
   const [loading, setLoading] = useState(false);
   const { signup, error, clearError } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    firstName: '',   
-    lastName: '', 
-    email: '',
-    password: '',
-    confirmPassword: '',
-    university: '',
-    fieldOfStudy: '',
-    companyName: '',
-    contactName: '',
-    companySize: '',
-    industry: '',
-  });
+  
 
-  const handleGoogleSignUp = () => {
-    console.log(`Google sign up for ${activeRole}`);
-    // Implement Google OAuth logic here
-  };
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleEmailSignUp = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (formData, userType) => {
     setLoading(true);
     clearError();
+    
+    try {
+      // Show loading toast
+      const loadingToastId = toast.loading('Creating your account...');
 
-    console.log("Sign up data:", form);
+      // Map form data to API format
+      const userData = {
+        role: userType === 'jobseeker' ? 'Job Seeker' : 'Employer',
+        termsAccepted: true,
+        privacyPolicyAccepted: true,
+        ...formData
+      };
 
-    // Basic validation
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      // For job seekers, map the email field
+      if (userType === 'jobseeker') {
+        userData.email = formData.email;
+      } else {
+        // For employers, map businessEmail to email
+        userData.email = formData.businessEmail;
+        delete userData.businessEmail; // Remove the original field
+      }
+
+      console.log("userData = " , userData);
+      const result = await signup(userData, userType);
+      
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+
+      console.log("result = " , result);
+
+      if (result.success) {
+        toast.success('Account created successfully! Please check your email to verify your account.');
+        navigate('/auth/email-verification', { 
+          state: { 
+            email: userData.email,
+            userType: userType 
+          }
+        });
+      } else {
+        toast.error(result.error || 'Failed to create account. Please try again.');
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred. Please try again.');
+      console.error('Signup error:', error);
+    } finally {
       setLoading(false);
-      return;
-    }
-
-    // Prepare user data based on role
-    const userData = {
-      email: form.email,
-      password: form.password,
-      role: activeRole,
-    };
-
-    if (activeRole === "jobseeker") {
-      userData.firstName = form.firstName;
-      userData.lastName = form.lastName;
-      userData.university = form.university;
-      userData.fieldOfStudy = form.fieldOfStudy;
-    } else {
-      userData.companyName = form.companyName;
-      userData.contactName = form.contactName;
-      userData.companySize = form.companySize;
-      userData.industry = form.industry;
-    }
-
-    const result = await signup(userData);
-    setLoading(false);
-
-    if (result.success) {
-      navigate("/signin");
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
@@ -110,13 +102,10 @@ const SignUp = () => {
               <TabsContent value="jobseeker" className="space-y-4">
                 <SignUpForm
                   role="jobseeker"
-                  title="Job Seeker Registration"
+                  title="Student Registration"
                   subtitle="Start your career journey today"
                   primaryColor="blue"
-                  onGoogleSignUp={handleGoogleSignUp}
-                  onEmailSignUp={handleEmailSignUp}
-                  handleChange={handleChange}
-                  form={form}
+                  onSubmit={handleSubmit}
                   loading={loading}
                 />
               </TabsContent>
@@ -125,12 +114,9 @@ const SignUp = () => {
                 <SignUpForm
                   role="employer"
                   title="Employer Registration"
-                  subtitle="Find the best talent for your company"
+                  subtitle="Find the best student talent"
                   primaryColor="purple"
-                  onGoogleSignUp={handleGoogleSignUp}
-                  onEmailSignUp={handleEmailSignUp}
-                  handleChange={handleChange}
-                  form={form}
+                  onSubmit={handleSubmit}
                   loading={loading}
                 />
               </TabsContent>

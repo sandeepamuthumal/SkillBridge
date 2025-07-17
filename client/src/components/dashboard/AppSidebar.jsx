@@ -52,14 +52,14 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-function AppSidebar({ userRole = 'seeker', userInfo = {}, autoCollapseThreshold = 4 }) {
+function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 }) {
   // State to track collapsed items
   
 
   const getNavigationData = (role, userInfo) => {
     const baseData = {
       user: {
-        name: userInfo.name || "John Doe",
+        name: userInfo.firstName || "John Doe",
         email: userInfo.email || "john@example.com",
         avatar: "/avatars/john-doe.jpg",
       },

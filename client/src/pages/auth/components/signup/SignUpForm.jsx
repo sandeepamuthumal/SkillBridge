@@ -1,71 +1,115 @@
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import GoogleButton from "../GoogleButton";
 import JobSeekerFields from "./JobSeekerFields";
 import EmployerFields from "./EmployerFields";
+import { jobSeekerSchema, employerSchema } from "@/lib/validations/authValidation";
 
 const SignUpForm = ({ 
   role, 
   title, 
   subtitle, 
-  primaryColor, 
-  onGoogleSignUp, 
-  onEmailSignUp,
-  handleChange,
-  form,
+  primaryColor,
+  onSubmit,
   loading,
 }) => {
   const colorClasses = {
     blue: {
       title: "text-blue-800",
       button: "bg-blue-600 hover:bg-blue-700",
-      link: "text-blue-600"
     },
     purple: {
       title: "text-purple-800",
       button: "bg-purple-600 hover:bg-purple-700",
-      link: "text-purple-600"
     }
   };
 
   const colors = colorClasses[primaryColor];
 
-   //handle loading
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+  // Choose validation schema based on role
+  const validationSchema = role === "jobseeker" ? jobSeekerSchema : employerSchema;
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch
+  } = useForm({
+    resolver: zodResolver(validationSchema),
+    mode: 'onChange', // Validate on change for better UX
+    defaultValues: role === "jobseeker" ? {
+      firstName: '',
+      lastName: '',
+      email: '',
+      university: '',
+      fieldOfStudy: '',
+      password: '',
+      confirmPassword: ''
+    } : {
+      companyName: '',
+      contactPersonName: '',
+      businessEmail: '',
+      companySize: '',
+      industry: '',
+      password: '',
+      confirmPassword: ''
+    }
+  });
+
+  // Watch password for real-time confirmation validation
+  const watchPassword = watch('password');
+
+  const onFormSubmit = async (data) => {
+    // Remove confirmPassword before sending to API
+    const { confirmPassword, ...submitData } = data;
+    await onSubmit(submitData, role);
+  };
 
   return (
     <>
       <div className="text-center mb-4">
         <h3 className={`font-semibold ${colors.title}`}>{title}</h3>
         <p className="text-sm text-gray-600">{subtitle}</p>
-      </div>
-      
-      <GoogleButton onClick={onGoogleSignUp} />
-
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-500">Or continue with</span>
-        </div>
+        {/* <div className="mt-2 p-2 bg-blue-50 rounded-lg">
+          <p className="text-xs text-blue-700">
+            {role === "jobseeker" 
+              ? "✉️ Use your university email address for verification"
+              : "🏢 Use your business email address for verification"
+            }
+          </p>
+        </div> */}
       </div>
 
-      <form onSubmit={onEmailSignUp} className="space-y-4">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
         {role === "jobseeker" ? (
-          <JobSeekerFields primaryColor={primaryColor} handleChange={handleChange} form={form}/>
+          <JobSeekerFields 
+            control={control} 
+            errors={errors} 
+            primaryColor={primaryColor}
+            watchPassword={watchPassword}
+          />
         ) : (
-          <EmployerFields primaryColor={primaryColor} handleChange={handleChange} form={form}/>
+          <EmployerFields 
+            control={control} 
+            errors={errors} 
+            primaryColor={primaryColor}
+            watchPassword={watchPassword}
+          />
         )}
         
-        <Button type="submit" className={`w-full ${colors.button} h-11`}>
-          Create Account
+        <Button 
+          type="submit" 
+          className={`w-full ${colors.button} h-11`}
+          disabled={loading || !isValid}
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+              Creating Account...
+            </>
+          ) : (
+            `Create ${role === "jobseeker" ? "Student" : "Employer"} Account`
+          )}
         </Button>
       </form>
     </>

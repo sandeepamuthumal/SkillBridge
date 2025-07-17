@@ -63,7 +63,9 @@ const jobSeekerSignupDTO = Joi.object({
 
     role: Joi.string()
         .valid('Job Seeker')
-        .required()
+        .required(),
+    termsAccepted: Joi.boolean().required(),
+    privacyPolicyAccepted: Joi.boolean().required()
 });
 
 // Employer Registration DTO
@@ -157,7 +159,10 @@ const employerSignupDTO = Joi.object({
 
     role: Joi.string()
         .valid('Employer')
-        .required()
+        .required(),
+
+    termsAccepted: Joi.boolean().required(),
+    privacyPolicyAccepted: Joi.boolean().required()
 });
 
 // Admin Registration DTO
@@ -206,7 +211,9 @@ const adminSignupDTO = Joi.object({
 
     role: Joi.string()
         .valid('Admin')
-        .required()
+        .required(),
+    termsAccepted: Joi.boolean().required(),
+    privacyPolicyAccepted: Joi.boolean().required()
 });
 
 // Sign In DTO
@@ -223,7 +230,11 @@ const signinDTO = Joi.object({
         .required()
         .messages({
             'any.required': 'Password is required'
-        })
+        }),
+
+    role: Joi.string()
+        .valid('Job Seeker', 'Employer', 'Admin')
+        .optional()
 });
 
 // Forgot Password DTO

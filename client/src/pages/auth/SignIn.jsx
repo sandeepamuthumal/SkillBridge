@@ -1,32 +1,29 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import Header from "./components/signin/Header";
 import SignInForm from "./components/signin/SignInForm";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [activeRole, setActiveRole] = useState("jobseeker");
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signin, error, clearError } = useAuth();
+   const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const handleGoogleSignIn = () => {
-    console.log(`Google sign in for ${activeRole}`);
-    // Implement Google OAuth logic here
-  };
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleEmailSignIn = async (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
     clearError();
@@ -34,25 +31,32 @@ const SignIn = () => {
     const userData = {
       email: form.email,
       password: form.password,
-      role: activeRole,
+      role: activeRole === 'jobseeker' ? 'Job Seeker' : 'Employer',
     };
+
+    console.log("userData = ", userData);
 
     const result = await signin(userData);
     setLoading(false);
 
     if (result.success) {
       // Redirect to the appropriate dashboard based on role
-      if (activeRole === "jobseeker") {
-        window.location.href = "/jobseeker/dashboard";
-      } else {
-        window.location.href = "/employer/dashboard";
+      if (activeRole === 'jobseeker') {
+        navigate('/jobseeker/dashboard');
+      }
+      else if (activeRole === 'employer') {
+        navigate('/employer/dashboard');
+      }
+      else{
+        navigate('/unauthorized');
       }
     }
-    else{
-      alert(result.message);
+    else {
+      // Handle error
+      console.error("Sign-in error:", result.error);
+      toast.error(result.error || 'Failed to sign in. Please try again.');
     }
   }
-
 
   const handleForgotPassword = () => {
     setIsForgotPasswordOpen(true);
@@ -96,8 +100,7 @@ const SignIn = () => {
                   title="Job Seeker Sign In"
                   subtitle="Find your dream internship or entry-level position"
                   primaryColor="blue"
-                  onGoogleSignIn={handleGoogleSignIn}
-                  onEmailSignIn={handleEmailSignIn}
+                  onSignIn={handleSignIn}
                   onForgotPassword={handleForgotPassword}
                   handleChange={handleChange}
                   form={form}
@@ -111,8 +114,7 @@ const SignIn = () => {
                   title="Employer Sign In"
                   subtitle="Connect with talented undergraduates"
                   primaryColor="purple"
-                  onGoogleSignIn={handleGoogleSignIn}
-                  onEmailSignIn={handleEmailSignIn}
+                  onSignIn={handleSignIn}
                   onForgotPassword={handleForgotPassword}
                   handleChange={handleChange}
                   form={form}

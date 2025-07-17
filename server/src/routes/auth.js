@@ -35,7 +35,7 @@ const emailLimiter = rateLimit({
 // Public routes
 authRouter.post("/signup/jobseeker", validateDTO(jobSeekerSignupDTO), signUpJobSeeker);
 authRouter.post("/signup/employer", validateDTO(employerSignupDTO), signUpEmployer);
-authRouter.post("/signin", authLimiter, validateDTO(signinDTO), signIn);
+authRouter.post("/signin", validateDTO(signinDTO), signIn);
 authRouter.get("/verify-email", verifyEmail);
 authRouter.post("/reset-password", authLimiter, validateDTO(resetPasswordDTO), resetPassword);
 
