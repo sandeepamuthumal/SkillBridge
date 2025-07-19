@@ -46,7 +46,7 @@ authRouter.post("/forgot-password", emailLimiter, validateDTO(forgotPasswordDTO)
 // Protected routes
 authRouter.get("/me", auth, getUser);
 authRouter.post("/signout", auth, logout);
-authRouter.post("/signup/admin", auth, authorize('admin'), validateDTO(adminSignupDTO), signUpAdmin);
+authRouter.post("/signup/admin", validateDTO(adminSignupDTO), signUpAdmin);
 
 
 export default authRouter;

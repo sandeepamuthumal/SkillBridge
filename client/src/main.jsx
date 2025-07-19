@@ -35,6 +35,8 @@ import SeekerDashboard from "./pages/seeker/dashboard/SeekerDashboard.jsx";
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
+import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 
 
 const router = createBrowserRouter([
@@ -122,6 +124,41 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <SeekerDashboard />,
+      }
+    ],
+  },
+
+  // Employer Protected Routes
+  {
+    path: "/employer",
+    element: (
+      <ProtectedRoute requiredRole="Employer">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: "dashboard",
+        element: <EmployerDashboard />,
+      }
+    ],
+  },
+
+
+  // Admin Protected Routes
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute requiredRole="Admin">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
       }
     ],
   },

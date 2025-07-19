@@ -221,8 +221,14 @@ export const signIn = async(req, res, next) => {
     try {
         const { email, password } = req.body;
 
+        console.log("SignIn request received with email:", email);
+
         // Check if user exists
-        const user = await User.findOne({ email }).select('+password');
+        const users = await User.find();
+        console.log("Users in database:", users.map(user => user.email));
+        const user = await User.findOne({
+            email: email
+        }).select('+password');
         if (!user) {
             throw new NotFoundError("User not found");
         }

@@ -47,6 +47,20 @@ export const useRouteHelper = () => {
     navigate(getDashboardRoute());
   };
 
+  const navigateDashboard = (role) => {
+    if (role === 'Job Seeker') {
+      navigate('/jobseeker/dashboard');
+    } else if (role === 'Employer') {
+      navigate('/employer/dashboard');
+    }
+    else if (role === 'Admin') {
+      navigate('/admin/dashboard');
+    }
+    else {
+      navigate('/');
+    }
+  };
+
   const navigateToProfile = () => {
     navigate(getProfileRoute());
   };
@@ -95,5 +109,6 @@ export const useRouteHelper = () => {
     navigateToProfile,
     navigateBasedOnRole,
     getMenuItems,
+    navigateDashboard
   };
 };

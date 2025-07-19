@@ -10,8 +10,7 @@ const Header = () => {
         </div>
         <span className="font-bold text-xl text-gray-900">SkillBridge</span>
       </Link>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-      <p className="text-gray-600">Sign in to your account to continue</p>
+      
     </div>
   );
 };

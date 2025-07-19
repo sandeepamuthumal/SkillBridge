@@ -5,7 +5,7 @@ export const authAPI = {
     post: (endpoint, data) => api.post(endpoint, data),
     signin: (credentials) => api.post('/auth/signin', credentials),
     getMe: () => api.get('/auth/me'),
-    logout: () => api.post('/auth/logout'),
+    logout: () => api.post('/auth/signout'),
 
     // Email Verification
     verifyEmail: (params) => api.get(`/auth/verify-email?token=${params.token}&email=${encodeURIComponent(params.email)}`),

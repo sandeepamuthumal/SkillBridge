@@ -127,7 +127,7 @@ export const AuthProvider = ({ children }) => {
       });
       
       toast.success(`Welcome back, ${user.firstName}!`);
-      return { success: true };
+      return { success: true, user };
     } catch (error) {
       const errorData = error.response?.data;
 

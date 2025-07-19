@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Settings,
   Bell,
@@ -22,7 +22,20 @@ function DashboardLayout() {
   const { user, logout } = useAuth();
   const userRole = user?.role;
   const userInfo = user || {};
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setIsProfileMenuOpen(false);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -59,7 +72,7 @@ function DashboardLayout() {
             </button>
 
             {/* Profile Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                 className="flex items-center gap-2 p-2 text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
