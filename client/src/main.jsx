@@ -1,45 +1,200 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import HomePage from './pages/public/HomePage.jsx'
-import MainLayout from './layouts/MainLayout.jsx'
-import SignInPage from './pages/auth/SignInPage.jsx'
-import SignUpPage from './pages/auth/SignUpPage.jsx'
-import DashboardLayout from './layouts/DashboardLayout.jsx'
-import SeekerDashboard from './pages/seeker/dashboard/SeekerDashboard.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Layouts
+import MainLayout from "./layouts/MainLayout.jsx";
+import DashboardLayout from "./layouts/DashboardLayout.jsx";
+
+// Route Protection Components
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import PublicRoute from "./components/common/PublicRoute.jsx";
+
+// Public Pages
+import HomePage from "./pages/public/HomePage.jsx";
+
+
+// Auth Pages
+import SignIn from "./pages/auth/SignIn.jsx";
+import SignUp from "./pages/auth/SignUp.jsx";
+import EmailVerification from "./pages/auth/EmailVerification.jsx";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
+
+// Jobseeker Pages
+import SeekerDashboard from "./pages/seeker/dashboard/SeekerDashboard.jsx";
+
+
+// Employer Pages
+
+
+// Error Pages
+import Unauthorized from "./pages/errors/Unauthorized.jsx";
+import NotFound from "./pages/errors/NotFound.jsx";
+import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
+import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+
 
 const router = createBrowserRouter([
+  // Public Routes with MainLayout
   {
+    path: "/",
     element: <MainLayout />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
-        path: '/',
-        element: <HomePage />
+        index: true,
+        element: <HomePage />,
       }
-    ]
+    ],
   },
+
+  // Authentication Routes (Public - only for non-authenticated users)
   {
-    element: <DashboardLayout />,
+    path: "/auth",
+    errorElement: <ErrorBoundary />,
     children: [
       {
-        path: '/seeker/dashboard',
-        element: <SeekerDashboard />
+        path: "signin",
+        element: (
+          <PublicRoute>
+            <SignIn />
+          </PublicRoute>
+        ),
       },
-    ]
+      {
+        path: "signup",
+        element: (
+          <PublicRoute>
+            <SignUp />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "reset-password/:token",
+        element: (
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "email-verification",
+        element: <EmailVerification />,
+      },
+      {
+        path: "verify-email",
+        element: <EmailVerification />,
+      },
+    ],
   },
-  {
-    path : '/sign-in',
-    element : <SignInPage />
-  },
-  {
-    path : '/sign-up',
-    element : <SignUpPage />
-  }
-])
 
-createRoot(document.getElementById('root')).render(
+  // Legacy auth routes (for backward compatibility)
+  {
+    path: "/signin",
+    element: (
+      <PublicRoute>
+        <SignIn />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: "/signup",
+    element: (
+      <PublicRoute>
+        <SignUp />
+      </PublicRoute>
+    ),
+  },
+
+  // Jobseeker Protected Routes
+  {
+    path: "/jobseeker",
+    element: (
+      <ProtectedRoute requiredRole="Job Seeker">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: "dashboard",
+        element: <SeekerDashboard />,
+      }
+    ],
+  },
+
+  // Employer Protected Routes
+  {
+    path: "/employer",
+    element: (
+      <ProtectedRoute requiredRole="Employer">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: "dashboard",
+        element: <EmployerDashboard />,
+      }
+    ],
+  },
+
+
+  // Admin Protected Routes
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute requiredRole="Admin">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: [
+      {
+        path: "dashboard",
+        element: <AdminDashboard />,
+      }
+    ],
+  },
+
+  // Error Routes
+  {
+    path: "/unauthorized",
+    element: <Unauthorized />,
+  },
+  {
+    path: "/404",
+    element: <NotFound />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-     <RouterProvider router={router} />
-  </StrictMode>,
-)
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="mt-16" // Add margin-top to avoid navbar overlap
+      />
+    </AuthProvider>
+  </StrictMode>
+);

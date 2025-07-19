@@ -1,11 +1,11 @@
 import React from "react";
 
-function SeekerDashboard() {
+function AdminDashboard() {
   return (
     <>
       <div className="space-y-6">
         <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <h1 className="text-2xl font-bold text-text mb-4">Job Seeker Dashboard</h1>
+          <h1 className="text-2xl font-bold text-text mb-4">Admin Dashboard</h1>
           <p className="text-secondary-600 mb-6">
             Welcome to your dashboard. Here you can manage all your activities
           </p>
@@ -15,4 +15,4 @@ function SeekerDashboard() {
   );
 }
 
-export default SeekerDashboard;
+export default AdminDashboard;

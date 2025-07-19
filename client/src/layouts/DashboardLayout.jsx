@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Settings,
   Bell,
@@ -9,15 +9,39 @@ import {
 } from "lucide-react";
 // Import shadcn/ui components
 
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import AppSidebar from "@/components/dashboard/AppSidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import Footer from "@/components/dashboard/Footer";
+import { useAuth } from "@/context/AuthContext";
+
+
 
 function DashboardLayout() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const userRole = "seeker";
-  const userInfo = {};
+  const { user, logout } = useAuth();
+  const userRole = user?.role;
+  const userInfo = user || {};
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setIsProfileMenuOpen(false);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    setIsProfileMenuOpen(false);
+    navigate('/');
+  };
 
   return (
     <SidebarProvider>
@@ -48,7 +72,7 @@ function DashboardLayout() {
             </button>
 
             {/* Profile Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                 className="flex items-center gap-2 p-2 text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
@@ -64,22 +88,8 @@ function DashboardLayout() {
                 <div className="absolute right-0 mt-2 w-48 bg-surface rounded-lg shadow-lg border border-border z-50">
                   <div className="py-2">
                     <a
-                      href="#"
-                      className="flex items-center px-4 py-2 text-sm text-secondary-700 hover:bg-primary-50"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Profile
-                    </a>
-                    <a
-                      href="#"
-                      className="flex items-center px-4 py-2 text-sm text-secondary-700 hover:bg-primary-50"
-                    >
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
-                    </a>
-                    <div className="border-t border-border my-2"></div>
-                    <a
-                      href="#"
+                      href="javascript:void(0)"
+                      onClick={handleLogout}
                       className="flex items-center px-4 py-2 text-sm text-danger-600 hover:bg-danger-50"
                     >
                       <LogOut className="w-4 h-4 mr-2" />
