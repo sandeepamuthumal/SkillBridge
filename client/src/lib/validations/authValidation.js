@@ -29,11 +29,9 @@ export const jobSeekerSchema = z.object({
     email: z
         .string()
         .email('Please enter a valid email address')
-        // .refine((email) => {
-        //     const domain = email.split('@')[1];
-        //     return UNIVERSITY_DOMAINS.includes(domain);
-        // }, 'Please use your university email address')
-        ,
+        .refine((value) => value.endsWith('.ac.lk'), {
+            message: 'Please use your official university email ending with .ac.lk',
+        }),
 
     university: z.string().min(1, 'Please select your university'),
 

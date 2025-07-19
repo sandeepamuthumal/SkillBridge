@@ -1,26 +1,38 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { AlertCircle } from "lucide-react";
 import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import Header from "./components/signin/Header";
 import SignInForm from "./components/signin/SignInForm";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
+import { useRouteHelper } from "@/hooks/useRouteHelper";
 
 const SignIn = () => {
-  const [activeRole, setActiveRole] = useState("jobseeker");
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signin, error, clearError } = useAuth();
-   const navigate = useNavigate();
+  const { navigateDashboard } = useRouteHelper();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  
   const [form, setForm] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
 
+  const from = location.state?.from?.pathname || '/';
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setForm({ 
+      ...form, 
+      [name]: type === 'checkbox' ? checked : value 
+    });
   };
 
   const handleSignIn = async (e) => {
@@ -31,114 +43,115 @@ const SignIn = () => {
     const userData = {
       email: form.email,
       password: form.password,
-      role: activeRole === 'jobseeker' ? 'Job Seeker' : 'Employer',
     };
 
-    console.log("userData = ", userData);
-
-    const result = await signin(userData);
-    setLoading(false);
-
-    if (result.success) {
-      // Redirect to the appropriate dashboard based on role
-      if (activeRole === 'jobseeker') {
-        navigate('/jobseeker/dashboard');
+    try {
+      const result = await signin(userData);
+      
+      if (result.success) {
+        // Use your route helper logic or direct navigation
+        navigateDashboard(result.user.role);
+        return;
+      } else {
+        console.error("Sign-in error:", result.error);
+        toast.error(result.error || "Failed to sign in. Please try again.");
       }
-      else if (activeRole === 'employer') {
-        navigate('/employer/dashboard');
-      }
-      else{
-        navigate('/unauthorized');
-      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    else {
-      // Handle error
-      console.error("Sign-in error:", result.error);
-      toast.error(result.error || 'Failed to sign in. Please try again.');
-    }
-  }
+  };
 
   const handleForgotPassword = () => {
     setIsForgotPasswordOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
         <Header />
 
-        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-center text-lg">Choose Your Role</CardTitle>
+        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="space-y-1 pb-6 text-center">
+            <CardTitle className="text-3xl font-bold text-gray-900">
+              Welcome Back
+            </CardTitle>
+            <p className="text-gray-600 text-base">
+              Sign in to your account to continue
+            </p>
           </CardHeader>
-          <CardContent>
+          
+          <CardContent className="space-y-6">
             {error && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                 {error}
               </div>
             )}
 
-            <Tabs value={activeRole} onValueChange={setActiveRole} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100">
-                <TabsTrigger
-                  value="jobseeker"
-                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-                >
-                  Job Seeker
-                </TabsTrigger>
-                <TabsTrigger
-                  value="employer"
-                  className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
-                >
-                  Employer
-                </TabsTrigger>
-              </TabsList>
+            <SignInForm
+              primaryColor="blue"
+              onSignIn={handleSignIn}
+              onForgotPassword={handleForgotPassword}
+              handleChange={handleChange}
+              form={form}
+              loading={loading}
+            />
 
-              <TabsContent value="jobseeker" className="space-y-4">
-                <SignInForm
-                  role="jobseeker"
-                  title="Job Seeker Sign In"
-                  subtitle="Find your dream internship or entry-level position"
-                  primaryColor="blue"
-                  onSignIn={handleSignIn}
-                  onForgotPassword={handleForgotPassword}
-                  handleChange={handleChange}
-                  form={form}
-                  loading={loading}
-                />
-              </TabsContent>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500">
+                  New to SkillBridge?
+                </span>
+              </div>
+            </div>
 
-              <TabsContent value="employer" className="space-y-4">
-                <SignInForm
-                  role="employer"
-                  title="Employer Sign In"
-                  subtitle="Connect with talented undergraduates"
-                  primaryColor="purple"
-                  onSignIn={handleSignIn}
-                  onForgotPassword={handleForgotPassword}
-                  handleChange={handleChange}
-                  form={form}
-                  loading={loading}
-                />
-              </TabsContent>
-            </Tabs>
-
-            <div className="text-center mt-6">
+            <div className="text-center">
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
-                <Link to="/signup" className="text-blue-600 hover:underline font-medium">
-                  Sign up
+                <Link
+                  to="/signup"
+                  className="text-blue-600 hover:text-blue-500 font-semibold transition-colors duration-200"
+                >
+                  Sign up for free
                 </Link>
               </p>
             </div>
           </CardContent>
         </Card>
+
+        {/* Footer Links */}
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
+            <Link to="/about" className="hover:text-blue-600 transition-colors">
+              About
+            </Link>
+            <span>•</span>
+            <Link to="/help" className="hover:text-blue-600 transition-colors">
+              Help
+            </Link>
+            <span>•</span>
+            <Link to="/privacy" className="hover:text-blue-600 transition-colors">
+              Privacy
+            </Link>
+          </div>
+        </div>
       </div>
 
       <ForgotPasswordModal
         isOpen={isForgotPasswordOpen}
         onClose={() => setIsForgotPasswordOpen(false)}
       />
+
+      {/* Background Decorations */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-1/2 -right-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-1/2 -left-1/2 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
+      </div>
     </div>
   );
 };

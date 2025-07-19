@@ -30,13 +30,13 @@ const jobSeekerSignupDTO = Joi.object({
     email: Joi.string()
         .email()
         .required()
-        // .custom((value, helpers) => {
-        //     const domain = value.split('@')[1];
-        //     if (!domain || !domain.endsWith('.ac.lk')) {
-        //         return helpers.message('Please use your official university email ending with .ac.lk');
-        //     }
-        //     return value;
-        // })
+        .custom((value, helpers) => {
+            const domain = value.split('@')[1];
+            if (!domain || !domain.endsWith('.ac.lk')) {
+                return helpers.message('Please use your official university email ending with .ac.lk');
+            }
+            return value;
+        })
         .messages({
             'string.email': 'Please provide a valid email address',
             'any.required': 'Email is required'
@@ -211,9 +211,7 @@ const adminSignupDTO = Joi.object({
 
     role: Joi.string()
         .valid('Admin')
-        .required(),
-    termsAccepted: Joi.boolean().required(),
-    privacyPolicyAccepted: Joi.boolean().required()
+        .required()
 });
 
 // Sign In DTO

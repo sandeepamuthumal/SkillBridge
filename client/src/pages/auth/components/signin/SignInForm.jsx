@@ -4,9 +4,6 @@ import { Label } from "@/components/ui/label";
 import PasswordInput from "@/components/ui/PasswordInput";
 
 const SignInForm = ({ 
-  role, 
-  title, 
-  subtitle, 
   primaryColor, 
   onSignIn, 
   onForgotPassword,
@@ -29,41 +26,28 @@ const SignInForm = ({
 
   const colors = colorClasses[primaryColor];
 
- 
-  //handle loading
-  // if (loading) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <>
-      <div className="text-center mb-4">
-        <h3 className={`font-semibold ${colors.title}`}>{title}</h3>
-        <p className="text-sm text-gray-600">{subtitle}</p>
-      </div>
 
       <form onSubmit={onSignIn} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor={`${role}-email`}>Email</Label>
+          <Label htmlFor="email">Email</Label>
           <Input
-            id={`${role}-email`}
+            id="email"
             name="email"
             onChange={handleChange}
             value={form.email}
             type="email"
-            placeholder={role === "employer" ? "Enter your company email" : "Enter your email"}
+            placeholder="Enter your email"
             required
             className="h-11"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${role}-password`}>Password</Label>
+          <Label htmlFor="password">Password</Label>
           <PasswordInput
-            id={`${role}-password`}
+            id="password"
             name="password"
             onChange={handleChange}
             value={form.password}

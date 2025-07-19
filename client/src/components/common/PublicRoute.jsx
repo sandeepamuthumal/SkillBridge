@@ -1,9 +1,11 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { useRouteHelper } from '@/hooks/useRouteHelper';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, user, loading } = useAuth();
+    const { getDashboardRoute } = useRouteHelper();
 
   // Show loading spinner while checking authentication
   if (loading) {
@@ -16,7 +18,7 @@ const PublicRoute = ({ children }) => {
 
   // If authenticated, redirect to appropriate dashboard
   if (isAuthenticated && user) {
-    const dashboardRoute = user.role === 'Job Seeker' ? '/jobseeker/dashboard' : '/employer/dashboard';
+    const dashboardRoute = getDashboardRoute();
     return <Navigate to={dashboardRoute} replace />;
   }
 
