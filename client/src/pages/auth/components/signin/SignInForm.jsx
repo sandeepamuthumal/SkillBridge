@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PasswordInput from "@/components/ui/PasswordInput";
+import { ArrowRight } from "lucide-react";
 
 const SignInForm = ({ 
   primaryColor, 
@@ -71,13 +72,16 @@ const SignInForm = ({
         </div>
         <Button type="submit" className={`w-full ${colors.button} h-11`}>
           {loading ? (
-            <>
-              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-              <span>Loading</span>
-            </>
-          ) : (
-            "Sign In"
-          )}
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            <span>Signing in...</span>
+          </>
+        ) : (
+          <>
+            <span>Sign In</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </>
+        )}
         </Button>
       </form>
     </>

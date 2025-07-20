@@ -37,6 +37,7 @@ import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import SeekerProfile from "./pages/seeker/profile/SeekerProfile";
 
 
 const router = createBrowserRouter([
@@ -124,6 +125,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <SeekerDashboard />,
+      },
+      {
+        path: "profile",
+        element: <SeekerProfile />,
       }
     ],
   },
