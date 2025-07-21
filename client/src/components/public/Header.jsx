@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Briefcase, Home } from 'lucide-react';
-import { Button } from '../ui/button'; 
-import { Link } from 'react-router-dom';
-
+import { Button } from '../ui/button';
+import { NavLink } from 'react-router-dom'; // ✅ Use NavLink instead of Link
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,14 +20,51 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/home" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <NavLink
+              to="/home"
+              className={({ isActive }) =>
+                `flex items-center gap-2 transition-colors ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'}`
+              }
+            >
               <Home className="h-4 w-4" />
               Home
-            </a>
-            <a href="/jobs" className="text-gray-700 hover:text-blue-600 transition-colors">Jobs</a>
-            <a href="/companies" className="text-gray-700 hover:text-blue-600 transition-colors">Companies</a>
-            <a href="/professionals" className="text-gray-700 hover:text-blue-600 transition-colors">Professionals</a>
-            <a href="/about" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+            </NavLink>
+
+            <NavLink
+              to="/jobs"
+              className={({ isActive }) =>
+                `transition-colors ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'}`
+              }
+            >
+              Jobs
+            </NavLink>
+
+            <NavLink
+              to="/companies"
+              className={({ isActive }) =>
+                `transition-colors ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'}`
+              }
+            >
+              Companies
+            </NavLink>
+
+            <NavLink
+              to="/professionals"
+              className={({ isActive }) =>
+                `transition-colors ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'}`
+              }
+            >
+              Professionals
+            </NavLink>
+
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                `transition-colors ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600'}`
+              }
+            >
+              About
+            </NavLink>
           </div>
 
           {/* CTA Buttons */}
@@ -59,9 +95,10 @@ const Navbar = () => {
           <div className="md:hidden border-t border-gray-200 py-4">
             <div className="flex flex-col space-y-4">
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Jobs</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Companies</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Professionals</a>
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">About</a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">How it Works</a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">Success Stories</a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
                 <Button variant="ghost" className="text-gray-700 justify-start">
                   Sign In

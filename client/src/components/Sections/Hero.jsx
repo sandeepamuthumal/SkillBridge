@@ -1,6 +1,8 @@
 import React from "react";
-import { ArrowDown, Users, Briefcase } from "lucide-react";
+// Removed: import { ArrowDown, Users, Briefcase } from "lucide-react";
+import { Users, Briefcase, ArrowDown } from "lucide-react"; // Keep these for your other buttons
 import { Button } from "../ui/button";
+import { Link } from 'react-scroll'; // Import Link from react-scroll
 
 const Hero = () => {
   return (
@@ -80,10 +82,16 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+      {/* Scroll indicator - Modified to use react-scroll Link */}
+      <Link
+        to="features" // This should match the 'name' prop of the target <Element> in HomePage.jsx
+        smooth={true}
+        duration={750}
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer" // Add cursor-pointer for better UX
+        aria-label="Scroll down to features"
+      >
         <ArrowDown className="h-6 w-6 text-gray-300" />
-      </div>
+      </Link>
     </section>
   );
 };
