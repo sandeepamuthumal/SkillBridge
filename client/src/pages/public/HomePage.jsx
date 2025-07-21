@@ -16,7 +16,7 @@ const HomePage = () => {
   // Function to scroll to the top of the page
   const scrollToTop = () => {
     scroll.scrollToTop({
-      duration: 1500, // Duration of the scroll animation in milliseconds
+      duration: 1600, // Duration of the scroll animation in milliseconds
       smooth: true,  // Enable smooth scrolling
     });
   };
