@@ -234,9 +234,10 @@ const Companies = () => {
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=400&fit=crop')] bg-cover bg-center bg-blend-overlay"
           aria-hidden="true"
         />
+        <div className="absolute inset-0 bg-black opacity-40" aria-hidden="true" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-8">
-             <br></br>
+            <br></br>
             <h1 className="text-5xl font-bold mb-4 animate-fade-in">
               Discover Amazing{" "}
               <span className="text-yellow-300">Companies</span>
@@ -257,7 +258,7 @@ const Companies = () => {
                   placeholder="Search companies, industries, or specialties..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-14 h-16 text-lg text-black border-gray-300 focus:border-purple-600 focus:ring-4 focus:ring-purple-300 rounded-2xl shadow-sm transition-shadow duration-300"
+                  className="pl-14 h-16 text-lg text-black border-4 border-gray-400 focus:border-purple-600 focus:ring-4 hover:border-purple-600 focus:ring-purple-300 rounded-2xl shadow-sm transition-shadow duration-300"
                   aria-label="Search companies, industries, or specialties"
                 />
                 {searchTerm && (
@@ -278,7 +279,7 @@ const Companies = () => {
                 onValueChange={(value) => setSelectedIndustry(value)}
               >
                 <SelectTrigger
-                  className="h-16 border-gray-300 rounded-2xl shadow-sm hover:border-purple-600 focus:border-purple-600 focus:ring-4 focus:ring-purple-300 transition-colors duration-300 flex items-center gap-2 px-4 cursor-pointer text-black"
+                  className="h-16 border-4 border-gray-400 rounded-2xl shadow-sm hover:border-purple-600 focus:border-purple-600 focus:ring-4 focus:ring-purple-300 transition-colors duration-300 flex items-center gap-2 px-4 cursor-pointer text-black"
                   aria-label="Filter by Industry"
                   title="Filter by Industry"
                 >
@@ -300,7 +301,7 @@ const Companies = () => {
                 onValueChange={(value) => setSelectedSize(value)}
               >
                 <SelectTrigger
-                  className="h-16 border-gray-300 rounded-2xl shadow-sm hover:border-purple-600 focus:border-purple-600 focus:ring-4 focus:ring-purple-300 transition-colors duration-300 flex items-center gap-2 px-4 cursor-pointer text-black"
+                  className="h-16  border-4 border-gray-400 rounded-2xl shadow-sm hover:border-purple-600 focus:border-purple-600 focus:ring-4 focus:ring-purple-300 transition-colors duration-300 flex items-center gap-2 px-4 cursor-pointer text-black"
                   aria-label="Filter by Company Size"
                   title="Filter by Company Size"
                 >

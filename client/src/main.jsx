@@ -16,6 +16,12 @@ import PublicRoute from "./components/common/PublicRoute.jsx";
 
 // Public Pages
 import HomePage from "./pages/public/HomePage.jsx";
+import AboutPage from "./pages/public/AboutPage.jsx";
+import Companies from "./pages/public/Companies.jsx";
+import JobsPage from "./pages/public/JobsPage.jsx";
+import ProfessionalsPage from "./pages/public/ProfessionalsPage.jsx";
+
+
 
 
 // Auth Pages
@@ -50,7 +56,23 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
-      }
+      },
+    {
+      path: "about",
+      element: <AboutPage />,
+    },
+    {
+      path: "companies",
+      element: <Companies />,
+    },
+    {
+      path: "jobs",
+      element: <JobsPage />,
+    },
+    {
+      path: "professionals",
+      element: <ProfessionalsPage />,
+    }
     ],
   },
 

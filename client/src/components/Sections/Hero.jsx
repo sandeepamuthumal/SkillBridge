@@ -2,7 +2,7 @@ import React from "react";
 // Removed: import { ArrowDown, Users, Briefcase } from "lucide-react";
 import { Users, Briefcase, ArrowDown } from "lucide-react"; // Keep these for your other buttons
 import { Button } from "../ui/button";
-import { Link } from 'react-scroll'; // Import Link from react-scroll
+import { Link } from "react-scroll"; // Import Link from react-scroll
 
 const Hero = () => {
   return (
@@ -15,7 +15,7 @@ const Hero = () => {
       />
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-700 via-purple-700 to-purple-900 opacity-30"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-black opacity-50"></div>
 
       {/* Content container */}
       <div className="relative z-10 max-w-4xl px-6 text-center text-white">
