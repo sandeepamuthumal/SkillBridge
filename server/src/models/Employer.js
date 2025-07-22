@@ -13,20 +13,14 @@ const employerSchema = new mongoose.Schema({
         trim: true,
         maxlength: 100
     },
-    businessEmail: {
-        type: String,
-        required: [true, 'Business email is required'],
-        lowercase: true,
-        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
-    },
-    website: {
-        type: String,
-        trim: true
-    },
-    description: {
+    companyDescription: {
         type: String,
         trim: true,
         maxlength: 2000
+    },
+    companyWebsite: {
+        type: String,
+        trim: true
     },
     logoUrl: {
         type: String,
@@ -39,7 +33,7 @@ const employerSchema = new mongoose.Schema({
     },
     companySize: {
         type: String,
-        enum: ['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'],
+        enum: ['startup', 'small', 'medium', 'large'],
         required: true
     },
     foundedYear: {
@@ -47,7 +41,7 @@ const employerSchema = new mongoose.Schema({
         min: 1800,
         max: new Date().getFullYear()
     },
-    headquarters: {
+    contactPersonName: {
         type: String,
         trim: true
     },

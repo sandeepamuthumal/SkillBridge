@@ -10,13 +10,24 @@ const jobSeekerSchema = new mongoose.Schema({
     statementHeader: {
         type: String,
         trim: true,
-        maxlength: 100
+        maxlength: [100, 'Statement header cannot exceed 100 characters']
     },
     statement: {
         type: String,
         trim: true,
-        maxlength: 500
+        maxlength: [500, 'Statement cannot exceed 500 characters']
     },
+    university: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    fieldOfStudy: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    // Documents
     resumeUrl: {
         type: String,
         trim: true
@@ -142,7 +153,6 @@ const jobSeekerSchema = new mongoose.Schema({
     cityId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'City',
-        required: true
     },
     availability: {
         type: String,
@@ -166,9 +176,68 @@ const jobSeekerSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         }
-    }
+    },
+    // Profile Statistics
+    profileViews: {
+        type: Number,
+        default: 0
+    },
+    profileCompleteness: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    profileVisibility: {
+        type: String,
+        enum: ['Public', 'Private', 'Limited'],
+        default: 'Public'
+    },
 }, {
     timestamps: true
+});
+
+// Virtual to populate user data
+jobSeekerSchema.virtual('user', {
+    ref: 'User',
+    localField: 'userId',
+    foreignField: '_id',
+    justOne: true
+});
+
+jobSeekerSchema.virtual('city', {
+    ref: 'City',
+    localField: 'cityId',
+    foreignField: '_id',
+    justOne: true
+});
+
+jobSeekerSchema.methods.calculateProfileCompleteness = function() {
+    let completeness = 0;
+    const fields = [
+        'statementHeader', 'statement', 'resumeUrl', 'skills',
+        'educations', 'experiences', 'projects', 'socialLinks.linkedin'
+    ];
+
+    fields.forEach(field => {
+        if (field.includes('.')) {
+            const [parent, child] = field.split('.');
+            if (this[parent] && this[parent][child]) completeness += (100 / fields.length);
+        } else {
+            if (this[field] && (Array.isArray(this[field]) ? this[field].length > 0 : true)) {
+                completeness += (100 / fields.length);
+            }
+        }
+    });
+
+    this.profileCompleteness = Math.round(completeness);
+    return this.profileCompleteness;
+};
+
+// Pre-save middleware to calculate profile completeness
+jobSeekerSchema.pre('save', function(next) {
+    this.calculateProfileCompleteness();
+    next();
 });
 
 export default mongoose.model('JobSeeker', jobSeekerSchema);
