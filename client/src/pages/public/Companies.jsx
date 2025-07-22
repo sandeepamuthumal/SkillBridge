@@ -248,7 +248,7 @@ const Companies = () => {
           </div>
 
           {/* Enhanced Search Section */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-black/30 max-w-7xl mx-auto">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-black/30 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
               {/* Search Input */}
               <div className="md:col-span-2 relative">
