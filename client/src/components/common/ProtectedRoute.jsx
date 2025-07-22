@@ -22,6 +22,7 @@ const ProtectedRoute = ({ children, requiredRole = null, allowedRoles = [] }) =>
 
   // Check for specific role requirement
   if (requiredRole && user?.role !== requiredRole) {
+    console.warn(`Access denied: User role ${user?.role} does not match required role ${requiredRole}`);
     return <Navigate to="/unauthorized" replace />;
   }
 
