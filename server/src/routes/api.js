@@ -1,5 +1,6 @@
 import express from "express";
 import { Resend } from 'resend';
+import City from "../models/City.js";
 
 const resend = new Resend('re_PoyqkuE7_PU7rSEtzAVuTn52bkBMN7rbg');
 const apiRouter = express.Router();
@@ -8,24 +9,16 @@ apiRouter.get("/", (req, res) => {
     res.json({ message: "Hello from the API!" });
 });
 
-apiRouter.get("/send-email", async(req, res) => {
-    //send email using resend
-    const { data, error } = await resend.emails.send({
-        from: 'SkillBridge <onboarding@resend.dev>',
-        to: ['ict22885@fot.sjp.ac.lk'],
-        subject: 'Hello Testing',
-        html: '<strong>It works!</strong>',
-    });
-
-    if (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-        return;
+apiRouter.get('/cities', async(req, res) => {
+    try {
+        const cities = await City.find({ isActive: true });
+        res.status(200).json({
+            success: true,
+            data: cities
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
     }
-
-    console.log({ data });
-
-    res.json({ message: "Email sent successfully!", data });
 });
 
 export default apiRouter;

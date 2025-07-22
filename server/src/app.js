@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { globalErrorHandler } from './middlewares/global-error-handler.js';
 import authRouter from './routes/auth.js';
 import apiRouter from './routes/api.js';
+import jobseekerRouter from './routes/jobseeker.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -15,8 +16,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -28,7 +32,7 @@ app.use('/api', limiter);
 
 // CORS configuration
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
 }));
 
@@ -42,11 +46,25 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Static files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+    setHeaders: (res, path) => {
+        res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+}));
+
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles'), {
+    setHeaders: (res, path) => {
+        res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    }
+}));
+
 
 // Routes
 app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/jobseeker", jobseekerRouter);
 
 app.use(globalErrorHandler);
 

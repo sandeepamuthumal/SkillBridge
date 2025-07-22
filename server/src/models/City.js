@@ -6,22 +6,14 @@ const citySchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    countryId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Country',
-        required: true
-    },
-    stateProvince: {
+    country: {
         type: String,
+        required: true,
         trim: true
     },
     isActive: {
         type: Boolean,
         default: true
-    },
-    coordinates: {
-        latitude: Number,
-        longitude: Number
     }
 }, {
     timestamps: true
