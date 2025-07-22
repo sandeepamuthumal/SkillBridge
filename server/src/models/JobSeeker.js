@@ -205,6 +205,13 @@ jobSeekerSchema.virtual('user', {
     justOne: true
 });
 
+jobSeekerSchema.virtual('city', {
+    ref: 'City',
+    localField: 'cityId',
+    foreignField: '_id',
+    justOne: true
+});
+
 jobSeekerSchema.methods.calculateProfileCompleteness = function() {
     let completeness = 0;
     const fields = [

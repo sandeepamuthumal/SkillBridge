@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom'; // Add this import
+import logo2 from "@/assets/logo2.png";
 import { 
   Menu, 
   X, 
@@ -211,11 +212,6 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/jobseeker/applications",
               icon: FileText,
               isActive: isPathActive("/jobseeker/applications", currentPath),
-              items: [
-                { title: "All Applications", url: "/jobseeker/applications", isActive: currentPath === "/jobseeker/applications" },
-                { title: "In Progress", url: "/jobseeker/applications/progress", isActive: isPathActive("/jobseeker/applications/progress", currentPath) },
-                { title: "Interviews", url: "/jobseeker/applications/interviews", isActive: isPathActive("/jobseeker/applications/interviews", currentPath) },
-              ],
             },
             {
               title: "Saved Jobs",
@@ -284,15 +280,8 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                  <Building2 className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold text-foreground">SkillBridge</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {getRoleDisplayName(userRole)}
-                  </span>
-                </div>
+                <img src={logo2} alt="SkillBridge Logo" className="h-14 w-auto" />
+                
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

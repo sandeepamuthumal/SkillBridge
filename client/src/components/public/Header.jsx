@@ -4,6 +4,8 @@ import { Button } from '../ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useRouteHelper } from '../../hooks/useRouteHelper';
+import logo from '../../assets/logo.png';
+import logo2 from '../../assets/logo2.png';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,10 +107,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Users className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">SkillBridge</span>
+            <span className="text-xl font-bold text-gray-900">SkillBridge</span> */}
+            <img src={logo2} alt="SkillBridge Logo" className="h-16 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}

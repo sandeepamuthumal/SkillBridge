@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   User, 
   Upload, 
@@ -15,24 +16,30 @@ import {
   CheckCircle,
   Circle,
   Star,
-  Eye
+  Eye,
+  AlertCircle
 } from 'lucide-react';
+import PersonalInfoForm from './components/PersonalInfoForm';
+import { seekerProfileAPI } from '@/services/jobseeker/seekerProfileAPI';
+import { toast } from 'react-toastify';
 
-const SeekerProfile = () => {
+const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('personal');
-  const [profileCompleteness] = useState(65); // This would come from your backend
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // Mock completion status for each section
-  const sectionStatus = {
-    personal: { completed: true, items: 5, total: 6 },
+  // Mock completion status for each section - replace with actual data
+  const [sectionStatus, setSectionStatus] = useState({
+    personal: { completed: false, items: 0, total: 8 },
     ai_upload: { completed: false, items: 0, total: 1 },
-    skills: { completed: true, items: 8, total: 10 },
-    education: { completed: true, items: 2, total: 2 },
-    experience: { completed: false, items: 1, total: 3 },
-    projects: { completed: false, items: 2, total: 4 },
-    social: { completed: true, items: 3, total: 3 },
-    preferences: { completed: false, items: 4, total: 7 }
-  };
+    skills: { completed: false, items: 0, total: 5 },
+    education: { completed: false, items: 0, total: 3 },
+    experience: { completed: false, items: 0, total: 3 },
+    projects: { completed: false, items: 0, total: 4 },
+    social: { completed: false, items: 0, total: 3 },
+    preferences: { completed: false, items: 0, total: 7 }
+  });
 
   const tabs = [
     {
@@ -85,6 +92,76 @@ const SeekerProfile = () => {
     }
   ];
 
+  // Load profile data on component mount
+  useEffect(() => {
+    loadProfileData();
+  }, []);
+
+  const loadProfileData = async () => {
+    setLoading(true);
+    try {
+      const result = await seekerProfileAPI.getProfile();
+      console.log('Profile data:', result);
+      if (result.success) {
+        setProfileData(result.data);
+        updateSectionStatus('personal', result.data);
+      } else {
+        console.error('Failed to load profile:', result.error);
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateSectionStatus = (section, data) => {
+    if (section === 'personal') {
+      const requiredFields = ['firstName', 'lastName', 'email', 'university', 'fieldOfStudy'];
+      const optionalFields = ['statementHeader', 'statement', 'profilePictureUrl'];
+      
+      const completedRequired = requiredFields.filter(field => data?.[field]?.trim()).length;
+      const completedOptional = optionalFields.filter(field => data?.[field]?.trim()).length;
+      const totalCompleted = completedRequired + completedOptional;
+      
+      setSectionStatus(prev => ({
+        ...prev,
+        personal: {
+          completed: completedRequired === requiredFields.length,
+          items: totalCompleted,
+          total: requiredFields.length + optionalFields.length
+        }
+      }));
+    }
+  };
+
+  const handleProfileUpdate = async (formData) => {
+    setSaving(true);
+    try {
+      const result = await seekerProfileAPI.updateProfile(formData);
+      if (result.success) {
+        setProfileData(result.data);
+        loadProfileData();
+        toast.success('Profile updated successfully');
+        return result;
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to update Profile');
+      throw error;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const calculateOverallCompletion = () => {
+    const sections = Object.values(sectionStatus);
+    const totalItems = sections.reduce((sum, section) => sum + section.total, 0);
+    const completedItems = sections.reduce((sum, section) => sum + section.items, 0);
+    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  };
+
   const StatusIcon = ({ completed }) => {
     return completed ? (
       <CheckCircle className="h-4 w-4 text-green-500" />
@@ -93,19 +170,31 @@ const SeekerProfile = () => {
     );
   };
 
+  const overallCompletion = calculateOverallCompletion();
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header Section */}
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-primary-600">Profile</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
             <p className="text-muted-foreground">
               Complete your profile to get better job matches
             </p>
           </div>
-          <Badge variant="secondary" className="text-sm">
-            {profileCompleteness}% Complete
+          <Badge variant={overallCompletion > 70 ? "default" : "secondary"} className="text-sm">
+            {overallCompletion}% Complete
           </Badge>
         </div>
         
@@ -115,15 +204,26 @@ const SeekerProfile = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">Profile Completion</span>
-                <span className="text-muted-foreground">{profileCompleteness}%</span>
+                <span className="text-muted-foreground">{overallCompletion}%</span>
               </div>
-              <Progress value={profileCompleteness} className="h-2 " />
+              <Progress value={overallCompletion} className="h-2" />
               <p className="text-xs text-muted-foreground">
                 Complete your profile to increase visibility to employers
               </p>
             </div>
           </CardContent>
         </Card>
+
+        {/* Quick Tips */}
+        {overallCompletion < 50 && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Tip:</strong> Profiles with 70%+ completion get 3x more views from employers. 
+              Start with your personal information and work experience.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       {/* Main Tabs Interface */}
@@ -138,7 +238,7 @@ const SeekerProfile = () => {
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className="flex flex-col items-center gap-2 p-3 h-auto data-[state=active]:bg-gradient-to-r from-blue-600 to-purple-600  data-[state=active]:text-primary-foreground"
+                  className="flex flex-col items-center gap-2 p-3 h-auto data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white"
                 >
                   <div className="flex items-center gap-1">
                     <Icon className="h-4 w-4" />
@@ -154,7 +254,16 @@ const SeekerProfile = () => {
         </div>
 
         {/* Tab Content Sections */}
-        {tabs.map((tab) => {
+        <TabsContent value="personal" className="space-y-6">
+          <PersonalInfoForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
+
+        {/* Placeholder for other tabs */}
+        {tabs.slice(1).map((tab) => {
           const status = sectionStatus[tab.id];
           return (
             <TabsContent key={tab.id} value={tab.id} className="space-y-6">
@@ -162,11 +271,11 @@ const SeekerProfile = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <tab.icon className="h-5 w-5 text-primary" />
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <tab.icon className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <CardTitle className="text-xl text-purple-600">{tab.label}</CardTitle>
+                        <CardTitle className="text-xl">{tab.label}</CardTitle>
                         <CardDescription>{tab.description}</CardDescription>
                       </div>
                     </div>
@@ -179,12 +288,11 @@ const SeekerProfile = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {/* This is where your actual form components will go */}
                   <div className="min-h-[400px] flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
                     <div className="text-center space-y-2">
                       <tab.icon className="h-12 w-12 text-gray-400 mx-auto" />
                       <h3 className="text-lg font-semibold">
-                        {tab.label} Form Component
+                        {tab.label} Coming Soon
                       </h3>
                       <p className="text-sm text-muted-foreground max-w-sm">
                         This section will contain the form for {tab.description.toLowerCase()}
@@ -198,7 +306,7 @@ const SeekerProfile = () => {
         })}
       </Tabs>
 
-      {/* Quick Stats Cards (Optional) */}
+      {/* Quick Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -208,7 +316,7 @@ const SeekerProfile = () => {
               </div>
               <div>
                 <p className="text-sm font-medium">Profile Views</p>
-                <p className="text-2xl font-bold">124</p>
+                <p className="text-2xl font-bold">{profileData?.profileViews || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -222,7 +330,7 @@ const SeekerProfile = () => {
               </div>
               <div>
                 <p className="text-sm font-medium">Skills Added</p>
-                <p className="text-2xl font-bold">8</p>
+                <p className="text-2xl font-bold">{profileData?.skills?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -236,7 +344,7 @@ const SeekerProfile = () => {
               </div>
               <div>
                 <p className="text-sm font-medium">Projects</p>
-                <p className="text-2xl font-bold">2</p>
+                <p className="text-2xl font-bold">{profileData?.projects?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -250,7 +358,7 @@ const SeekerProfile = () => {
               </div>
               <div>
                 <p className="text-sm font-medium">Experience</p>
-                <p className="text-2xl font-bold">1</p>
+                <p className="text-2xl font-bold">{profileData?.experiences?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -260,4 +368,4 @@ const SeekerProfile = () => {
   );
 };
 
-export default SeekerProfile;
+export default ProfilePage;
