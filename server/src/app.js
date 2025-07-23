@@ -9,6 +9,8 @@ import { globalErrorHandler } from './middlewares/global-error-handler.js';
 import authRouter from './routes/auth.js';
 import apiRouter from './routes/api.js';
 import jobseekerRouter from './routes/jobseeker.js';
+import professionalsRoutes from './routes/professionals.js';
+
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -65,6 +67,7 @@ app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profil
 app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobseeker", jobseekerRouter);
+app.use("/api/professionals", professionalsRoutes);
 
 app.use(globalErrorHandler);
 
