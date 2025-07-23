@@ -1,12 +1,13 @@
 // src/pages/ProfessionalsPage.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "@/services/api";
+
 import {
   Search,
   MapPin,
   Briefcase,
   Star,
-  Users,
   Filter,
   ArrowRight,
   Badge as BadgeIcon,
@@ -16,6 +17,7 @@ import {
   Calendar,
   Video,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,10 +32,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const ProfessionalsPage = () => {
+  const [professionals, setProfessionals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedExperience, setSelectedExperience] = useState("all");
 
+  // Define role options matching your UI expectations
   const roles = [
     { value: "all", label: "All Roles" },
     { value: "developer", label: "Developer" },
@@ -51,187 +58,60 @@ const ProfessionalsPage = () => {
     { value: "expert", label: "Expert Level (10+ years)" },
   ];
 
-  const professionals = [
-    {
-      id: 1,
-      name: "Saman Perera",
-      title: "Senior Full Stack Developer",
-      company: "TechStart Lanka",
-      location: "Colombo",
-      experience: "senior",
-      rating: 4.9,
-      reviews: 28,
-      hourlyRate: "LKR 2,500/hr",
-      profileImage:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      coverImage:
-        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=300&fit=crop",
-      bio: "Experienced full-stack developer with expertise in React, Node.js, and cloud technologies. Passionate about building scalable web applications.",
-      skills: ["React", "Node.js", "Python", "AWS", "MongoDB"],
-      achievements: ["AWS Certified", "Top Rated Freelancer", "50+ Projects"],
-      availability: "Available",
-      languages: ["English", "Sinhala"],
-      category: "developer",
-      responseTime: "< 2 hours",
-      completedProjects: 47,
-    },
-    {
-      id: 2,
-      name: "Priya Rajapaksa",
-      title: "UX/UI Designer",
-      company: "Creative Studio",
-      location: "Kandy",
-      experience: "mid",
-      rating: 4.8,
-      reviews: 22,
-      hourlyRate: "LKR 2,000/hr",
-      profileImage:
-        "https://images.unsplash.com/photo-1494790108755-2616b9c84c8a?w=150&h=150&fit=crop&crop=face",
-      coverImage:
-        "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=600&h=300&fit=crop",
-      bio: "Creative UX/UI designer with a passion for creating intuitive and beautiful user experiences. Specialized in mobile and web design.",
-      skills: ["Figma", "Adobe XD", "Sketch", "Prototyping", "User Research"],
-      achievements: [
-        "Design Award Winner",
-        "Top 10 Designer",
-        "30+ Apps Designed",
-      ],
-      availability: "Available",
-      languages: ["English", "Sinhala", "Tamil"],
-      category: "designer",
-      responseTime: "< 1 hour",
-      completedProjects: 32,
-    },
-    {
-      id: 3,
-      name: "Kasun Silva",
-      title: "Data Scientist",
-      company: "DataInsights",
-      location: "Colombo",
-      experience: "mid",
-      rating: 4.7,
-      reviews: 19,
-      hourlyRate: "LKR 3,000/hr",
-      profileImage:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      coverImage:
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=300&fit=crop",
-      bio: "Data scientist with expertise in machine learning, statistical analysis, and business intelligence. Helping companies make data-driven decisions.",
-      skills: ["Python", "R", "SQL", "Machine Learning", "Tableau"],
-      achievements: [
-        "PhD in Statistics",
-        "Published Researcher",
-        "15+ ML Models",
-      ],
-      availability: "Busy",
-      languages: ["English", "Sinhala"],
-      category: "analyst",
-      responseTime: "< 4 hours",
-      completedProjects: 23,
-    },
-    {
-      id: 4,
-      name: "Nimal Fernando",
-      title: "Project Manager",
-      company: "Startup Accelerator",
-      location: "Galle",
-      experience: "senior",
-      rating: 4.6,
-      reviews: 35,
-      hourlyRate: "LKR 2,200/hr",
-      profileImage:
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
-      coverImage:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=300&fit=crop",
-      bio: "Experienced project manager with a track record of delivering complex projects on time and within budget. Agile and Scrum certified.",
-      skills: [
-        "Project Management",
-        "Agile",
-        "Scrum",
-        "Team Leadership",
-        "Strategy",
-      ],
-      achievements: ["PMP Certified", "Agile Master", "100+ Projects"],
-      availability: "Available",
-      languages: ["English", "Sinhala"],
-      category: "manager",
-      responseTime: "< 3 hours",
-      completedProjects: 89,
-    },
-    {
-      id: 5,
-      name: "Amara Wickramasinghe",
-      title: "Digital Marketing Specialist",
-      company: "Growth Hub",
-      location: "Remote",
-      experience: "mid",
-      rating: 4.8,
-      reviews: 24,
-      hourlyRate: "LKR 1,800/hr",
-      profileImage:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      coverImage:
-        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=300&fit=crop",
-      bio: "Digital marketing expert specializing in SEO, social media marketing, and content strategy. Helping startups grow their online presence.",
-      skills: [
-        "SEO",
-        "Social Media",
-        "Content Marketing",
-        "Google Ads",
-        "Analytics",
-      ],
-      achievements: [
-        "Google Certified",
-        "Marketing Expert",
-        "200% Growth Average",
-      ],
-      availability: "Available",
-      languages: ["English", "Sinhala"],
-      category: "consultant",
-      responseTime: "< 1 hour",
-      completedProjects: 56,
-    },
-    {
-      id: 6,
-      name: "Ruwan Jayawardena",
-      title: "Mobile App Developer",
-      company: "InnovateGlobal",
-      location: "Colombo",
-      experience: "senior",
-      rating: 4.9,
-      reviews: 31,
-      hourlyRate: "LKR 2,800/hr",
-      profileImage:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-      coverImage:
-        "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=300&fit=crop",
-      bio: "Mobile app developer with expertise in React Native and Flutter. Built 40+ mobile applications with millions of downloads.",
-      skills: ["React Native", "Flutter", "iOS", "Android", "Firebase"],
-      achievements: [
-        "App Store Featured",
-        "Mobile Expert",
-        "40+ Apps Published",
-      ],
-      availability: "Available",
-      languages: ["English", "Sinhala"],
-      category: "developer",
-      responseTime: "< 2 hours",
-      completedProjects: 64,
-    },
-  ];
+  useEffect(() => {
+    api
+      .get("/professionals")
+      .then((response) => {
+        // Map your backend data to your UI model
+        const mappedProfessionals = response.data.map((professional) => ({
+          id: professional._id,
+          name: professional.contactPersonName || "Unknown",
+          title: professional.industry || "Professional",
+          company: professional.companyName || "N/A",
+          location: professional.contactInfo?.address || "Unknown",
+          experience: "mid", // You can adjust or get from your API if available
+          rating: 4.5, // Static or dynamic if available
+          reviews: 10,
+          hourlyRate: "LKR 2,000/hr", // Static placeholder
+          profileImage:
+            professional.logoUrl ||
+            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+          coverImage:
+            "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=300&fit=crop",
+          bio: professional.companyDescription || "",
+          skills: ["Skill1", "Skill2"], // You can enhance this by adding skills field
+          achievements: [],
+          availability: "Available", // Or "Busy" if you track that
+          languages: ["English"], // Static or dynamic
+          category: "consultant", // Map properly if you have category in backend
+          responseTime: "< 2 hours",
+          completedProjects: 20,
+        }));
+
+        setProfessionals(mappedProfessionals);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load professionals");
+        setLoading(false);
+      });
+  }, []);
 
   const filteredProfessionals = professionals.filter((professional) => {
+    const searchLower = searchTerm.toLowerCase();
+
     const matchesSearch =
-      professional.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      professional.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      professional.name.toLowerCase().includes(searchLower) ||
+      professional.title.toLowerCase().includes(searchLower) ||
       professional.skills.some((skill) =>
-        skill.toLowerCase().includes(searchTerm.toLowerCase())
+        skill.toLowerCase().includes(searchLower)
       );
+
     const matchesRole =
       selectedRole === "all" || professional.category === selectedRole;
+
     const matchesExperience =
-      selectedExperience === "all" ||
-      professional.experience === selectedExperience;
+      selectedExperience === "all" || professional.experience === selectedExperience;
 
     return matchesSearch && matchesRole && matchesExperience;
   });
@@ -264,15 +144,31 @@ const ProfessionalsPage = () => {
     }
   };
 
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg font-medium">Loading professionals...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg font-medium text-red-600">{error}</p>
+      </div>
+    );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-green-600 to-teal-600 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&h=400&fit=crop')] bg-cover bg-center bg-blend-overlay"><div className="absolute inset-0 bg-black opacity-50" aria-hidden="true" /></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&h=400&fit=crop')] bg-cover bg-center bg-blend-overlay">
+          <div className="absolute inset-0 bg-black opacity-50" aria-hidden="true" />
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-8">
-            <br></br>
+            <br />
             <h1 className="text-5xl font-bold mb-4 animate-fade-in">
               Connect with Top{" "}
               <span className="text-yellow-300">Professionals</span>
