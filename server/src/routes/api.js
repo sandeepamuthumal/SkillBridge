@@ -1,8 +1,6 @@
 import express from "express";
-import { Resend } from 'resend';
 import City from "../models/City.js";
 
-const resend = new Resend('re_PoyqkuE7_PU7rSEtzAVuTn52bkBMN7rbg');
 const apiRouter = express.Router();
 
 apiRouter.get("/", (req, res) => {
