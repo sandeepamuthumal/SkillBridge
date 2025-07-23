@@ -81,7 +81,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
     };
 
     switch (role) {
-      case 'admin':
+      case 'Admin':
         return {
           ...baseData,
           navMain: [
@@ -133,7 +133,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
           ],
         };
 
-      case 'employer':
+      case 'Employer':
         return {
           ...baseData,
           navMain: [
