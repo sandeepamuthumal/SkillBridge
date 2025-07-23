@@ -50,8 +50,14 @@ const employerSchema = new mongoose.Schema({
         default: false
     },
     verificationDocuments: [{
-        type: String,
-        url: String,
+        type: {
+            type: String,
+            required: true
+        },
+        url: {
+            type: String,
+            required: true
+        },
         uploadedAt: {
             type: Date,
             default: Date.now

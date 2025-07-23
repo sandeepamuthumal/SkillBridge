@@ -9,6 +9,10 @@ import { globalErrorHandler } from './middlewares/global-error-handler.js';
 import authRouter from './routes/auth.js';
 import apiRouter from './routes/api.js';
 import jobseekerRouter from './routes/jobseeker.js';
+import employerRouter from './routes/employer.js';
+import jobPostRouter from './routes/jobpost.js';
+import jobCategoryRouter from './routes/jobCategory.js';
+import jobTypeRouter from './routes/jobType.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -65,6 +69,12 @@ app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profil
 app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobseeker", jobseekerRouter);
+
+// Added by Inshaf
+app.use("/api/employer", employerRouter);
+app.use("/api/jobpost", jobPostRouter);
+app.use("/api/jobcategory", jobCategoryRouter);
+app.use("/api/jobtype", jobTypeRouter);
 
 app.use(globalErrorHandler);
 
