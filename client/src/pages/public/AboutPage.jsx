@@ -188,13 +188,14 @@ const About = () => {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop')] bg-cover bg-center bg-blend-overlay"></div>
+     <div className="absolute inset-0 bg-black/60 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop')] bg-cover bg-center bg-blend-overlay"></div>
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
-            <h1 className="text-6xl font-bold mb-6 animate-fade-in">
+            <h1 className="text-6xl font-bold mb-10 animate-fade-in">
               About <span className="text-yellow-300">SkillBridge</span>
             </h1>
-            <p className="text-xl max-w-4xl mx-auto mb-8 opacity-90 leading-relaxed">
+            <p className="text-xl max-w-4xl mx-auto mb-10 opacity-90 leading-relaxed">
               We're revolutionizing how undergraduates connect with startup
               opportunities in Sri Lanka. Our AI-powered platform bridges the
               gap between student potential and startup innovation.
