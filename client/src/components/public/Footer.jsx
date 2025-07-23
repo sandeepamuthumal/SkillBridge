@@ -1,6 +1,9 @@
 
 import React from 'react';
 import { Users, Briefcase, Home } from 'lucide-react';
+import logo2 from '../../assets/logo2.png';
+import { Link } from 'react-router-dom';
+
 
 const Footer = () => {
   return (
@@ -9,14 +12,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold">SkillBridge</span>
-            </div>
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logo2} alt="SkillBridge Logo" className="h-20 w-auto" />
+            </Link>
             <p className="text-gray-400 text-lg leading-relaxed mb-6 max-w-md">
-              The AI-powered platform connecting Sri Lankan undergraduates with innovative startups. 
+              The AI-powered platform connecting Sri Lankan undergraduates with innovative startups.
               Built for emerging talent, designed for the future.
             </p>
             <div className="flex space-x-4">
@@ -31,7 +31,7 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Quick Links */}
           <div>
             <h4 className="text-lg font-semibold mb-6">For Students</h4>
@@ -42,7 +42,7 @@ const Footer = () => {
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Success Stories</a></li>
             </ul>
           </div>
-          
+
           {/* Company */}
           <div>
             <h4 className="text-lg font-semibold mb-6">For Startups</h4>
@@ -54,11 +54,11 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 mb-4 md:mb-0">
-              © 2024 SkillBridge. Built with ❤️ for Sri Lankan undergraduates.
+              © 2025 SkillBridge. Built with ❤️ for Sri Lankan undergraduates.
             </div>
             <div className="flex space-x-6">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>

@@ -4,19 +4,19 @@ import { ArrowDown, Upload, Users, Check } from 'lucide-react';
 const HowItWorks = () => {
   const steps = [
     {
-      icon: <Upload className="h-12 w-12 text-blue-600" />,
+      icon: <Upload className="h-12 w-12 text-white" />,
       title: "Upload Your Resume",
       description: "Our AI analyzes your skills, projects, and academic achievements to understand your unique potential.",
       color: "from-blue-500 to-blue-600"
     },
     {
-      icon: <Users className="h-12 w-12 text-purple-600" />,
+      icon: <Users className="h-12 w-12 text-white" />,
       title: "Get Smart Matches",
       description: "Receive personalized job and internship recommendations based on your skills and learning goals.",
       color: "from-purple-500 to-purple-600"
     },
     {
-      icon: <Check className="h-12 w-12 text-green-600" />,
+      icon: <Check className="h-12 w-12 text-white" />,
       title: "Connect & Grow",
       description: "Apply to opportunities that value your potential and start building your career with innovative startups.",
       color: "from-green-500 to-green-600"

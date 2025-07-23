@@ -1,19 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Users, Briefcase, Home, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { Users, Briefcase, Home, User, LogOut, Settings, ChevronDown, Building2, Info } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useRouteHelper } from '../../hooks/useRouteHelper';
-import logo from '../../assets/logo.png';
 import logo2 from '../../assets/logo2.png';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { isAuthenticated, user, logout, loading } = useAuth();
-  const { getDashboardRoute,getProfileRoute } = useRouteHelper();
+  const { getDashboardRoute, getProfileRoute } = useRouteHelper();
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location for active states
+
+  // Navigation items configuration
+  const navigationItems = [
+    { path: '/', label: 'Home', icon: Home },
+    { path: '/jobs', label: 'Jobs', icon: Briefcase },
+    { path: '/companies', label: 'Companies', icon: Building2 },
+    { path: '/professionals', label: 'Professionals', icon: Users },
+    { path: '/about', label: 'About', icon: Info }
+  ];
+
+  // Helper function to check if a link is active
+  const isLinkActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // Get active link classes
+  const getLinkClasses = (path, isMobile = false) => {
+    const baseClasses = isMobile
+      ? 'block px-3 py-2 rounded-md text-base font-medium transition-colors'
+      : 'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors';
+
+    const activeClasses = 'text-blue-600 bg-blue-50 border-b-2 border-blue-600';
+    const inactiveClasses = 'text-gray-700 hover:text-blue-600 hover:bg-gray-50';
+
+    return `${baseClasses} ${isLinkActive(path) ? activeClasses : inactiveClasses}`;
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -32,8 +61,6 @@ const Navbar = () => {
     setIsDropdownOpen(false);
     navigate('/');
   };
-
-
 
   const getAvatarText = () => {
     if (!user) return 'U';
@@ -107,31 +134,24 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            {/* <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <Users className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">SkillBridge</span> */}
             <img src={logo2} alt="SkillBridge Logo" className="h-16 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
-              <Home className="h-4 w-4" />
-              Home
-            </Link>
-            <Link to="/jobs" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Jobs
-            </Link>
-            <Link to="/companies" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Companies
-            </Link>
-            <Link to="/professionals" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Professionals
-            </Link>
-            <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
-              About
-            </Link>
+          <div className="hidden md:flex items-center space-x-2">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={getLinkClasses(item.path)}
+                >
+                  {Icon && <Icon className="h-4 w-4" />}
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right Side - Auth dependent */}
@@ -172,23 +192,18 @@ const Navbar = () => {
         {/* Mobile Navigation */}
         {isOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
-            <div className="flex flex-col space-y-4">
-              <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Home
-              </Link>
-              <Link to="/jobs" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Jobs
-              </Link>
-              <Link to="/companies" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Companies
-              </Link>
-              <Link to="/professionals" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Professionals
-              </Link>
-              <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
-                About
-              </Link>
-              
+            <div className="flex flex-col space-y-2">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={getLinkClasses(item.path, true)}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
               {/* Mobile Auth Section */}
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
                 {loading ? (
@@ -197,7 +212,7 @@ const Navbar = () => {
                   </div>
                 ) : isAuthenticated ? (
                   <>
-                    <div className="flex items-center gap-3 py-2">
+                    <div className="flex items-center gap-3 py-2 px-3">
                       <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                         {getAvatarText()}
                       </div>
@@ -210,21 +225,21 @@ const Navbar = () => {
                     </div>
                     <Link
                       to={getDashboardRoute()}
-                      className="text-gray-700 hover:text-blue-600 transition-colors"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       Dashboard
                     </Link>
                     <Link
-                       to={getProfileRoute()}
-                      className="text-gray-700 hover:text-blue-600 transition-colors"
+                      to={getProfileRoute()}
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       Profile Settings
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="text-red-600 hover:text-red-700 transition-colors text-left"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors text-left w-full"
                     >
                       Sign Out
                     </button>
