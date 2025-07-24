@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { auth, authorize } from "../middlewares/auth.js";
+import { getAllPublicJobSeekers } from "../controllers/JobSeekerController.js";
+
 
 // Import JobSeekerController methods
 import {
@@ -17,6 +19,8 @@ const __filename = fileURLToPath(
 const __dirname = path.dirname(__filename);
 
 const jobseekerRouter = express.Router();
+
+jobseekerRouter.get("/public", getAllPublicJobSeekers);
 
 
 // Configure multer for file uploads
@@ -57,6 +61,7 @@ const upload = multer({
 jobseekerRouter.get("/profile", auth, getJobSeekerProfile);
 jobseekerRouter.put("/profile", auth, authorize('Job Seeker'), updateJobSeekerProfile);
 jobseekerRouter.post("/profile/image", auth, authorize('Job Seeker'), upload.single('profileImage'), uploadProfilePicture);
+jobseekerRouter.get("/public", getAllPublicJobSeekers);
 
 
 export default jobseekerRouter;

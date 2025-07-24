@@ -68,6 +68,8 @@ app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
+app.use("/api/jobseeker", jobseekerRouter);
+
 
 app.use(globalErrorHandler);
 
