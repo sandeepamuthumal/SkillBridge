@@ -13,5 +13,10 @@ export const authAPI = {
 
     // Password Reset
     forgotPassword: (data) => api.post('/auth/forgot-password', data),
-    resetPassword: (data) => api.post('/auth/reset-password', data)
+    resetPassword: (data) => api.post('/auth/reset-password', data),
+
+    // Admin specific endpoints (NEW)
+    getAllUsers: () => api.get('/admin/users'), // New endpoint to fetch all users
+    updateUserStatus: (userId, data) => api.patch(`/admin/users/${userId}/status`, data), // New endpoint for status update
+    adminResetUserPassword: (userId, data) => api.patch(`/admin/users/${userId}/reset-password`, data)
 };

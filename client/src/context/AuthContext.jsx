@@ -254,6 +254,39 @@ export const AuthProvider = ({ children }) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
   };
 
+  const fetchAllUsers = async () => {
+    try {
+      const response = await authAPI.getAllUsers(); // Assuming this API call is added to authAPI
+      return { success: true, data: response.data.users }; // Adjust based on actual API response structure
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to fetch users';
+      console.error('fetchAllUsers error:', message);
+      return { success: false, error: message };
+    }
+  };
+
+  const updateUserStatus = async (userId, status) => {
+    try {
+      const response = await authAPI.updateUserStatus(userId, { status }); // Assuming this API call is added
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to update user status';
+      console.error('updateUserStatus error:', message);
+      return { success: false, error: message };
+    }
+  };
+
+  const adminResetUserPassword = async (userId, newPassword) => {
+    try {
+      const response = await authAPI.adminResetUserPassword(userId, { newPassword }); // Assuming this API call is added
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to reset user password';
+      console.error('adminResetUserPassword error:', message);
+      return { success: false, error: message };
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       ...state,
@@ -274,6 +307,9 @@ export const AuthProvider = ({ children }) => {
       canAccess,
       getUserDisplayName,
       getUserInitials,
+      fetchAllUsers,      
+      updateUserStatus,
+      adminResetUserPassword
     }}>
       {children}
     </AuthContext.Provider>

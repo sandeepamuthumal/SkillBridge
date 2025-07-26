@@ -10,7 +10,7 @@ import authRouter from './routes/auth.js';
 import apiRouter from './routes/api.js';
 import jobseekerRouter from './routes/jobseeker.js';
 import professionalsRoutes from './routes/professionals.js';
-
+import adminRouter from './routes/admin.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -68,6 +68,7 @@ app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
+app.use("/api/admin", adminRouter);
 
 app.use(globalErrorHandler);
 

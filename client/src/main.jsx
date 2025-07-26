@@ -36,6 +36,8 @@ import SeekerDashboard from "./pages/seeker/dashboard/SeekerDashboard.jsx";
 
 // Employer Pages
 
+// Admin Pages
+import UserManagementPage from "./pages/admin/users/UserManagementPage.jsx";
 
 // Error Pages
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
@@ -186,6 +188,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <AdminDashboard />,
+      },
+      {
+        path: "users",
+        element: <UserManagementPage />,
       }
     ],
   },
