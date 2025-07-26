@@ -111,7 +111,11 @@ const ProfessionalsPage = () => {
       </div>
     );
 
+    
+
   return (
+
+    
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
       {/* Hero */}
       <div className="relative bg-gradient-to-r from-green-600 to-teal-600 text-white overflow-hidden">

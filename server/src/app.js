@@ -72,6 +72,7 @@ app.use("/api/professionals", professionalsRoutes);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use('/api/jobs', jobRoutes);
 
+
 app.use(globalErrorHandler);
 
 export { app };
