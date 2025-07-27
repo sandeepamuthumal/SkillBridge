@@ -44,6 +44,11 @@ import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import SeekerProfile from "./pages/seeker/profile/SeekerProfile";
+import AllJobs from "./pages/seeker/jobs/AllJobs";
+import SavedJobs from "./pages/seeker/jobs/SavedJobs";
+import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
+import Settings from "./pages/seeker/settings/settings";
+import Applications from "./pages/seeker/applications/applications";
 
 
 const router = createBrowserRouter([
@@ -151,6 +156,26 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <SeekerProfile />,
+      },
+      {
+        path: "jobs",
+        element: <AllJobs />,
+      },
+      {
+        path: "jobs/recommended",
+        element: <RecommendedJobs />,
+      },
+      {
+        path: "jobs/saved",
+        element: <SavedJobs />,
+      },
+      {
+        path: "applications",
+        element: <Applications />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       }
     ],
   },

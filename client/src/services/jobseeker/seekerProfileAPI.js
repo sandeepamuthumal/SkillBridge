@@ -82,5 +82,39 @@ export const seekerProfileAPI = {
         };
 
         return patterns[platform] ? patterns[platform].test(url) : false;
+    },
+
+    //get job categories
+    getJobCategories: async() => {
+        try {
+            const response = await api.get('/job-categories');
+            return {
+                success: true,
+                data: response.data.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred while fetching job categories',
+                data: [] // Return empty array as fallback
+            };
+        }
+    },
+
+    //get job types
+    getJobTypes: async() => {
+        try {
+            const response = await api.get('/job-types');
+            return {
+                success: true,
+                data: response.data.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred while fetching job types',
+                data: [] // Return empty array as fallback
+            };
+        }
     }
 };

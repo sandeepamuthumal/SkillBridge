@@ -55,13 +55,6 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
     }
 }));
 
-app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads/profiles'), {
-    setHeaders: (res, path) => {
-        res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    }
-}));
-
 
 // Routes
 app.use('/api', apiRouter);
