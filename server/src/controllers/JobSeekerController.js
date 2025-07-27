@@ -5,6 +5,7 @@ import { ValidationError } from "../errors/validation-error.js";
 import fs from 'fs';
 import axios from 'axios';
 import FormData from 'form-data';
+import JobPost from "../models/JobPost.js";
 
 export const getJobSeekerProfile = async(req, res, next) => {
     try {
@@ -289,6 +290,29 @@ export const removeCV = async(req, res, next) => {
         res.status(200).json({
             success: true,
             message: 'CV removed successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getAllJobs = async(req, res, next) => {
+    try {
+        // Fetch all jobs from the database
+        const jobs = await JobPost.find({
+                status: 'Published',
+                isApproved: true,
+                deadline: { $gte: new Date() },
+            })
+            .populate('employerId', 'companyName logoUrl')
+            .populate('categoryId', 'name')
+            .populate('typeId', 'name')
+            .populate('cityId', 'name')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: jobs
         });
     } catch (error) {
         next(error);
