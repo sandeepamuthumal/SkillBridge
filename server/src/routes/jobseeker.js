@@ -40,7 +40,6 @@ jobseekerRouter.put("/profile", auth, authorize('Job Seeker'), updateJobSeekerPr
 jobseekerRouter.post("/profile/image", auth, authorize('Job Seeker'), profileUploader.single('profileImage'), uploadProfilePicture);
 jobseekerRouter.post("/upload-cv", auth, authorize('Job Seeker'), cvUploader.single('cv'), uploadAndParseCV);
 jobseekerRouter.delete('/remove-cv', auth, authorize('Job Seeker'), removeCV);
-jobseekerRouter.get("/job-posts/all", auth, getAllJobs);
 jobseekerRouter.get("/public", getAllPublicJobSeekers);
 
 

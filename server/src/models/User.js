@@ -72,7 +72,12 @@ const userSchema = new mongoose.Schema({
 
     // Password Reset
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+
+    savedJobs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'JobPost'
+    }]
 }, {
     timestamps: true
 });
