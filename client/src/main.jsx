@@ -77,9 +77,11 @@ const router = createBrowserRouter([
     {
       path: "professionals",
       element: <ProfessionalsPage />,
-    }
-    ],
+    },
+  ],
   },
+
+  
 
   // Authentication Routes (Public - only for non-authenticated users)
   {

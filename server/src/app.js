@@ -10,6 +10,8 @@ import authRouter from './routes/auth.js';
 import apiRouter from './routes/api.js';
 import jobseekerRouter from './routes/jobseeker.js';
 import professionalsRoutes from './routes/professionals.js';
+import jobRoutes from './routes/jobRoutes.js';
+import employerRoutes from './routes/employerRoutes.js';
 
 
 const __filename = fileURLToPath(
@@ -61,6 +63,10 @@ app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
+app.use("/api/jobseeker", jobseekerRouter);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/employers', employerRoutes);
+
 
 app.use(globalErrorHandler);
 

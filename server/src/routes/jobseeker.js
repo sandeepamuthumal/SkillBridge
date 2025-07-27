@@ -4,6 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { auth, authorize } from "../middlewares/auth.js";
 import { createMulterUpload } from "../utils/multerConfig.js";
+import { getAllPublicJobSeekers } from "../controllers/JobSeekerController.js";
+
 
 // Import JobSeekerController methods
 import {
@@ -21,6 +23,8 @@ const __dirname = path.dirname(__filename);
 
 const jobseekerRouter = express.Router();
 
+jobseekerRouter.get("/public", getAllPublicJobSeekers);
+
 // Allowed types per route
 const imageTypes = /jpeg|jpg|png|gif|webp/;
 const documentTypes = /pdf|doc|docx/;
@@ -37,6 +41,7 @@ jobseekerRouter.post("/profile/image", auth, authorize('Job Seeker'), profileUpl
 jobseekerRouter.post("/upload-cv", auth, authorize('Job Seeker'), cvUploader.single('cv'), uploadAndParseCV);
 jobseekerRouter.delete('/remove-cv', auth, authorize('Job Seeker'), removeCV);
 jobseekerRouter.get("/job-posts/all", auth, getAllJobs);
+jobseekerRouter.get("/public", getAllPublicJobSeekers);
 
 
 export default jobseekerRouter;

@@ -7,6 +7,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import JobPost from "../models/JobPost.js";
 
+
 export const getJobSeekerProfile = async(req, res, next) => {
     try {
         let jobSeeker = await JobSeeker.findOne({ userId: req.user.id })
@@ -203,6 +204,19 @@ export const uploadProfilePicture = async(req, res, next) => {
         });
     } catch (error) {
         next(error);
+    }
+};
+
+export const getAllPublicJobSeekers = async(req, res) => {
+    try {
+        const seekers = await JobSeeker.find({ profileVisibility: 'Public' })
+            .populate('user') // if you want user details like name/email
+            .populate('cityId'); // optional: if you want city name, etc.
+
+        res.json(seekers);
+    } catch (err) {
+        console.error('Error getting public job seekers:', err);
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
