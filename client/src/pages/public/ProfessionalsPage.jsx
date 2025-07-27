@@ -19,6 +19,20 @@ import {
 
 import ProfessionalCard from "@/components/cards/ProfessionalCard";
 
+// Helper function to calculate total years of experience
+const calculateTotalYears = (experiences) => {
+  if (!experiences || experiences.length === 0) return 0;
+  const today = new Date();
+  return experiences.reduce((total, exp) => {
+    const startDate = new Date(exp.startDate);
+    const endDate = exp.currentlyWorking ? today : (exp.endDate ? new Date(exp.endDate) : today);
+    const diffTime = Math.abs(endDate - startDate);
+    const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+    return total + diffYears;
+  }, 0);
+};
+
+
 const ProfessionalsPage = () => {
   const [professionals, setProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,22 +79,36 @@ const ProfessionalsPage = () => {
   const filteredProfessionals = professionals.filter((p) => {
     const searchLower = searchTerm.toLowerCase();
 
+    // --- Search Logic (matchesSearch) ---
     const matchesSearch =
-      (p.statementHeader &&
-        p.statementHeader.toLowerCase().includes(searchLower)) ||
+      (p.statementHeader && p.statementHeader.toLowerCase().includes(searchLower)) ||
+      (p.statement && p.statement.toLowerCase().includes(searchLower)) ||
       (p.university && p.university.toLowerCase().includes(searchLower)) ||
+      (p.cityId?.name && p.cityId.name.toLowerCase().includes(searchLower)) ||
       (Array.isArray(p.skills) &&
-        p.skills.some((skill) =>
-          skill?.toLowerCase().includes(searchLower)
-        ));
+        p.skills.some((skill) => {
+          const skillText = typeof skill === "object" && skill !== null && "name" in skill
+            ? skill.name
+            : typeof skill === "string" ? skill : "";
+          return skillText.toLowerCase().includes(searchLower);
+        })
+      );
 
+    // --- Role Filter Logic (matchesRole) ---
     const matchesRole =
       selectedRole === "all" ||
-      (p.jobPreferences &&
-        p.jobPreferences.categories &&
-        p.jobPreferences.categories.includes(selectedRole));
+      (p.jobPreferences?.categories &&
+       Array.isArray(p.jobPreferences.categories) &&
+       p.jobPreferences.categories.some(category => category.name?.toLowerCase() === selectedRole));
 
-    const matchesExperience = selectedExperience === "all"; // No experience field in your data
+    // --- Experience Filter Logic (matchesExperience) ---
+    const totalYears = calculateTotalYears(p.experiences);
+    const matchesExperience =
+      selectedExperience === "all" ||
+      (selectedExperience === "entry" && totalYears >= 0 && totalYears <= 2) ||
+      (selectedExperience === "mid" && totalYears > 2 && totalYears <= 5) ||
+      (selectedExperience === "senior" && totalYears > 5 && totalYears <= 10) ||
+      (selectedExperience === "expert" && totalYears > 10);
 
     return matchesSearch && matchesRole && matchesExperience;
   });
@@ -111,11 +139,7 @@ const ProfessionalsPage = () => {
       </div>
     );
 
-    
-
   return (
-
-    
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
       {/* Hero */}
       <div className="relative bg-gradient-to-r from-green-600 to-teal-600 text-white overflow-hidden">
