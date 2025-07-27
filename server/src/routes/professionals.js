@@ -1,8 +1,17 @@
-import express from 'express';
-import { getAllProfessionals } from '../controllers/professionalController.js';
+import express from "express";
+import { getAllPublicJobSeekers } from "../controllers/JobSeekerController.js";
 
-const router = express.Router();
+const professionalsRouter = express.Router();
 
-router.get('/', getAllProfessionals);
+// Add some debugging
+professionalsRouter.get("/", (req, res, next) => {
+    console.log("Professionals route hit!");
+    next();
+}, getAllPublicJobSeekers);
 
-export default router;
+// Test route
+professionalsRouter.get("/test", (req, res) => {
+    res.json({ message: "Professionals route is working!" });
+});
+
+export default professionalsRouter;

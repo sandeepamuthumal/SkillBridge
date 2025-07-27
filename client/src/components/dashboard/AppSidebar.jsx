@@ -97,7 +97,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               icon: Users,
               isActive: isPathActive("/admin/users", currentPath),
               items: [
-                { title: "All Users", url: "/admin/users", isActive: isPathActive("/admin/users", currentPath) },
+                { title: "Admins", url: "/admin/users", isActive: isPathActive("/admin/users", currentPath) },
                 { title: "Job Seekers", url: "/admin/users/seekers", isActive: isPathActive("/admin/users/seekers", currentPath) },
                 { title: "Employers", url: "/admin/users/employers", isActive: isPathActive("/admin/users/employers", currentPath) },
               ],
@@ -204,7 +204,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               items: [
                 { title: "Browse All", url: "/jobseeker/jobs", isActive: currentPath === "/jobseeker/jobs" },
                 { title: "Recommended", url: "/jobseeker/jobs/recommended", isActive: isPathActive("/jobseeker/jobs/recommended", currentPath) },
-                { title: "Recent", url: "/jobseeker/jobs/recent", isActive: isPathActive("/jobseeker/jobs/recent", currentPath) },
+                { title: "Saved", url: "/jobseeker/jobs/saved", isActive: isPathActive("/jobseeker/jobs/saved", currentPath) }, 
               ],
             },
             {
@@ -212,12 +212,6 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/jobseeker/applications",
               icon: FileText,
               isActive: isPathActive("/jobseeker/applications", currentPath),
-            },
-            {
-              title: "Saved Jobs",
-              url: "/jobseeker/saved",
-              icon: Heart,
-              isActive: isPathActive("/jobseeker/saved", currentPath),
             },
             {
               title: "Profile",

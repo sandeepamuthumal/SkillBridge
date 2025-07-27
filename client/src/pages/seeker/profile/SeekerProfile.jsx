@@ -1,3 +1,4 @@
+// Updated ProfilePage.jsx with AI CV Upload integration
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,8 +21,15 @@ import {
   AlertCircle
 } from 'lucide-react';
 import PersonalInfoForm from './components/PersonalInfoForm';
+import AICVUpload from './components/AICVUpload';
 import { seekerProfileAPI } from '@/services/jobseeker/seekerProfileAPI';
 import { toast } from 'react-toastify';
+import SkillsForm from './components/SkillsForm';
+import EducationForm from './components/EducationForm';
+import ExperienceForm from './components/ExperienceForm';
+import ProjectsForm from './components/ProjectsForm';
+import SocialLinksForm from './components/SocialLinksForm';
+import JobPreferencesForm from './components/JobPreferencesForm';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -29,7 +37,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Mock completion status for each section - replace with actual data
+  // Enhanced section status tracking
   const [sectionStatus, setSectionStatus] = useState({
     personal: { completed: false, items: 0, total: 8 },
     ai_upload: { completed: false, items: 0, total: 1 },
@@ -104,7 +112,7 @@ const ProfilePage = () => {
       console.log('Profile data:', result);
       if (result.success) {
         setProfileData(result.data);
-        updateSectionStatus('personal', result.data);
+        updateAllSectionStatus(result.data);
       } else {
         console.error('Failed to load profile:', result.error);
       }
@@ -115,24 +123,115 @@ const ProfilePage = () => {
     }
   };
 
-  const updateSectionStatus = (section, data) => {
-    if (section === 'personal') {
-      const requiredFields = ['firstName', 'lastName', 'email', 'university', 'fieldOfStudy'];
-      const optionalFields = ['statementHeader', 'statement', 'profilePictureUrl'];
-      
-      const completedRequired = requiredFields.filter(field => data?.[field]?.trim()).length;
-      const completedOptional = optionalFields.filter(field => data?.[field]?.trim()).length;
-      const totalCompleted = completedRequired + completedOptional;
-      
-      setSectionStatus(prev => ({
-        ...prev,
-        personal: {
-          completed: completedRequired === requiredFields.length,
-          items: totalCompleted,
-          total: requiredFields.length + optionalFields.length
-        }
-      }));
-    }
+  const updateAllSectionStatus = (data) => {
+    setSectionStatus(prev => ({
+      ...prev,
+      personal: calculatePersonalStatus(data),
+      ai_upload: calculateAIUploadStatus(data),
+      skills: calculateSkillsStatus(data),
+      education: calculateEducationStatus(data),
+      experience: calculateExperienceStatus(data),
+      projects: calculateProjectsStatus(data),
+      social: calculateSocialStatus(data),
+      preferences: calculatePreferencesStatus(data)
+    }));
+  };
+
+  const calculatePersonalStatus = (data) => {
+    const requiredFields = ['firstName', 'lastName', 'email', 'university', 'fieldOfStudy'];
+    const optionalFields = ['statementHeader', 'statement', 'profilePictureUrl'];
+    
+    const completedRequired = requiredFields.filter(field => data?.[field]?.trim()).length;
+    const completedOptional = optionalFields.filter(field => data?.[field]?.trim()).length;
+    const totalCompleted = completedRequired + completedOptional;
+    
+    return {
+      completed: completedRequired === requiredFields.length,
+      items: totalCompleted,
+      total: requiredFields.length + optionalFields.length
+    };
+  };
+
+  const calculateAIUploadStatus = (data) => {
+    const hasCV = data?.resumeUrl?.trim();
+    return {
+      completed: !!hasCV,
+      items: hasCV ? 1 : 0,
+      total: 1
+    };
+  };
+
+  const calculateSkillsStatus = (data) => {
+    const skillsCount = data?.skills?.length || 0;
+    return {
+      completed: skillsCount >= 5,
+      items: Math.min(skillsCount, 5),
+      total: 5
+    };
+  };
+
+  const calculateEducationStatus = (data) => {
+    const educationCount = data?.educations?.length || 0;
+    return {
+      completed: educationCount >= 1,
+      items: Math.min(educationCount, 3),
+      total: 3
+    };
+  };
+
+  const calculateExperienceStatus = (data) => {
+    const experienceCount = data?.experiences?.length || 0;
+    return {
+      completed: experienceCount >= 1,
+      items: Math.min(experienceCount, 3),
+      total: 3
+    };
+  };
+
+  const calculateProjectsStatus = (data) => {
+    const projectsCount = data?.projects?.length || 0;
+    return {
+      completed: projectsCount >= 2,
+      items: Math.min(projectsCount, 4),
+      total: 4
+    };
+  };
+
+  const calculateSocialStatus = (data) => {
+    const socialFields = ['linkedin', 'github', 'portfolio'];
+    const completedSocial = socialFields.filter(field => 
+      data?.socialLinks?.[field]?.trim()
+    ).length;
+    
+    return {
+      completed: completedSocial >= 2,
+      items: completedSocial,
+      total: 3
+    };
+  };
+
+  const calculatePreferencesStatus = (data) => {
+    const preferenceFields = [
+      'availability',
+      'expectedSalary',
+      'jobPreferences.jobTypes',
+      'jobPreferences.categories',
+      'jobPreferences.remoteWork'
+    ];
+    
+    let completedPreferences = 0;
+    if (data?.availability) completedPreferences++;
+    if (data?.expectedSalary?.min && data?.expectedSalary?.max) completedPreferences++;
+    if (data?.jobPreferences?.jobTypes?.length > 0) completedPreferences++;
+    if (data?.jobPreferences?.categories?.length > 0) completedPreferences++;
+    if (data?.jobPreferences?.remoteWork !== undefined) completedPreferences++;
+    if (data?.cityId) completedPreferences++;
+    
+    return {
+      completed: completedPreferences >= 5,
+      items: completedPreferences,
+      total: 7
+    };
   };
 
   const handleProfileUpdate = async (formData) => {
@@ -141,8 +240,8 @@ const ProfilePage = () => {
       const result = await seekerProfileAPI.updateProfile(formData);
       if (result.success) {
         setProfileData(result.data);
-        loadProfileData();
-        toast.success('Profile updated successfully');
+        await loadProfileData(); // Reload to get updated completion status
+        console.log('Profile updated successfully:', result.data);
         return result;
       } else {
         throw new Error(result.error);
@@ -155,11 +254,8 @@ const ProfilePage = () => {
     }
   };
 
-  const calculateOverallCompletion = () => {
-    const sections = Object.values(sectionStatus);
-    const totalItems = sections.reduce((sum, section) => sum + section.total, 0);
-    const completedItems = sections.reduce((sum, section) => sum + section.items, 0);
-    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  const handleMoveToNextSection = (sectionId) => {
+    setActiveTab(sectionId);
   };
 
   const StatusIcon = ({ completed }) => {
@@ -170,7 +266,7 @@ const ProfilePage = () => {
     );
   };
 
-  const overallCompletion = calculateOverallCompletion();
+  const overallCompletion = profileData ? profileData.profileCompleteness : 0;
 
   if (loading) {
     return (
@@ -220,7 +316,7 @@ const ProfilePage = () => {
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               <strong>Tip:</strong> Profiles with 70%+ completion get 3x more views from employers. 
-              Start with your personal information and work experience.
+              Start with uploading your CV using AI extraction for quick profile completion.
             </AlertDescription>
           </Alert>
         )}
@@ -262,48 +358,61 @@ const ProfilePage = () => {
           />
         </TabsContent>
 
-        {/* Placeholder for other tabs */}
-        {tabs.slice(1).map((tab) => {
-          const status = sectionStatus[tab.id];
-          return (
-            <TabsContent key={tab.id} value={tab.id} className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <tab.icon className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl">{tab.label}</CardTitle>
-                        <CardDescription>{tab.description}</CardDescription>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={status.completed ? "default" : "secondary"}>
-                        {status.items}/{status.total} Complete
-                      </Badge>
-                      <StatusIcon completed={status.completed} />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="min-h-[400px] flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
-                    <div className="text-center space-y-2">
-                      <tab.icon className="h-12 w-12 text-gray-400 mx-auto" />
-                      <h3 className="text-lg font-semibold">
-                        {tab.label} Coming Soon
-                      </h3>
-                      <p className="text-sm text-muted-foreground max-w-sm">
-                        This section will contain the form for {tab.description.toLowerCase()}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          );
-        })}
+        <TabsContent value="ai_upload" className="space-y-6">
+          <AICVUpload
+            profileData={profileData}
+            onProfileUpdate={handleProfileUpdate}
+            onMoveToNextSection={handleMoveToNextSection}
+            loadProfileData={loadProfileData}
+          />
+        </TabsContent>
+
+        <TabsContent value="skills" className="space-y-6">
+          <SkillsForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
+
+        <TabsContent value="education" className="space-y-6">
+          <EducationForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
+
+        <TabsContent value="experience" className="space-y-6">
+          <ExperienceForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
+        <TabsContent value="projects" className="space-y-6">
+          <ProjectsForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
+
+        <TabsContent value="social" className="space-y-6">
+          <SocialLinksForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
+
+        <TabsContent value="preferences" className="space-y-6">
+          <JobPreferencesForm
+            initialData={profileData}
+            onSave={handleProfileUpdate}
+            isLoading={saving}
+          />
+        </TabsContent>
       </Tabs>
 
       {/* Quick Stats Cards */}

@@ -45,6 +45,9 @@ const personalInfoSchema = z.object({
     email: z.string()
         .email('Please enter a valid email address'),
 
+    contactNumber: z.string()
+        .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'),
+
     statementHeader: z.string()
         .max(100, 'Statement header cannot exceed 100 characters')
         .optional()
@@ -90,6 +93,7 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
             firstName: initialData.firstName || user?.firstName || '',
             lastName: initialData.lastName || user?.lastName || '',
             email: initialData.email || user?.email || '',
+            contactNumber: initialData.contactNumber || '',
             statementHeader: initialData.statementHeader || '',
             statement: initialData.statement || '',
             university: initialData.university || user?.university || '',
@@ -105,20 +109,6 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
 
     // Watch form values for progress calculation
     const watchedValues = watch();
-
-    // Mock data - replace with actual API calls
-    const availabilityOptions = [
-        'Immediately',
-        'Within 2 weeks',
-        'Within 1 month',
-        'Within 3 months'
-    ];
-
-    const visibilityOptions = [
-        { value: 'Public', label: 'Public', description: 'Visible to all employers' },
-        { value: 'Limited', label: 'Limited', description: 'Visible to matched employers' },
-        { value: 'Private', label: 'Private', description: 'Only visible to you' }
-    ];
 
     // Mock cities - replace with actual API call
     useEffect(() => {
@@ -140,7 +130,7 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                     setValue(key, initialData[key] || '');
                 }
             });
-            
+
             setImagePreview(`${serverUrl}${initialData.profilePictureUrl}` || '');
         }
     }, [initialData, setValue, form]);
@@ -224,7 +214,7 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
 
     const calculateCompletion = () => {
         const requiredFields = ['firstName', 'lastName', 'email', 'university', 'fieldOfStudy'];
-        const optionalFields = ['statementHeader', 'statement', 'profilePictureUrl', 'cityId'];
+        const optionalFields = ['statementHeader', 'statement', 'profilePictureUrl'];
 
         const requiredCompleted = requiredFields.filter(field =>
             watchedValues[field] && watchedValues[field].toString().trim()
@@ -243,6 +233,7 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
     const onSubmit = async (data) => {
         try {
             await onSave?.(data);
+            toast.success('Personal information saved successfully');
         } catch (error) {
             toast.error('Failed to save personal information');
             console.error('Save error:', error);
@@ -304,8 +295,8 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                     <div className="flex-1 space-y-3">
                                         <div
                                             className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragOver
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-300 hover:border-gray-400'
+                                                ? 'border-blue-500 bg-blue-50'
+                                                : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                             onDrop={handleDrop}
                                             onDragOver={handleDragOver}
@@ -389,21 +380,40 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                     />
                                 </div>
 
-                                <FormField
-                                    control={control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                Email Address <span className="text-red-500">*</span>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input type="email" placeholder="Enter your email address" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                    <FormField
+                                        control={control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    Email Address <span className="text-red-500">*</span>
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input type="email" placeholder="Enter your email address" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={control}
+                                        name="contactNumber"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Contact Number</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Enter your contact number"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
 
                             {/* Professional Statement */}
@@ -501,109 +511,22 @@ const PersonalInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                 </div>
                             </div>
 
-                            {/* Location & Preferences */}
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="h-5 w-5 text-blue-600" />
-                                    <h3 className="text-lg font-semibold">Location & Preferences</h3>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <FormField
-                                        control={control}
-                                        name="cityId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Location</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select your city" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {cities.map((city) => (
-                                                            <SelectItem key={city._id} value={city._id}>
-                                                                {city.name}, {city.country}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={control}
-                                        name="availability"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Availability</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select availability" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {availabilityOptions.map((option) => (
-                                                            <SelectItem key={option} value={option}>
-                                                                {option}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-
-                                <FormField
-                                    control={control}
-                                    name="profileVisibility"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Profile Visibility</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select visibility" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {visibilityOptions.map((option) => (
-                                                        <SelectItem key={option.value} value={option.value}>
-                                                            <div>
-                                                                <div className="font-medium">{option.label}</div>
-                                                                <div className="text-xs text-muted-foreground">{option.description}</div>
-                                                            </div>
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            {/* Submit Button */}
-                            <div className="flex items-center justify-end gap-4 pt-6 border-t">
+                            {/* Save Button */}
+                            <div className="flex justify-end pt-4 border-t">
                                 <Button
                                     type="submit"
                                     disabled={isLoading || !isDirty}
-                                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                                    className="gap-2"
+                                    size="lg"
                                 >
                                     {isLoading ? (
                                         <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                                             Saving...
                                         </>
                                     ) : (
                                         <>
-                                            <Save className="w-4 h-4 mr-2" />
+                                            <CheckCircle className="h-4 w-4" />
                                             Save Personal Info
                                         </>
                                     )}

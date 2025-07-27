@@ -17,6 +17,11 @@ const jobSeekerSchema = new mongoose.Schema({
         trim: true,
         maxlength: [500, 'Statement cannot exceed 500 characters']
     },
+    contactNumber: {
+        type: String,
+        trim: true,
+        match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number']
+    },
     university: {
         type: String,
         required: true,
@@ -36,42 +41,22 @@ const jobSeekerSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    skills: [{
-        name: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        level: {
-            type: String,
-            enum: ['Beginner', 'Intermediate', 'Advanced', 'Expert'],
-            default: 'Beginner'
-        },
-        yearsOfExperience: {
-            type: Number,
-            min: 0,
-            max: 50
-        }
-    }],
+    skills: [String],
     educations: [{
         degree: {
             type: String,
-            required: true,
             trim: true
         },
         fieldOfStudy: {
             type: String,
-            required: true,
             trim: true
         },
         university: {
             type: String,
-            required: true,
             trim: true
         },
         startYear: {
             type: Number,
-            required: true
         },
         endYear: {
             type: Number
@@ -94,12 +79,10 @@ const jobSeekerSchema = new mongoose.Schema({
         },
         company: {
             type: String,
-            required: true,
             trim: true
         },
         startDate: {
             type: Date,
-            required: true
         },
         endDate: {
             type: Date
@@ -121,7 +104,6 @@ const jobSeekerSchema = new mongoose.Schema({
         },
         description: {
             type: String,
-            required: true,
             maxlength: 1000
         },
         technologies: [String],
@@ -229,6 +211,8 @@ jobSeekerSchema.methods.calculateProfileCompleteness = function() {
             }
         }
     });
+
+    console.log('Profile completeness:', completeness);
 
     this.profileCompleteness = Math.round(completeness);
     return this.profileCompleteness;

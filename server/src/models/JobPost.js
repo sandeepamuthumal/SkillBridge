@@ -113,10 +113,15 @@ const jobPostSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    tags: [String]
+    tags: [String],
+    isActive: {
+        type: Boolean,
+        default: true
+    },
 }, {
     timestamps: true
 });
+
 
 // Index for AI matching and search
 jobPostSchema.index({ requirements: 1, categoryId: 1, typeId: 1 });

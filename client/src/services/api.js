@@ -35,4 +35,11 @@ api.interceptors.response.use(
     }
 );
 
+
+export const getAllCompanies = async () => {
+  const response = await api.get('/employers'); 
+  return response.data.data; 
+};
+
+
 export default api;
