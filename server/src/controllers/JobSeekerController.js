@@ -185,3 +185,68 @@ export const getAllPublicJobSeekers = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+export const getJobSeekerById = async (req, res, next) => {
+    try {
+        const { seekerId } = req.params; // Get the ID from the URL parameter
+
+        // CORRECTED LINE: Use findOne with userId field
+        let jobSeeker = await JobSeeker.findOne({ userId: seekerId })
+            .populate("userId", "firstName lastName email")
+            .populate("cityId", "name country");
+
+        // ... (rest of your getJobSeekerById logic remains the same)
+        // Optional: uncomment if you enforce public profiles
+        if (!jobSeeker || jobSeeker.profileVisibility !== "Public") {
+             throw new NotFoundError("Job Seeker profile not found or is private");
+        }
+
+        if (!jobSeeker) {
+            throw new NotFoundError("Job Seeker profile not found");
+        }
+
+        const responseData = {
+            // ... (your existing responseData structure) ...
+            firstName: jobSeeker.userId?.firstName,
+            lastName: jobSeeker.userId?.lastName,
+            email: jobSeeker.userId?.email,
+            userId: { // Add userId object as frontend expects p.userId._id
+                _id: jobSeeker.userId._id,
+                firstName: jobSeeker.userId.firstName,
+                lastName: jobSeeker.userId.lastName,
+                email: jobSeeker.userId.email,
+            },
+            _id: jobSeeker._id, // Add JobSeeker's _id
+            statementHeader: jobSeeker.statementHeader,
+            statement: jobSeeker.statement,
+            university: jobSeeker.university,
+            fieldOfStudy: jobSeeker.fieldOfStudy,
+            profilePictureUrl: jobSeeker.profilePictureUrl,
+            cityId: jobSeeker.cityId ? { // Ensure cityId is an object if populated
+                _id: jobSeeker.cityId._id,
+                name: jobSeeker.cityId.name,
+                country: jobSeeker.cityId.country,
+            } : null,
+            cityName: jobSeeker.cityId?.name || null,
+            cityCountry: jobSeeker.cityId?.country || null,
+            availability: jobSeeker.availability,
+            profileVisibility: jobSeeker.profileVisibility,
+            profileViews: jobSeeker.profileViews,
+            profileCompleteness: jobSeeker.profileCompleteness,
+            socialLinks: jobSeeker.socialLinks,
+            skills: jobSeeker.skills,
+            experiences: jobSeeker.experiences,
+            projects: jobSeeker.projects,
+            educations: jobSeeker.educations,
+            expectedSalary: jobSeeker.expectedSalary,
+            jobPreferences: jobSeeker.jobPreferences,
+            resumeUrl: jobSeeker.resumeUrl,
+            experience: jobSeeker.experience, // Make sure this field is included if your frontend uses it
+        };
+
+        res.status(200).json(responseData);
+    } catch (error) {
+        next(error);
+    }
+};

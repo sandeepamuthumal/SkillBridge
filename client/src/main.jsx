@@ -1,3 +1,5 @@
+// src/main.jsx
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -20,8 +22,7 @@ import AboutPage from "./pages/public/AboutPage.jsx";
 import Companies from "./pages/public/Companies.jsx";
 import JobsPage from "./pages/public/JobsPage.jsx";
 import ProfessionalsPage from "./pages/public/ProfessionalsPage.jsx";
-
-
+import SeekerProfilePage from "./pages/public/SeekerProfilePage.jsx"; // <-- Import the new public seeker profile page
 
 
 // Auth Pages
@@ -32,19 +33,21 @@ import ResetPassword from "./pages/auth/ResetPassword.jsx";
 
 // Jobseeker Pages
 import SeekerDashboard from "./pages/seeker/dashboard/SeekerDashboard.jsx";
+import SeekerProfile from "./pages/seeker/profile/SeekerProfile"; // This is the user's *own* profile for editing, etc.
 
 
 // Employer Pages
+import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
+
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 
 
 // Error Pages
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
-import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
-import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import SeekerProfile from "./pages/seeker/profile/SeekerProfile";
-
 
 const router = createBrowserRouter([
   // Public Routes with MainLayout
@@ -57,27 +60,32 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-    {
-      path: "about",
-      element: <AboutPage />,
-    },
-    {
-      path: "companies",
-      element: <Companies />,
-    },
-    {
-      path: "jobs",
-      element: <JobsPage />,
-    },
-    {
-      path: "professionals",
-      element: <ProfessionalsPage />,
-    },
-  ],
+      {
+        path: "about",
+        element: <AboutPage />,
+      },
+      {
+        path: "companies",
+        element: <Companies />,
+      },
+      {
+        path: "jobs",
+        element: <JobsPage />,
+      },
+      {
+        path: "professionals",
+        element: <ProfessionalsPage />,
+      },
+      // ADD THE NEW ROUTE FOR THE PUBLIC SEEKER PROFILE HERE
+      {
+        path: "seeker-profile/:seekerId",
+        element: <SeekerProfilePage />,
+      },
+    ],
   },
-
   
-
+  // ... (the rest of your routes remain the same)
+  
   // Authentication Routes (Public - only for non-authenticated users)
   {
     path: "/auth",
@@ -117,7 +125,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-
+  
   // Legacy auth routes (for backward compatibility)
   {
     path: "/signin",
@@ -135,7 +143,7 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-
+  
   // Jobseeker Protected Routes
   {
     path: "/jobseeker",
@@ -153,10 +161,10 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <SeekerProfile />,
-      }
+      },
     ],
   },
-
+  
   // Employer Protected Routes
   {
     path: "/employer",
@@ -170,11 +178,11 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <EmployerDashboard />,
-      }
+      },
     ],
   },
-
-
+  
+  
   // Admin Protected Routes
   {
     path: "/admin",
@@ -188,10 +196,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <AdminDashboard />,
-      }
+      },
     ],
   },
-
+  
   // Error Routes
   {
     path: "/unauthorized",

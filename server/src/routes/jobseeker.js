@@ -1,3 +1,5 @@
+// routes/jobseeker.js
+
 import express from "express";
 import multer from 'multer';
 import path from 'path';
@@ -11,17 +13,14 @@ import { getAllPublicJobSeekers } from "../controllers/JobSeekerController.js";
 import {
     getJobSeekerProfile,
     updateJobSeekerProfile,
-    uploadProfilePicture
+    uploadProfilePicture,
+    getJobSeekerById // Still import it
 } from "../controllers/JobSeekerController.js";
 
-const __filename = fileURLToPath(
-    import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const jobseekerRouter = express.Router();
-
-jobseekerRouter.get("/public", getAllPublicJobSeekers);
-
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -56,12 +55,17 @@ const upload = multer({
     }
 });
 
+// --- CORRECTED ROUTE ORDER ---
 
-// Routes for Job Seeker profile
+// Routes for Job Seeker profile (more specific routes first)
 jobseekerRouter.get("/profile", auth, getJobSeekerProfile);
 jobseekerRouter.put("/profile", auth, authorize('Job Seeker'), updateJobSeekerProfile);
 jobseekerRouter.post("/profile/image", auth, authorize('Job Seeker'), upload.single('profileImage'), uploadProfilePicture);
+
+// Route to get all public job seekers (also more specific than /:seekerId)
 jobseekerRouter.get("/public", getAllPublicJobSeekers);
 
+// GET job seeker profile by userId (most general, so it goes last)
+jobseekerRouter.get("/:seekerId", getJobSeekerById); // This is now in the correct position
 
 export default jobseekerRouter;

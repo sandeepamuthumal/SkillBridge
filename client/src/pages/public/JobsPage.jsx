@@ -10,6 +10,7 @@ import {
   Bookmark,
   Building2,
   Calendar,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,7 @@ const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLocation, setSelectedLocation] = useState("all");
+  const [selectedWorkStyle, setSelectedWorkStyle] = useState("all");
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [jobListings, setJobListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,21 @@ const JobsPage = () => {
     fetchJobs();
   }, []);
 
+  // Function to reset all filters
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedLocation("all");
+    setSelectedWorkStyle("all");
+  };
+
+  // Check if any filter is active
+  const isFilterActive =
+    searchTerm !== "" ||
+    selectedCategory !== "all" ||
+    selectedLocation !== "all" ||
+    selectedWorkStyle !== "all";
+
   const filteredJobs = jobListings.filter((job) => {
     const title = job.title?.toLowerCase() || "";
     const company = job.employerId?.companyName?.toLowerCase() || "";
@@ -73,13 +90,20 @@ const JobsPage = () => {
       skills.includes(searchTerm.toLowerCase());
 
     const matchesCategory =
-      selectedCategory === "all" || job.categoryId?.name === selectedCategory;
+      selectedCategory === "all" ||
+      job.categoryId?.name?.toLowerCase() === selectedCategory.toLowerCase();
 
     const matchesLocation =
       selectedLocation === "all" ||
       job.cityId?.name?.toLowerCase() === selectedLocation.toLowerCase();
 
-    return matchesSearch && matchesCategory && matchesLocation;
+    const matchesWorkStyle =
+      selectedWorkStyle === "all" ||
+      job.workArrangement?.toLowerCase() === selectedWorkStyle.toLowerCase();
+
+    return (
+      matchesSearch && matchesCategory && matchesLocation && matchesWorkStyle
+    );
   });
 
   const toggleSaveJob = (jobId) => {
@@ -116,46 +140,64 @@ const JobsPage = () => {
             </p>
           </div>
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="md:col-span-2 relative">
+            <div className="flex flex-col md:flex-row gap-4 justify-between">
+              <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 text-black" />
                 <Input
                   placeholder="Search jobs, companies, or skills..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 h-14 text-lg border-4 border-gray-400 focus:border-purple-600 hover:border-purple-600 focus:ring-4 focus:ring-blue-300 rounded-xl text-black bg-white"
+                  className="pl-12 h-14 text-lg border-4 border-gray-400 focus:border-purple-600 hover:border-purple-600 focus:ring-4 focus:ring-blue-300 rounded-xl text-black bg-white w-full"
                 />
               </div>
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger className="h-14 border-4 border-gray-400 rounded-xl text-gray-700 hover:border-purple-600 focus:border-purple-600 focus:ring-2 focus:ring-purple-300 transition-colors duration-300">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {jobCategories.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                value={selectedLocation}
-                onValueChange={setSelectedLocation}
-              >
-                <SelectTrigger className="h-14 border-4 border-gray-400 rounded-xl text-gray-700 hover:border-purple-600 focus:border-purple-600 focus:ring-2 focus:ring-purple-300 transition-colors duration-300">
-                  <SelectValue placeholder="Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((loc) => (
-                    <SelectItem key={loc.value} value={loc.value}>
-                      {loc.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
+                  <SelectTrigger className="h-14 border-4 border-gray-400 rounded-xl text-gray-700 hover:border-purple-600 focus:border-purple-600 focus:ring-2 focus:ring-purple-300 transition-colors duration-300">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {jobCategories.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedLocation}
+                  onValueChange={setSelectedLocation}
+                >
+                  <SelectTrigger className="h-14 border-4 border-gray-400 rounded-xl text-gray-700 hover:border-purple-600 focus:border-purple-600 focus:ring-2 focus:ring-purple-300 transition-colors duration-300">
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locations.map((loc) => (
+                      <SelectItem key={loc.value} value={loc.value}>
+                        {loc.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={selectedWorkStyle}
+                  onValueChange={setSelectedWorkStyle}
+                >
+                  <SelectTrigger className="h-14 border-4 border-gray-400 rounded-xl text-gray-700 hover:border-purple-600 focus:border-purple-600 focus:ring-2 focus:ring-purple-300 transition-colors duration-300">
+                    <SelectValue placeholder="Work Style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Work Styles</SelectItem>
+                    <SelectItem value="Onsite">Onsite</SelectItem>
+                    <SelectItem value="Remote">Remote</SelectItem>
+                    <SelectItem value="Hybrid">Hybrid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
@@ -169,13 +211,26 @@ const JobsPage = () => {
               ? "Loading..."
               : `${filteredJobs.length} Opportunities Found`}
           </h2>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
-          >
-            <Filter className="h-4 w-4" />
-            More Filters
-          </Button>
+          <div className="flex gap-4 items-center">
+            {/* Conditional Clear Filters button */}
+            {isFilterActive && (
+              <Button
+                variant="ghost"
+                onClick={handleClearFilters}
+                className="flex items-center gap-2 text-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                Clear Filters
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
+            >
+              <Filter className="h-4 w-4" />
+              More Filters
+            </Button>
+          </div>
         </div>
 
         {loading ? (
@@ -190,7 +245,6 @@ const JobsPage = () => {
                 className="bg-green-100 p-6 rounded-3xl border border-gray-200 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group hover:border-purple-400 border-4"
               >
                 <CardContent className="p-0">
-                  
                   {/* Card Header Section */}
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4">
                     <div className="flex items-center gap-4">
@@ -242,7 +296,9 @@ const JobsPage = () => {
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                       <MapPin className="h-5 w-5 text-purple-600" />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-gray-500">Location</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Location
+                        </span>
                         <span className="font-semibold text-gray-900">
                           {job.cityId?.name || "N/A"}
                         </span>
@@ -253,7 +309,9 @@ const JobsPage = () => {
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                       <Briefcase className="h-5 w-5 text-purple-600" />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-gray-500">Type</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Type
+                        </span>
                         <span className="font-semibold text-gray-900">
                           {job.typeId?.name || "N/A"}
                         </span>
@@ -264,7 +322,9 @@ const JobsPage = () => {
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                       <Users className="h-5 w-5 text-purple-600" />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-gray-500">Experience</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Experience
+                        </span>
                         <span className="font-semibold text-gray-900">
                           {job.experienceLevel || "N/A"}
                         </span>
@@ -275,7 +335,9 @@ const JobsPage = () => {
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                       <DollarSign className="h-5 w-5 text-purple-600" />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-gray-500">Salary</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Salary
+                        </span>
                         <span className="font-semibold text-gray-900">
                           {job.salaryRange?.min && job.salaryRange?.max
                             ? `${job.salaryRange.min} - ${job.salaryRange.max} ${job.salaryRange.currency}`
@@ -288,9 +350,13 @@ const JobsPage = () => {
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                       <Calendar className="h-5 w-5 text-purple-600" />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-gray-500">Deadline</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Deadline
+                        </span>
                         <span className="font-semibold text-gray-900">
-                          {job.deadline ? new Date(job.deadline).toLocaleDateString() : "N/A"}
+                          {job.deadline
+                            ? new Date(job.deadline).toLocaleDateString()
+                            : "N/A"}
                         </span>
                       </div>
                     </div>
@@ -299,7 +365,9 @@ const JobsPage = () => {
                     <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                       <Building2 className="h-5 w-5 text-purple-600" />
                       <div className="flex flex-col">
-                        <span className="text-xs font-medium text-gray-500">Work Style</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Work Style
+                        </span>
                         <span className="font-semibold text-gray-900">
                           {job.workArrangement || "N/A"}
                         </span>
@@ -309,7 +377,9 @@ const JobsPage = () => {
 
                   {/* Skills & Technologies */}
                   <div className="space-y-4">
-                    <p className="text-gray-900 font-semibold">Skills & Technologies</p>
+                    <p className="text-gray-900 font-semibold">
+                      Skills & Technologies
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {job.preferredSkills?.slice(0, 6).map((skill, i) => (
                         <Badge
@@ -320,14 +390,15 @@ const JobsPage = () => {
                           {skill}
                         </Badge>
                       ))}
-                      {job.preferredSkills && job.preferredSkills.length > 6 && (
-                        <Badge
-                          variant="outline"
-                          className="bg-purple-100 text-purple-800 border-none text-xs px-3 py-1 rounded-full font-medium"
-                        >
-                          +{job.preferredSkills.length - 6} more
-                        </Badge>
-                      )}
+                      {job.preferredSkills &&
+                        job.preferredSkills.length > 6 && (
+                          <Badge
+                            variant="outline"
+                            className="bg-purple-100 text-purple-800 border-none text-xs px-3 py-1 rounded-full font-medium"
+                          >
+                            +{job.preferredSkills.length - 6} more
+                          </Badge>
+                        )}
                     </div>
                   </div>
                 </CardContent>

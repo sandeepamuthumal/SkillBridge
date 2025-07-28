@@ -41,5 +41,11 @@ export const getAllCompanies = async () => {
   return response.data.data; 
 };
 
+export const fetchJobs = async (filters) => {
+  const query = new URLSearchParams(filters).toString();
+  const response = await axios.get(`/api/jobs?${query}`);
+  return response.data;
+};
+
 
 export default api;

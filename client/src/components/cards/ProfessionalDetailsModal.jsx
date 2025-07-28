@@ -1,6 +1,7 @@
 // src/components/ProfessionalDetailsModal.jsx
 
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import {
   Dialog,
   DialogContent,
@@ -21,9 +22,12 @@ import {
   Linkedin,
   Github,
   ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 
 const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) => {
+  const navigate = useNavigate(); // Initialize useNavigate
+  
   if (!p) return null;
 
   const fullName =
@@ -64,6 +68,12 @@ const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) 
 
   const skillsArray = p.skills || [];
   const achievementsArray = p.achievements || [];
+  
+  // Function to handle navigation to the seeker's profile page
+  const handleGoToProfile = () => {
+  onClose(); // Close the modal first
+  navigate(`/seeker-profile/${p.userId?._id}`); // Use userId instead of _id
+};
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -209,10 +219,20 @@ const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) 
                   </a>
                 )}
               </div>
-              <Button className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white flex items-center gap-2 px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-transform duration-300">
-                Contact {p.userId?.firstName}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 px-6 py-2 rounded-xl text-purple-600 border-purple-600 hover:bg-purple-50 transition-colors"
+                  onClick={handleGoToProfile}
+                >
+                  Go to Seeker Profile
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+                <Button className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white flex items-center gap-2 px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-transform duration-300">
+                  Contact {p.userId?.firstName}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
