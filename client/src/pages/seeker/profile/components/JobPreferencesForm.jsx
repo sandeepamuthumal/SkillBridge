@@ -275,7 +275,7 @@ const JobPreferencesForm = ({ initialData, onSave, isLoading }) => {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="When can you start?" />
+                <SelectValue placeholder="Who can see your profile?" />
               </SelectTrigger>
               <SelectContent>
                 {visibilityOptions.map((option) => (

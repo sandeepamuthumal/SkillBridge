@@ -6,6 +6,7 @@ import fs from 'fs';
 import axios from 'axios';
 import FormData from 'form-data';
 import JobPost from "../models/JobPost.js";
+import Application from "../models/Application.js";
 
 
 export const getJobSeekerProfile = async(req, res, next) => {
@@ -332,3 +333,126 @@ export const getAllJobs = async(req, res, next) => {
         next(error);
     }
 };
+
+export const submitJobApplication = async(req, res, next) => {
+    try {
+        const jobId = req.body.jobId;
+        const userId = req.user._id;
+        const jobSeeker = await JobSeeker.findOne({ userId });
+
+        // Check if job exists
+        const job = await JobPost.findById(jobId);
+        if (!job) {
+            throw new NotFoundError("Job not found");
+        }
+
+        // Check if user has already applied
+        const existingApplication = await Application.findOne({
+            jobSeekerId: jobSeeker._id,
+            jobPostId: jobId
+        });
+
+        if (existingApplication) {
+            throw new ValidationError("You have already applied for this job");
+        }
+
+        let cvFile = req.files ? req.files.cv ? req.files.cv[0] : null : null;
+        const coverLetterFile = req.files ? req.files.coverLetter ? req.files.coverLetter[0] : null : null;
+
+        if (req.body.useCurrentResume == "true") {
+            if (!jobSeeker.resumeUrl) {
+                throw new ValidationError("No resume found in your profile");
+            }
+            cvFile = jobSeeker.resumeUrl;
+        } else {
+            if (!cvFile) {
+                throw new ValidationError("No CV file uploaded");
+            }
+            cvFile = cvFile ? `/uploads/applications/${cvFile.filename}` : null;
+        }
+
+        // Create application data
+        const applicationData = {
+            jobSeekerId: jobSeeker._id,
+            jobPostId: jobId,
+            resumeUrl: cvFile,
+            coverLetterUrl: coverLetterFile ? `/uploads/applications/${req.files.coverLetter[0].filename}` : null,
+            additionalNotes: req.body.additionalNotes,
+            appliedDate: new Date()
+        };
+
+        // Update JobSeeker profile with new application
+        await Application.create(applicationData);
+
+        // Increment job's application count
+        job.applicationCount += 1;
+        await job.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Job application submitted successfully',
+            data: applicationData
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const seekerApplications = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const jobSeeker = await JobSeeker.findOne({ userId });
+
+        const applications = await Application.find({ jobSeekerId: jobSeeker._id })
+            .populate({
+                path: 'jobPostId',
+                populate: [{
+                        path: 'employerId',
+                        select: 'companyName logoUrl'
+                    },
+                    {
+                        path: 'categoryId',
+                        select: 'name'
+                    },
+                    {
+                        path: 'typeId',
+                        select: 'name'
+                    },
+                    {
+                        path: 'cityId',
+                        select: 'name'
+                    }
+                ]
+            })
+
+        res.status(200).json({
+            success: true,
+            data: applications
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteApplication = async(req, res, next) => {
+    try {
+        const applicationId = req.params.id;
+        const application = await Application.findById(applicationId);
+        if (!application) {
+            throw new NotFoundError("Application not found");
+        }
+        await Application.findByIdAndDelete(applicationId);
+
+        //reduce application count
+        const jobPost = await JobPost.findById(application.jobPostId);
+        jobPost.applicationCount -= 1;
+        await jobPost.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Application deleted successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+}

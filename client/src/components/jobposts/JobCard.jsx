@@ -13,8 +13,10 @@ import { jobPostAPI } from '@/services/jobPostAPI';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+
 const JobCard = ({ job, onClick, onApply }) => {
     const { isAuthenticated } = useAuth();
+    const serverUrl = import.meta.env.VITE_SERVER_URL;
     const navigate = useNavigate();
 
     const formatSalary = (min, max, currency) => {
@@ -79,7 +81,7 @@ const JobCard = ({ job, onClick, onApply }) => {
                     <div className="flex items-start space-x-4">
                         <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-xl flex items-center justify-center text-2xl shadow-sm">
                             {job.employerId.logoUrl ? (
-                                <img src={job.employerId.logoUrl} alt={job.employerId.companyName} className="w-10 h-10 rounded-full" />
+                                <img src={serverUrl + job.employerId.logoUrl} alt={job.employerId.companyName} className="w-10 h-10 rounded-full" />
                             ) : (
                                 <span className="text-3xl">{job.employerId.companyName.charAt(0)}</span>
                             )
@@ -173,7 +175,7 @@ const JobCard = ({ job, onClick, onApply }) => {
                 {/* Action Buttons */}
                 <div className="flex items-center space-x-3">
                     <button
-                        onClick={() => onApply(job._id)}
+                        onClick={() => onApply(job)}
                         disabled={daysLeft <= 0}
                         className={`flex-1 font-semibold py-3 px-4 rounded-xl transition-all duration-300 ${daysLeft <= 0
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'

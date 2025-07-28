@@ -6,12 +6,17 @@ import {
 import { jobPostAPI } from '@/services/jobPostAPI';
 import JobCard from '@/components/jobposts/JobCard';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import ApplicationModal from '../applications/components/ApplicationModal';
+import { applicationAPI } from '@/services/jobseeker/applicationAPI';
 
 
 const JobListingsPage = () => {
     const [jobs, setJobs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [showApplicationModal, setShowApplicationModal] = useState(false);
+    const [selectedJobForApplication, setSelectedJobForApplication] = useState(null);
     const navigate = useNavigate();
 
     // Load all jobs
@@ -56,8 +61,27 @@ const JobListingsPage = () => {
         navigate(`/jobseeker/jobs/${jobId}`);
     };
 
-    const handleApply = (jobId) => {
-        alert(`Applied to job ${jobId}. This will integrate with your application system.`);
+    const handleApply = (job) => {
+        setShowApplicationModal(true);
+        setSelectedJobForApplication(job);
+    };
+
+    const handleApplicationSubmit = async (applicationData) => {
+        try {
+            // API call to submit application
+            const response = await applicationAPI.submitJobApplication(applicationData);
+            if (response.success) {
+                toast.success('Application submitted successfully!');
+                setShowApplicationModal(false);
+                setSelectedJobForApplication(null);
+                loadJobPosts();
+            } else {
+                toast.error(response.error);
+            }
+        } catch (error) {
+            console.error('Error submitting application:', error);
+            toast.error('Failed to submit application. Please try again.');
+        }
     };
 
     if (loading) {
@@ -128,6 +152,17 @@ const JobListingsPage = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Application Modal */}
+            <ApplicationModal
+                isOpen={showApplicationModal}
+                onClose={() => {
+                    setShowApplicationModal(false);
+                    setSelectedJobForApplication(null);
+                }}
+                job={selectedJobForApplication}
+                onSubmit={handleApplicationSubmit}
+            />
         </div>
     );
 };

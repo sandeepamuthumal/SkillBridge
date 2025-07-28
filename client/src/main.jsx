@@ -35,7 +35,6 @@ import AllJobs from "./pages/seeker/jobs/AllJobs";
 import SavedJobs from "./pages/seeker/jobs/SavedJobs";
 import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
 import Settings from "./pages/seeker/settings/settings";
-import Applications from "./pages/seeker/applications/applications";
 
 // Employer Pages
 
@@ -49,6 +48,7 @@ import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
 // Admin Pages
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import JobDetail from "./pages/seeker/jobs/JobDetail";
+import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
 
 
 
@@ -182,7 +182,7 @@ const router = createBrowserRouter([
       },
       {
         path: "applications",
-        element: <Applications />,
+        element: <ApplicationsPage />,
       },
       {
         path: "settings",

@@ -38,6 +38,10 @@ export const getJobById = async(req, res, next) => {
             return res.status(404).json({ success: false, message: 'Job not found' });
         }
 
+        // Increment view count
+        job.viewCount = (job.viewCount || 0) + 1;
+        await job.save();
+
         res.status(200).json({
             success: true,
             data: job

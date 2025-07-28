@@ -27,6 +27,7 @@
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
+    "@tanstack/react-table": "^8.21.3",
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
