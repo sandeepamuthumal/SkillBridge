@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Users, Briefcase, ArrowDown } from "lucide-react";
 import { Button } from "../ui/button";
-import { Link } from "react-scroll";
+import { Link, useNavigate } from "react-router-dom";
 import carousel1 from "../public/img/carousel-1.jpg";
-
 
 const backgroundImages = [
   "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1920&q=80",
@@ -19,7 +18,9 @@ const Hero = () => {
       setFade(false); // start fade out
       setTimeout(() => {
         // switch image after fade out
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+        setCurrentIndex(
+          (prevIndex) => (prevIndex + 1) % backgroundImages.length
+        );
         setFade(true); // fade in new image
       }, 450); // 0.45 second fade out duration
     }, 8000); // every 8 seconds
@@ -75,10 +76,12 @@ const Hero = () => {
         </p> */}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center gap-2">
-            <Users className="h-5 w-5" />
-            Find Opportunities
-          </Button>
+          <Link to="/jobs">
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105 hover:shadow-xl flex items-center justify-center gap-2">
+              <Users className="h-5 w-5" />
+              Find Opportunities
+            </Button>
+          </Link>
           <Button
             variant="outline"
             className="border-2 border-gray-300 text-white px-8 py-4 text-lg rounded-full hover:bg-gray-700 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 text-black"

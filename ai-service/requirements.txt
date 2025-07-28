@@ -1,7 +1,6 @@
-docx2txt
-PyPDF2
-spacy
-scikit-learn
-sentence-transformers
 fastapi
 uvicorn
+python-multipart
+python-docx
+PyPDF2
+python-dateutil
