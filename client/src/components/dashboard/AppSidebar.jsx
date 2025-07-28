@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom'; // Add this import
+import { Link, useLocation } from 'react-router-dom'; // Add this import
 import logo2 from "@/assets/logo2.png";
 import { 
   Menu, 
@@ -306,10 +306,10 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                         isActive={isItemActive}
                         className="data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:border-r-2 data-[active=true]:border-blue-500 flex-1 hover:bg-gray-50"
                       >
-                        <a href={item.url} className="flex items-center">
+                        <Link to={item.url} className="flex items-center">
                           <item.icon className="!size-4" />
                           <span>{item.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                       
                       {/* Collapse toggle button */}
@@ -340,9 +340,9 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                                 isActive={subItem.isActive}
                                 className="data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:font-medium"
                               >
-                                <a href={subItem.url}>
+                                <Link to={subItem.url}>
                                   <span>{subItem.title}</span>
-                                </a>
+                                </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}

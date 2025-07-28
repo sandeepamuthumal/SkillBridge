@@ -27,18 +27,21 @@ if (!employer || !category || !type || !city) {
 // Sample job post data
 const jobPosts = [{
         employerId: employer._id,
-        title: 'Full Stack Developer',
-        description: 'Develop scalable web applications.',
+        title: 'UI/UX Design Intern',
+        description: 'Looking for a creative UI/UX Design Intern to join our product team and help create amazing user experiences for our mobile and web applications.',
         responsibilities: [
-            'Build front-end interfaces',
-            'Design and consume REST APIs',
-            'Collaborate with product teams'
+            'Create wireframes and prototypes for new features',
+            'Conduct user research and usability testing',
+            'Design user interfaces for web and mobile platforms',
+            'Collaborate with developers to ensure design implementation'
         ],
         requirements: [
-            'Strong knowledge of JavaScript',
-            'Experience with MongoDB and Node.js'
+            'Portfolio showcasing design projects',
+            'Proficiency in Figma or Adobe XD',
+            'Understanding of design principles',
+            'Strong communication skills'
         ],
-        preferredSkills: ['React', 'TypeScript', 'Docker'],
+        preferredSkills: ['Figma', 'Adobe Creative Suite', 'Prototyping', 'User Research'],
         experienceLevel: 'Mid Level',
         experienceYears: { min: 2, max: 5 },
         categoryId: category._id,
@@ -50,8 +53,8 @@ const jobPosts = [{
             currency: 'USD',
             negotiable: true
         },
-        benefits: ['Health insurance', 'Flexible hours'],
-        workArrangement: 'Hybrid',
+        benefits: ['Creative freedom', 'Portfolio building', 'Design tools access'],
+        workArrangement: 'Remote',
         deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
         status: 'Published',
         isApproved: true,
@@ -63,21 +66,21 @@ const jobPosts = [{
     },
     {
         employerId: employer._id,
-        title: 'Frontend Developer Intern',
-        description: 'Join our dynamic startup as a Frontend Developer Intern and gain hands-on experience building modern web applications using React, TypeScript, and cutting-edge technologies.',
+        title: 'Marketing Assistant',
+        description: 'Join our marketing team as a part-time Marketing Assistant to help with digital marketing campaigns, content creation, and social media management.',
         responsibilities: [
-            'Develop responsive web applications using React and TypeScript',
-            'Collaborate with design team to implement UI/UX designs',
-            'Write clean, maintainable code following best practices',
-            'Participate in code reviews and team meetings'
+            'Assist in creating marketing content',
+            'Manage social media accounts',
+            'Support email marketing campaigns',
+            'Analyze marketing metrics and prepare reports'
         ],
         requirements: [
-            'Currently pursuing Computer Science or related degree',
-            'Basic knowledge of HTML, CSS, and JavaScript',
-            'Familiarity with React framework',
-            'Strong problem-solving skills'
+            'Strong written communication skills',
+            'Basic knowledge of social media platforms',
+            'Interest in digital marketing',
+            'Ability to work independently'
         ],
-        preferredSkills: ['TypeScript', 'Tailwind CSS', 'Git', 'Figma'],
+        preferredSkills: ['Canva', 'Google Analytics', 'Content Writing', 'Social Media'],
         experienceLevel: 'Entry Level',
         experienceYears: { min: 0, max: 1 },
         categoryId: category._id,
@@ -89,7 +92,7 @@ const jobPosts = [{
             currency: 'LKR',
             negotiable: false
         },
-        benefits: ['Flexible hours', 'Learning opportunities', 'Mentorship'],
+        benefits: ['Flexible schedule', 'Marketing training', 'Performance bonus'],
         workArrangement: 'Hybrid',
         deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
         status: 'Published',
@@ -102,7 +105,7 @@ const jobPosts = [{
     }
 ];
 
-await JobPost.deleteMany();
+
 // Insert
 await JobPost.insertMany(jobPosts);
 console.log('Job posts seeded successfully');

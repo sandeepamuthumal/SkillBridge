@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { auth, authorize } from "../middlewares/auth.js";
 import { createMulterUpload } from "../utils/multerConfig.js";
-import { getAllPublicJobSeekers } from "../controllers/JobSeekerController.js";
+import { deleteApplication, getAllPublicJobSeekers, seekerApplications, submitJobApplication } from "../controllers/JobSeekerController.js";
 
 
 // Import JobSeekerController methods
@@ -32,6 +32,7 @@ const documentTypes = /pdf|doc|docx/;
 // Create uploaders
 const profileUploader = createMulterUpload('profiles', 'profile', imageTypes);
 const cvUploader = createMulterUpload('cvs', 'cv', documentTypes);
+const applicationUploader = createMulterUpload('applications', 'app', documentTypes);
 
 
 // Routes for Job Seeker profile
@@ -40,8 +41,16 @@ jobseekerRouter.put("/profile", auth, authorize('Job Seeker'), updateJobSeekerPr
 jobseekerRouter.post("/profile/image", auth, authorize('Job Seeker'), profileUploader.single('profileImage'), uploadProfilePicture);
 jobseekerRouter.post("/upload-cv", auth, authorize('Job Seeker'), cvUploader.single('cv'), uploadAndParseCV);
 jobseekerRouter.delete('/remove-cv', auth, authorize('Job Seeker'), removeCV);
-jobseekerRouter.get("/job-posts/all", auth, getAllJobs);
 jobseekerRouter.get("/public", getAllPublicJobSeekers);
+
+//Job seeker applications
+jobseekerRouter.post("/apply/job", auth, authorize('Job Seeker'), applicationUploader.fields([
+    { name: 'cv', maxCount: 1 },
+    { name: 'coverLetter', maxCount: 1 }
+]), submitJobApplication);
+
+jobseekerRouter.get("/job/applications", auth, authorize('Job Seeker'), seekerApplications);
+jobseekerRouter.delete("/job/applications/:id", auth, authorize('Job Seeker'), deleteApplication);
 
 
 export default jobseekerRouter;

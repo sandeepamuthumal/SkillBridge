@@ -20,7 +20,7 @@ const applicationSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    coverLetterText: {
+    additionalNotes: {
         type: String,
         maxlength: 2000
     },

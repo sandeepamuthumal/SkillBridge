@@ -20,9 +20,7 @@ import AboutPage from "./pages/public/AboutPage.jsx";
 import Companies from "./pages/public/Companies.jsx";
 import JobsPage from "./pages/public/JobsPage.jsx";
 import ProfessionalsPage from "./pages/public/ProfessionalsPage.jsx";
-
-
-
+import JobDetailPage from "./pages/public/JobDetailPage";
 
 // Auth Pages
 import SignIn from "./pages/auth/SignIn.jsx";
@@ -32,7 +30,11 @@ import ResetPassword from "./pages/auth/ResetPassword.jsx";
 
 // Jobseeker Pages
 import SeekerDashboard from "./pages/seeker/dashboard/SeekerDashboard.jsx";
-
+import SeekerProfile from "./pages/seeker/profile/SeekerProfile";
+import AllJobs from "./pages/seeker/jobs/AllJobs";
+import SavedJobs from "./pages/seeker/jobs/SavedJobs";
+import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
+import Settings from "./pages/seeker/settings/settings";
 
 // Employer Pages
 
@@ -42,13 +44,12 @@ import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
+
+// Admin Pages
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import SeekerProfile from "./pages/seeker/profile/SeekerProfile";
-import AllJobs from "./pages/seeker/jobs/AllJobs";
-import SavedJobs from "./pages/seeker/jobs/SavedJobs";
-import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
-import Settings from "./pages/seeker/settings/settings";
-import Applications from "./pages/seeker/applications/applications";
+import JobDetail from "./pages/seeker/jobs/JobDetail";
+import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
+
 
 
 const router = createBrowserRouter([
@@ -62,26 +63,30 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-    {
-      path: "about",
-      element: <AboutPage />,
-    },
-    {
-      path: "companies",
-      element: <Companies />,
-    },
-    {
-      path: "jobs",
-      element: <JobsPage />,
-    },
-    {
-      path: "professionals",
-      element: <ProfessionalsPage />,
-    },
-  ],
+      {
+        path: "about",
+        element: <AboutPage />,
+      },
+      {
+        path: "companies",
+        element: <Companies />,
+      },
+      {
+        path: "jobs",
+        element: <JobsPage />,
+      },
+      {
+        path: "jobs/:jobId",
+        element: <JobDetailPage />,
+      },
+      {
+        path: "professionals",
+        element: <ProfessionalsPage />,
+      },
+    ],
   },
 
-  
+
 
   // Authentication Routes (Public - only for non-authenticated users)
   {
@@ -164,6 +169,10 @@ const router = createBrowserRouter([
         element: <AllJobs />,
       },
       {
+        path: "jobs/:jobId",
+        element: <JobDetail />,
+      },
+      {
         path: "jobs/recommended",
         element: <RecommendedJobs />,
       },
@@ -173,7 +182,7 @@ const router = createBrowserRouter([
       },
       {
         path: "applications",
-        element: <Applications />,
+        element: <ApplicationsPage />,
       },
       {
         path: "settings",

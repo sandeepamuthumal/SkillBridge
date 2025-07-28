@@ -1,26 +1,14 @@
 import express from 'express';
-import JobPost from '../models/JobPost.js';
-import { getAllJobs } from '../controllers/JobController.js';
+import { getAllJobs, getJobById, getSavedJobs, saveJobPost, unsaveJobPost } from '../controllers/JobController.js';
+import { auth } from '../middlewares/auth.js';
 
 const router = express.Router();
 
-// Public route: Fetch all approved and published jobs
-router.get('/', async (req, res) => {
-  try {
-//    const jobs = await JobPost.find({}) // ← fetch everything
-//   .populate('employerId', 'companyName logoUrl')
-//   .populate('categoryId', 'name')
-//   .populate('typeId', 'name')
-//   .populate('cityId', 'name')
-//   .sort({ createdAt: -1 });
+router.get('/', getAllJobs);
+router.get('/saved', auth, getSavedJobs);
+router.get('/:id', getJobById);
+router.post('/save/:id', auth, saveJobPost);
+router.delete('/save/:id', auth, unsaveJobPost);
 
-const jobs = await JobPost.find({}).sort({ createdAt: -1 });
-
-    res.json(jobs);
-  } catch (error) {
-    console.error('Error fetching jobs:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
 
 export default router;
