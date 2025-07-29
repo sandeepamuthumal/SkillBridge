@@ -1,3 +1,5 @@
+// src/main.jsx
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -21,6 +23,8 @@ import Companies from "./pages/public/Companies.jsx";
 import JobsPage from "./pages/public/JobsPage.jsx";
 import ProfessionalsPage from "./pages/public/ProfessionalsPage.jsx";
 import JobDetailPage from "./pages/public/JobDetailPage";
+import SeekerProfilePage from "./pages/public/SeekerProfilePage.jsx"; // <-- Import the new public seeker profile page
+
 
 // Auth Pages
 import SignIn from "./pages/auth/SignIn.jsx";
@@ -67,30 +71,35 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-      {
-        path: "about",
-        element: <AboutPage />,
-      },
-      {
-        path: "companies",
-        element: <Companies />,
-      },
-      {
-        path: "jobs",
-        element: <JobsPage />,
-      },
+        {
+          path: "about",
+          element: <AboutPage />,
+        },
+        {
+          path: "companies",
+          element: <Companies />,
+        },
+        {
+          path: "jobs",
+          element: <JobsPage />,
+        },
       {
         path: "jobs/:jobId",
         element: <JobDetailPage />,
       },
+        {
+          path: "professionals",
+          element: <ProfessionalsPage />,
+        },
+        // ADD THE NEW ROUTE FOR THE PUBLIC SEEKER PROFILE HERE
       {
-        path: "professionals",
-        element: <ProfessionalsPage />,
+        path: "seeker-profile/:seekerId",
+        element: <SeekerProfilePage />,
       },
     ],
   },
 
-
+  
 
   // Authentication Routes (Public - only for non-authenticated users)
   {
@@ -131,7 +140,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-
+  
   // Legacy auth routes (for backward compatibility)
   {
     path: "/signin",
@@ -149,7 +158,7 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-
+  
   // Jobseeker Protected Routes
   {
     path: "/jobseeker",
@@ -194,7 +203,7 @@ const router = createBrowserRouter([
       }
     ],
   },
-
+  
   // Employer Protected Routes
   {
     path: "/employer",
@@ -208,11 +217,11 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <EmployerDashboard />,
-      }
+      },
     ],
   },
-
-
+  
+  
   // Admin Protected Routes
   {
     path: "/admin",
@@ -246,7 +255,7 @@ const router = createBrowserRouter([
       }
     ],
   },
-
+  
   // Error Routes
   {
     path: "/unauthorized",

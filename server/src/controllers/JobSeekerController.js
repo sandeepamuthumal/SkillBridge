@@ -100,7 +100,7 @@ export const updateJobSeekerProfile = async(req, res, next) => {
         if (Object.keys(userUpdateData).length > 0) {
             await User.findByIdAndUpdate(req.user.id, userUpdateData, {
                 new: true,
-                runValidators: true
+                runValidators: true,
             });
         }
 
@@ -156,12 +156,15 @@ export const updateJobSeekerProfile = async(req, res, next) => {
         }
 
 
-        let jobSeeker = await JobSeeker.findOneAndUpdate({ userId: req.user.id }, jobSeekerUpdateData, {
-                new: true,
-                upsert: true,
-                runValidators: true
-            }).populate('userId', 'firstName lastName email')
-            .populate('cityId', 'name country');
+        let jobSeeker = await JobSeeker.findOneAndUpdate({ userId: req.user.id },
+                jobSeekerUpdateData, {
+                    new: true,
+                    upsert: true,
+                    runValidators: true,
+                }
+            )
+            .populate("userId", "firstName lastName email")
+            .populate("cityId", "name country");
 
         jobSeeker.profileCompleteness = jobSeeker.calculateProfileCompleteness();
         await jobSeeker.save();
@@ -197,11 +200,11 @@ export const uploadProfilePicture = async(req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: 'Profile image uploaded successfully',
+            message: "Profile image uploaded successfully",
             data: {
                 profilePictureUrl,
-                profileCompleteness: jobSeeker.profileCompleteness
-            }
+                profileCompleteness: jobSeeker.profileCompleteness,
+            },
         });
     } catch (error) {
         next(error);
@@ -210,14 +213,82 @@ export const uploadProfilePicture = async(req, res, next) => {
 
 export const getAllPublicJobSeekers = async(req, res) => {
     try {
-        const seekers = await JobSeeker.find({ profileVisibility: 'Public' })
-            .populate('user') // if you want user details like name/email
-            .populate('cityId'); // optional: if you want city name, etc.
+        const seekers = await JobSeeker.find({ profileVisibility: "Public" })
+            .populate({
+                path: "userId", // <-- make sure this matches your schema field name
+                select: "firstName lastName email",
+            })
+            .populate("cityId");
 
         res.json(seekers);
     } catch (err) {
-        console.error('Error getting public job seekers:', err);
-        res.status(500).json({ message: 'Server error' });
+        console.error("Error getting public job seekers:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+export const getJobSeekerById = async(req, res, next) => {
+    try {
+        const { seekerId } = req.params; // Get the ID from the URL parameter
+
+        // CORRECTED LINE: Use findOne with userId field
+        let jobSeeker = await JobSeeker.findOne({ userId: seekerId })
+            .populate("userId", "firstName lastName email")
+            .populate("cityId", "name country");
+
+        // ... (rest of your getJobSeekerById logic remains the same)
+        // Optional: uncomment if you enforce public profiles
+        if (!jobSeeker || jobSeeker.profileVisibility !== "Public") {
+            throw new NotFoundError("Job Seeker profile not found or is private");
+        }
+
+        if (!jobSeeker) {
+            throw new NotFoundError("Job Seeker profile not found");
+        }
+
+        const responseData = {
+            // ... (your existing responseData structure) ...
+            firstName: jobSeeker.userId ? .firstName,
+            lastName: jobSeeker.userId ? .lastName,
+            email: jobSeeker.userId ? .email,
+            userId: { // Add userId object as frontend expects p.userId._id
+                _id: jobSeeker.userId._id,
+                firstName: jobSeeker.userId.firstName,
+                lastName: jobSeeker.userId.lastName,
+                email: jobSeeker.userId.email,
+            },
+            _id: jobSeeker._id, // Add JobSeeker's _id
+            statementHeader: jobSeeker.statementHeader,
+            statement: jobSeeker.statement,
+            university: jobSeeker.university,
+            fieldOfStudy: jobSeeker.fieldOfStudy,
+            profilePictureUrl: jobSeeker.profilePictureUrl,
+            cityId: jobSeeker.cityId ? { // Ensure cityId is an object if populated
+                _id: jobSeeker.cityId._id,
+                name: jobSeeker.cityId.name,
+                country: jobSeeker.cityId.country,
+            } : null,
+            cityName: jobSeeker.cityId ? .name || null,
+            cityCountry: jobSeeker.cityId ? .country || null,
+            availability: jobSeeker.availability,
+            profileVisibility: jobSeeker.profileVisibility,
+            profileViews: jobSeeker.profileViews,
+            profileCompleteness: jobSeeker.profileCompleteness,
+            socialLinks: jobSeeker.socialLinks,
+            skills: jobSeeker.skills,
+            experiences: jobSeeker.experiences,
+            projects: jobSeeker.projects,
+            educations: jobSeeker.educations,
+            expectedSalary: jobSeeker.expectedSalary,
+            jobPreferences: jobSeeker.jobPreferences,
+            resumeUrl: jobSeeker.resumeUrl,
+            experience: jobSeeker.experience, // Make sure this field is included if your frontend uses it
+        };
+
+        res.status(200).json(responseData);
+    } catch (error) {
+        next(error);
     }
 };
 
