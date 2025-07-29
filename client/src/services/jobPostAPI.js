@@ -1,6 +1,9 @@
 import api from './api';
 
 export const jobPostAPI = {
+
+
+    
     getAllJobs: async() => {
         try {
             const response = await api.get('/jobs');
