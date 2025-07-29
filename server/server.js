@@ -4,8 +4,12 @@ import {
     connectDB
 } from "./src/config/database.js";
 
+
+
 // Connect to database
 connectDB();
+
+
 
 const PORT = process.env.PORT || 5000;
 

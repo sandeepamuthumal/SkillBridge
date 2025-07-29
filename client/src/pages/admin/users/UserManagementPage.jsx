@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react'; // Assuming Loader2 icon exists for loading state
+import { Loader2 } from 'lucide-react'; 
 
 const UserManagementPage = () => {
-  const { user, token, fetchAllUsers, updateUserStatus, adminResetUserPassword } = useAuth(); // Assuming these new functions are added to AuthContext
+  const { user, token, fetchAllUsers, updateUserStatus, adminResetUserPassword } = useAuth(); 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterRole, setFilterRole] = useState('All'); // 'All', 'Admin', 'Job Seeker', 'Employer'
@@ -26,7 +26,7 @@ const UserManagementPage = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetchAllUsers(); // Call the new function from AuthContext
+      const response = await fetchAllUsers(); 
       if (response.success) {
         setUsers(response.data);
       } else {
@@ -76,7 +76,7 @@ const UserManagementPage = () => {
     }
 
     try {
-      const result = await adminResetUserPassword(selectedUser._id, newPassword); // Call new function
+      const result = await adminResetUserPassword(selectedUser._id, newPassword); 
       if (result.success) {
         toast.success(`Password for ${selectedUser.firstName} reset successfully.`);
         setIsResetPasswordModalOpen(false);
@@ -95,11 +95,11 @@ const UserManagementPage = () => {
     setModalLoading(true);
     try {
       const newStatus = statusChangeAction === 'activate' ? 'active' : 'inactive';
-      const result = await updateUserStatus(selectedUser._id, newStatus); // Call new function
+      const result = await updateUserStatus(selectedUser._id, newStatus); 
       if (result.success) {
         toast.success(`${selectedUser.firstName}'s account has been ${newStatus === 'active' ? 'activated' : 'deactivated'}.`);
         setIsStatusChangeModalOpen(false);
-        loadUsers(); // Reload users to reflect status change
+        loadUsers(); 
       } else {
         toast.error(result.error || 'Failed to update user status.');
       }

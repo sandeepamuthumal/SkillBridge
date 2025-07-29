@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { authAPI } from '@/services/authAPI';
+import { adminJobAPI } from '@/services/adminJobAPI';
 
 const AuthContext = createContext();
 
@@ -165,6 +166,53 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Admin Job Post Functions
+  const adminFetchAllJobPosts = async (page = 1, limit = 10, status = '') => {
+    console.log('AuthContext: adminFetchAllJobPosts called.'); // Log function start
+    try {
+      const response = await adminJobAPI.getAllJobPosts(page, limit, status);
+      console.log('AuthContext: adminJobAPI.getAllJobPosts successful response:', response); // Log API service response
+      return { success: true, data: response.data }; // Adjust based on actual backend response structure
+    } catch (error) {
+      const message = error.response?.data?.message || error.message ||  'Failed to fetch job posts';
+      console.error('adminFetchAllJobPosts error:', message);
+      return { success: false, error: message };
+    }
+  };
+
+  const adminFetchJobPostById = async (jobPostId) => {
+    try {
+      const response = await adminJobAPI.getJobPostById(jobPostId);
+      return { success: true, data: response.data.jobPost }; // Adjust based on actual backend response structure
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to fetch job post details';
+      console.error('adminFetchJobPostById error:', message);
+      return { success: false, error: message };
+    }
+  };
+
+  const adminApproveJobPost = async (jobPostId) => {
+    try {
+      const response = await adminJobAPI.approveJobPost(jobPostId);
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to approve job post';
+      console.error('adminApproveJobPost error:', message);
+      return { success: false, error: message };
+    }
+  };
+
+  const adminDeleteJobPost = async (jobPostId) => {
+    try {
+      const response = await adminJobAPI.deleteJobPost(jobPostId);
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to delete job post';
+      console.error('adminDeleteJobPost error:', message);
+      return { success: false, error: message };
+    }
+  };
+
   const resendVerificationEmail = async (email) => {
     try {
       await authAPI.resendVerification({ email });
@@ -256,8 +304,8 @@ export const AuthProvider = ({ children }) => {
 
   const fetchAllUsers = async () => {
     try {
-      const response = await authAPI.getAllUsers(); // Assuming this API call is added to authAPI
-      return { success: true, data: response.data.users }; // Adjust based on actual API response structure
+      const response = await authAPI.getAllUsers(); 
+      return { success: true, data: response.data.users }; 
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to fetch users';
       console.error('fetchAllUsers error:', message);
@@ -267,7 +315,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateUserStatus = async (userId, status) => {
     try {
-      const response = await authAPI.updateUserStatus(userId, { status }); // Assuming this API call is added
+      const response = await authAPI.updateUserStatus(userId, { status }); 
       return { success: true, message: response.data.message };
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update user status';
@@ -278,7 +326,7 @@ export const AuthProvider = ({ children }) => {
 
   const adminResetUserPassword = async (userId, newPassword) => {
     try {
-      const response = await authAPI.adminResetUserPassword(userId, { newPassword }); // Assuming this API call is added
+      const response = await authAPI.adminResetUserPassword(userId, { newPassword }); 
       return { success: true, message: response.data.message };
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to reset user password';
@@ -309,7 +357,11 @@ export const AuthProvider = ({ children }) => {
       getUserInitials,
       fetchAllUsers,      
       updateUserStatus,
-      adminResetUserPassword
+      adminResetUserPassword,
+      adminFetchAllJobPosts,
+      adminFetchJobPostById,
+      adminApproveJobPost,
+      adminDeleteJobPost
     }}>
       {children}
     </AuthContext.Provider>

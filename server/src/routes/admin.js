@@ -1,8 +1,8 @@
 import express from 'express';
 import { auth, authorize } from '../middlewares/auth.js';
-import { getAllUsers, updateUserStatus, adminResetPassword } from '../controllers/AdminController.js'; // Will create this controller next
+import { getAllUsers, updateUserStatus, adminResetPassword } from '../controllers/AdminController.js'; 
 import validateDTO from '../middlewares/validate.js';
-import { updateUserStatusDTO, adminResetPasswordDTO } from '../dto/user.dto.js'; // Will create this DTO next
+import { updateUserStatusDTO, adminResetPasswordDTO } from '../dto/user.dto.js'; 
 
 const adminRouter = express.Router();
 
