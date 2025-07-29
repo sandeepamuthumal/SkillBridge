@@ -1,3 +1,5 @@
+// routes/jobseeker.js
+
 import express from "express";
 import multer from 'multer';
 import path from 'path';
@@ -14,7 +16,8 @@ import {
     removeCV,
     updateJobSeekerProfile,
     uploadAndParseCV,
-    uploadProfilePicture
+    uploadProfilePicture,
+    getJobSeekerById // Still import it
 } from "../controllers/JobSeekerController.js";
 
 const __filename = fileURLToPath(
@@ -34,8 +37,9 @@ const profileUploader = createMulterUpload('profiles', 'profile', imageTypes);
 const cvUploader = createMulterUpload('cvs', 'cv', documentTypes);
 const applicationUploader = createMulterUpload('applications', 'app', documentTypes);
 
+// --- CORRECTED ROUTE ORDER ---
 
-// Routes for Job Seeker profile
+// Routes for Job Seeker profile (more specific routes first)
 jobseekerRouter.get("/profile", auth, getJobSeekerProfile);
 jobseekerRouter.put("/profile", auth, authorize('Job Seeker'), updateJobSeekerProfile);
 jobseekerRouter.post("/profile/image", auth, authorize('Job Seeker'), profileUploader.single('profileImage'), uploadProfilePicture);
@@ -52,5 +56,16 @@ jobseekerRouter.post("/apply/job", auth, authorize('Job Seeker'), applicationUpl
 jobseekerRouter.get("/job/applications", auth, authorize('Job Seeker'), seekerApplications);
 jobseekerRouter.delete("/job/applications/:id", auth, authorize('Job Seeker'), deleteApplication);
 
+//Job seeker applications
+jobseekerRouter.post("/apply/job", auth, authorize('Job Seeker'), applicationUploader.fields([
+    { name: 'cv', maxCount: 1 },
+    { name: 'coverLetter', maxCount: 1 }
+]), submitJobApplication);
+
+jobseekerRouter.get("/job/applications", auth, authorize('Job Seeker'), seekerApplications);
+jobseekerRouter.delete("/job/applications/:id", auth, authorize('Job Seeker'), deleteApplication);
+
+// GET job seeker profile by userId (most general, so it goes last)
+jobseekerRouter.get("/:seekerId", getJobSeekerById); // This is now in the correct position
 
 export default jobseekerRouter;

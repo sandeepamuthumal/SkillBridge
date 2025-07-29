@@ -106,7 +106,10 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               title: "Job Management",
               url: "/admin/jobs",
               icon: Briefcase,
-              isActive: isPathActive("/admin/jobs", currentPath),
+              isActive: isPathActive("/admin/jobs", currentPath) || hasActiveSubItem([
+                  { url: "/admin/jobs/pending" }, // These now logically map to filters on the main page
+                  { url: "/admin/jobs/categories" },
+              ], currentPath),
               items: [
                 { title: "All Jobs", url: "/admin/jobs", isActive: isPathActive("/admin/jobs", currentPath) },
                 { title: "Pending Approval", url: "/admin/jobs/pending", isActive: isPathActive("/admin/jobs/pending", currentPath) },

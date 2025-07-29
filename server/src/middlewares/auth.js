@@ -12,6 +12,8 @@ const auth = async(req, res, next) => {
         const decoded = verifyToken(token);
         const user = await User.findById(decoded.userId).select('-password');
 
+        
+
         if (!user) {
             return res.status(401).json({ message: 'Token is not valid' });
         }
@@ -26,6 +28,7 @@ const auth = async(req, res, next) => {
 // Role-based authorization
 const authorize = (...roles) => {
     return (req, res, next) => {
+        
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
                 message: 'Access denied. Insufficient permissions.'

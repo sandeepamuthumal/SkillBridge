@@ -1,6 +1,8 @@
 export const getAllProfessionals = async (req, res) => {
   try {
-    const employers = await Employer.find();
+    const professionals = await Professional.find()
+  .populate("userId", "firstName lastName")
+  .exec();
 
     const cleanedEmployers = employers.map(emp => ({
       ...emp.toObject(),

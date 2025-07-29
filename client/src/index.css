@@ -127,3 +127,118 @@
 ::-webkit-scrollbar {
     width: 6px;
 }
+
+/* src/index.css or a dedicated styles.css */
+
+/* Base styles for cards and sections */
+/* This class can be applied to the <Card> component if you want to encapsulate basic card styling */
+.card-professional {
+  @apply bg-white text-gray-800 rounded-xl shadow-md border border-gray-100 transition-all duration-300; /* Added transition for general card interaction */
+}
+
+/* For the hero section, the background color is now directly set in JSX: bg-gray-900.
+   This class defines the structural and visual commonalities. */
+.card-hero {
+  @apply rounded-3xl p-8 mb-8 relative overflow-hidden;
+}
+
+/* Section Header Styles - for titles like "About Me", "Work Experience" */
+.section-header-title {
+  @apply flex items-center gap-3 text-2xl font-bold text-gray-900; /* Added text-gray-900 for dark text */
+}
+
+/* This class for gradient text is not currently used in the provided JSX for headers,
+   but it's updated if you decide to use it for titles or specific text. */
+.gradient-text {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+/* Interactive Hover Effect - for elements that should subtly respond on hover */
+.interactive-hover {
+  @apply transition-all duration-200 ease-in-out hover:shadow-lg hover:border-indigo-300 hover:-translate-y-0.5; /* Adjusted hover border to indigo */
+}
+
+/* Timeline Item (for Experience and Education) - assuming you want a visual timeline */
+/* This styling would be applied to a wrapper div for each timeline entry */
+.timeline-item {
+  @apply relative pl-8 before:absolute before:left-0 before:top-2 before:h-[calc(100%-8px)] before:w-0.5 before:bg-gray-200 before:rounded-full after:absolute after:left-0 after:top-2 after:h-3 after:w-3 after:bg-indigo-500 after:rounded-full after:-translate-x-1/2 after:ring-4 after:ring-white; /* Adjusted colors and added ring for marker */
+}
+
+/* Custom Button Styles - if you want to define specific button variants */
+.btn-professional {
+  @apply bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition-colors duration-200; /* Primary button style */
+}
+
+.btn-outline-professional {
+  @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-200; /* Outline button style */
+}
+
+/* Skill Badge Styles */
+.skill-badge {
+  @apply bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200; /* Specific skill badge style */
+}
+
+/* Pulse Glow for Loader */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.7); /* Using indigo-500 color */
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0px rgba(99, 102, 241, 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Shadcn UI CSS Variables (assuming you are still using them) */
+/* These are typically in your global CSS (e.g., globals.css if you're using Next.js, or index.css) */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%; /* Dark text/foreground */
+
+  --muted: 210 40% 96.1%; /* Light gray for muted backgrounds */
+  --muted-foreground: 215.4 16.3% 46.9%; /* Medium gray for muted text */
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+
+  --border: 214.3 31.8% 91.4%; /* Lighter border color for contrast with white cards */
+  --input: 214.3 31.8% 91.4%;
+
+  --card: 0 0% 100%; /* White card background */
+  --card-foreground: 222.2 47.4% 11.2%;
+
+  --primary: 240 5.9% 10%; /* General primary for darker elements */
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 210 40% 98%;
+
+  --ring: 222.2 47.4% 11.2%;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* You would define your dark mode variables here if applicable */
+  /* Example: */
+  /*
+  --background: 224 71% 4%;
+  --foreground: 213 31% 91%;
+  --card: 224 71% 4%;
+  --card-foreground: 213 31% 91%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  */
+}

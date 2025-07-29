@@ -12,6 +12,8 @@ import jobseekerRouter from './routes/jobseeker.js';
 import professionalsRoutes from './routes/professionals.js';
 import jobRoutes from './routes/jobRoutes.js';
 import employerRoutes from './routes/employerRoutes.js';
+import adminRouter from './routes/admin.js';
+import adminJobRouter from './routes/adminJobs.js';
 
 
 const __filename = fileURLToPath(
@@ -40,6 +42,9 @@ app.use(cors({
     credentials: true,
 }));
 
+
+
+
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -63,11 +68,11 @@ app.use('/api', apiRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
+app.use("/api/admin", adminRouter);
+app.use("/api/admin/jobs", adminJobRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/employers', employerRoutes);
-
-
 app.use(globalErrorHandler);
 
 export { app };
