@@ -1,5 +1,3 @@
-// src/components/ProfessionalDetailsModal.jsx
-
 import React from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import {
@@ -27,7 +25,7 @@ import {
 
 const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) => {
   const navigate = useNavigate(); // Initialize useNavigate
-  
+
   if (!p) return null;
 
   const fullName =
@@ -68,16 +66,19 @@ const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) 
 
   const skillsArray = p.skills || [];
   const achievementsArray = p.achievements || [];
-  
+
   // Function to handle navigation to the seeker's profile page
   const handleGoToProfile = () => {
-  onClose(); // Close the modal first
-  navigate(`/seeker-profile/${p.userId?._id}`); // Use userId instead of _id
-};
+    onClose(); // Close the modal first
+    navigate(`/seeker-profile/${p.userId?._id}`); // Use userId instead of _id
+  };
+
+  // Determine if achievements section should be rendered at all
+  const shouldShowAchievements = achievementsArray.length > 0;
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-[800px] p-0 overflow-hidden max-h-screen [&>button]:bg-red-500 [&>button]:text-white [&>button:hover]:bg-red-600 [&>button]:rounded-full [&>button]:p-2"
         style={{ borderRadius: "2rem" }}
       >
@@ -133,9 +134,10 @@ const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) 
               </div>
 
               {/* Skills & Achievements */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Conditional rendering for layout based on whether achievements are present */}
+              <div className={shouldShowAchievements ? "grid grid-cols-1 md:grid-cols-2 gap-6" : ""}>
                 {/* Skills */}
-                <div>
+                <div className={shouldShowAchievements ? "" : "col-span-full"}>
                   <h4 className="text-lg font-bold mb-2">Skills</h4>
                   {skillsArray.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
@@ -156,10 +158,10 @@ const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) 
                   )}
                 </div>
 
-                {/* Achievements */}
-                <div>
-                  <h4 className="text-lg font-bold mb-2">Achievements</h4>
-                  {achievementsArray.length > 0 ? (
+                {/* Achievements - Only render if there are achievements */}
+                {shouldShowAchievements && (
+                  <div>
+                    <h4 className="text-lg font-bold mb-2">Achievements</h4>
                     <div className="flex flex-wrap gap-2">
                       {achievementsArray.map((ach) => (
                         <Badge
@@ -172,10 +174,8 @@ const ProfessionalDetailsModal = ({ professional: p, onClose, backendBaseUrl }) 
                         </Badge>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-sm italic text-gray-500">No achievements listed.</p>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Footer Info */}
