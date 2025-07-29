@@ -78,5 +78,21 @@ export const jobPostAPI = {
                 error: error.response ? error.response.data.message : 'An unexpected error occurred'
             };
         }
-    }
+    },
+
+    getRecommendedJobs: async() => {
+        try {
+            const response = await api.get('/jobseeker/jobs/recommended');
+            return {
+                success: true,
+                data: response.data.data
+            }
+        } catch (error) {
+            console.error('Error fetching recommended jobs:', error);
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    },
 };

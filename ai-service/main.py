@@ -10,6 +10,7 @@ app = FastAPI()
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
 @app.post("/parse-cv")
 async def parse_cv_file(file: UploadFile = File(...)):
     file_ext = file.filename.split('.')[-1]
@@ -25,4 +26,36 @@ async def parse_cv_file(file: UploadFile = File(...)):
         return JSONResponse(content=data)
     except Exception as e:
         os.remove(file_path)
+        return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+
+from fastapi import Request
+from pydantic import BaseModel
+from services.recommender import recommend_jobs
+
+class JobSeeker(BaseModel):
+    skills: list[str]
+    statement: str = ""
+    fieldOfStudy: str = ""
+    projects: list[dict] = []
+    experiences: list[dict] = []
+
+class Job(BaseModel):
+    id: str
+    title: str
+    description: str
+    requirements: list[str] = []
+    preferredSkills: list[str] = []
+
+class MatchRequest(BaseModel):
+    jobSeeker: JobSeeker
+    jobs: list[Job]
+
+
+@app.post("/recommend-jobs")
+async def get_recommendations(payload: MatchRequest):
+    try:
+        result = recommend_jobs(payload.jobSeeker.dict(), [j.dict() for j in payload.jobs])
+        return {"recommendedJobs": result}
+    except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)

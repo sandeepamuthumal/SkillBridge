@@ -91,7 +91,7 @@ const SavedJobs = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">Saved Jobs</h1>
-                            <p className="text-gray-600 mt-1">Your saved job postings</p>
+                            <p className="text-gray-600 mt-1"> View and manage your saved job postings</p>
                         </div>
                         <div className="text-sm text-gray-500">
                             Showing {(currentPage - 1) * jobsPerPage + 1}-{Math.min(currentPage * jobsPerPage, savedjobs.length)} of {savedjobs.length} jobs

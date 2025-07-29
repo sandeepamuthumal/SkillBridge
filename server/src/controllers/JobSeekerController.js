@@ -531,3 +531,78 @@ export const deleteApplication = async(req, res, next) => {
         next(error);
     }
 }
+
+export const getJobRecommendations = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const jobSeeker = await JobSeeker.findOne({ userId });
+        const query = {
+            status: 'Published',
+            isApproved: true,
+            deadline: { $gte: new Date() }
+        };
+
+        if (Array.isArray(jobSeeker.jobPreferences.categories) && jobSeeker.jobPreferences.categories.length > 0) {
+            query.categoryId = { $in: jobSeeker.jobPreferences.categories };
+        }
+
+        const jobPosts = await JobPost.find(query).sort({ createdAt: -1 });
+
+        // Format jobSeeker
+        const formattedSeeker = {
+            skills: jobSeeker.skills,
+            statement: jobSeeker.statement,
+            fieldOfStudy: jobSeeker.fieldOfStudy,
+            projects: jobSeeker.projects,
+            experiences: jobSeeker.experiences
+        };
+
+        const formattedJobs = jobPosts.map(job => ({
+            id: job._id,
+            title: job.title,
+            description: job.description,
+            requirements: job.requirements,
+            preferredSkills: job.preferredSkills
+        }));
+
+        const pythonServiceUrl = process.env.PYTHON_AI_SERVICE_URL || 'http://localhost:8000';
+
+        const response = await axios.post(`${pythonServiceUrl}/recommend-jobs`, {
+            jobSeeker: formattedSeeker,
+            jobs: formattedJobs
+        });
+
+        const recommendJobs = await Promise.all(
+            response.data.recommendedJobs.map(async(job) => {
+                const jobPost = await JobPost.findById(job.id)
+                    .populate('employerId', 'companyName logoUrl')
+                    .populate('categoryId', 'name')
+                    .populate('typeId', 'name')
+                    .populate('cityId', 'name');
+
+                if (!jobPost) return null;
+
+                const jobData = jobPost.toObject();
+                jobData.similarity = job.similarity;
+                jobData.matchLabel = job.matchLabel;
+                jobData.details = job.details;
+
+                return jobData;
+            })
+        );
+
+        const filteredJobs = recommendJobs.filter(Boolean);
+
+        res.status(200).json({
+            success: true,
+            data: filteredJobs
+        });
+    } catch (error) {
+        console.error('AI match error:', error);
+
+        res.status(500).json({
+            success: false,
+            message: error.response ? error.response.data || error.message : 'Server error'
+        });
+    }
+}

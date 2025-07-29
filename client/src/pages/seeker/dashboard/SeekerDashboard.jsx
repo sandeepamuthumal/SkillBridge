@@ -17,7 +17,6 @@ import {
   Star,
   ArrowRight,
   Plus,
-  Filter,
   Bell,
   Target,
   Award,
@@ -25,7 +24,17 @@ import {
   Activity,
   BarChart3,
   Zap,
-  ExternalLink
+  ExternalLink,
+  Send,
+  MousePointer,
+  Filter,
+  Bookmark,
+  MessageSquare,
+  Sparkles,
+  ChevronRight,
+  PlayCircle,
+  RefreshCw,
+  TrendingDown
 } from 'lucide-react';
 
 // Shadcn/ui components
@@ -97,131 +106,147 @@ const Badge = ({ children, variant = "default", className = "" }) => {
 };
 
 const Progress = ({ value, className = "" }) => (
-  <div className={`w-full bg-gray-200 rounded-full h-2 ${className}`}>
+  <div className={`w-full bg-gray-200 rounded-full h-3 ${className}`}>
     <div
-      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+      className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
       style={{ width: `${value}%` }}
     />
   </div>
 );
 
-// Mock data
-const mockUser = {
-  name: "Sandeepa",
-  email: "ict22885@fot.sjp.ac.lk",
-  profileCompletion: 85,
-  joinDate: "January 2025"
+const Alert = ({ children, className = "" }) => (
+  <div className={`relative w-full rounded-lg border p-4 ${className}`}>
+    {children}
+  </div>
+);
+
+const RecentApplicationsPage = () => {
+  return <div>Navigate to My Applications page</div>;
 };
 
-const mockStats = {
-  totalApplications: 12,
-  activeApplications: 8,
-  interviewsScheduled: 3,
-  savedJobs: 15,
-  profileViews: 47,
-  matchingJobs: 23
-};
-
-const mockRecentApplications = [
-  {
-    id: 1,
-    jobTitle: "Frontend Developer Intern",
-    company: "TechStart Solutions",
-    logo: "🚀",
-    appliedDate: "2 days ago",
-    status: "Under Review",
-    statusColor: "bg-yellow-100 text-yellow-800",
-    location: "Colombo",
-    salary: "LKR 25,000 - 35,000"
-  },
-  {
-    id: 2,
-    jobTitle: "UI/UX Design Intern",
-    company: "Design Hub",
-    logo: "🎨",
-    appliedDate: "5 days ago",
-    status: "Interview Scheduled",
-    statusColor: "bg-purple-100 text-purple-800",
-    location: "Kandy",
-    salary: "LKR 20,000 - 30,000"
-  },
-  {
-    id: 3,
-    jobTitle: "Software Engineer Intern",
-    company: "CodeCraft Ltd",
-    logo: "💻",
-    appliedDate: "1 week ago",
-    status: "Offer Extended",
-    statusColor: "bg-green-100 text-green-800",
-    location: "Colombo",
-    salary: "LKR 30,000 - 40,000"
-  }
-];
-
-const mockRecommendedJobs = [
-  {
-    id: 1,
-    title: "React Developer Intern",
-    company: "NextGen Tech",
-    logo: "⚛️",
-    location: "Colombo",
-    type: "Internship",
-    salary: "LKR 28,000 - 38,000",
-    matchScore: 92,
-    postedDate: "2 days ago",
-    tags: ["React", "JavaScript", "CSS"]
-  },
-  {
-    id: 2,
-    title: "Full Stack Developer",
-    company: "Innovation Labs",
-    logo: "🔬",
-    location: "Galle",
-    type: "Part-time",
-    salary: "LKR 35,000 - 45,000",
-    matchScore: 88,
-    postedDate: "3 days ago",
-    tags: ["Node.js", "MongoDB", "React"]
-  },
-  {
-    id: 3,
-    title: "Mobile App Developer",
-    company: "AppVenture",
-    logo: "📱",
-    location: "Kandy",
-    type: "Internship",
-    salary: "LKR 25,000 - 35,000",
-    matchScore: 85,
-    postedDate: "1 week ago",
-    tags: ["React Native", "Flutter", "Mobile"]
-  }
-];
-
-const mockUpcomingInterviews = [
-  {
-    id: 1,
-    jobTitle: "UI/UX Design Intern",
-    company: "Design Hub",
-    logo: "🎨",
-    date: "July 30, 2025",
-    time: "10:00 AM",
-    type: "Video Interview",
-    interviewer: "Sarah Johnson"
-  },
-  {
-    id: 2,
-    jobTitle: "Frontend Developer Intern",
-    company: "TechStart Solutions",
-    logo: "🚀",
-    date: "August 2, 2025",
-    time: "2:30 PM",
-    type: "Technical Interview",
-    interviewer: "Mike Chen"
-  }
-];
-
+// Mock data - Replace with real API calls
 const SeekerDashboard = () => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Simulate API call - Replace with real implementation
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Replace with: const response = await fetch('/api/dashboard/overview');
+        // const data = await response.json();
+        
+        // Mock API response structure
+        const mockData = {
+          user: {
+            name: "Sandeepa",
+            email: "ict22885@fot.sjp.ac.lk",
+            profileCompletion: 85,
+            lastLogin: "2 hours ago"
+          },
+          stats: {
+            totalApplications: 12,
+            activeApplications: 8,
+            savedJobs: 15,
+            profileViews: 47,
+            responseRate: 67.5,
+            weeklyGrowth: {
+              applications: 2,
+              profileViews: 12,
+              savedJobs: 3
+            }
+          },
+          recentApplications: [
+            {
+              id: 1,
+              jobTitle: "Frontend Developer Intern",
+              company: "TechStart Solutions",
+              logo: "🚀",
+              appliedDate: "2 days ago",
+              status: "Under Review",
+              statusColor: "bg-yellow-100 text-yellow-800",
+              location: "Colombo",
+              salary: "LKR 25,000 - 35,000"
+            },
+            {
+              id: 2,
+              jobTitle: "UI/UX Design Intern", 
+              company: "Design Hub",
+              logo: "🎨",
+              appliedDate: "5 days ago",
+              status: "Interview Scheduled",
+              statusColor: "bg-purple-100 text-purple-800",
+              location: "Kandy",
+              salary: "LKR 20,000 - 30,000"
+            },
+            {
+              id: 3,
+              jobTitle: "Software Engineer Intern",
+              company: "CodeCraft Ltd", 
+              logo: "💻",
+              appliedDate: "1 week ago",
+              status: "Offer Extended",
+              statusColor: "bg-green-100 text-green-800",
+              location: "Colombo",
+              salary: "LKR 30,000 - 40,000"
+            }
+          ],
+          recommendedJobs: [
+            {
+              id: 1,
+              title: "React Developer Intern",
+              company: "NextGen Tech",
+              logo: "⚛️",
+              location: "Colombo",
+              type: "Internship",
+              salary: "LKR 28,000 - 38,000",
+              matchScore: 92,
+              postedDate: "2 days ago",
+              tags: ["React", "JavaScript", "CSS"],
+              isHot: true
+            },
+            {
+              id: 2,
+              title: "Full Stack Developer",
+              company: "Innovation Labs",
+              logo: "🔬", 
+              location: "Galle",
+              type: "Part-time",
+              salary: "LKR 35,000 - 45,000",
+              matchScore: 88,
+              postedDate: "3 days ago",
+              tags: ["Node.js", "MongoDB", "React"],
+              isHot: false
+            },
+            {
+              id: 3,
+              title: "Mobile App Developer",
+              company: "AppVenture",
+              logo: "📱",
+              location: "Kandy", 
+              type: "Internship",
+              salary: "LKR 25,000 - 35,000",
+              matchScore: 85,
+              postedDate: "1 week ago",
+              tags: ["React Native", "Flutter", "Mobile"],
+              isHot: false
+            }
+          ]
+        };
+
+        setTimeout(() => {
+          setDashboardData(mockData);
+          setLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -235,57 +260,70 @@ const SeekerDashboard = () => {
     return "Good evening";
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {getGreeting()}, {mockUser.name}! 👋
-              </h1>
-              <p className="text-gray-600 mt-1">Here's what's happening with your job search today</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Bell className="w-4 h-4 mr-2" />
-                Notifications
-              </Button>
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Quick Apply
-              </Button>
-            </div>
-          </div>
+  const handleRefreshData = async () => {
+    setLoading(true);
+    // Simulate API refresh
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <p className="text-gray-600">Failed to load dashboard data</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { user, stats, recentApplications, recommendedJobs } = dashboardData;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+    
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
+        {/* Key Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-all duration-300">
+          <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                  <p className="text-3xl font-bold text-gray-900">{mockStats.totalApplications}</p>
-                  <p className="text-sm text-green-600 font-medium">+2 this week</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.totalApplications}</p>
+                  <div className="flex items-center mt-1">
+                    <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600 font-medium">+{stats.weeklyGrowth.applications} this week</span>
+                  </div>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                  <Send className="w-6 h-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all duration-300">
+          <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-yellow-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Applications</p>
-                  <p className="text-3xl font-bold text-gray-900">{mockStats.activeApplications}</p>
-                  <p className="text-sm text-blue-600 font-medium">In progress</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.activeApplications}</p>
+                  <p className="text-sm text-yellow-600 font-medium">Awaiting response</p>
                 </div>
                 <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                   <Clock className="w-6 h-6 text-yellow-600" />
@@ -294,31 +332,34 @@ const SeekerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all duration-300">
+          <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Interviews Scheduled</p>
-                  <p className="text-3xl font-bold text-gray-900">{mockStats.interviewsScheduled}</p>
-                  <p className="text-sm text-purple-600 font-medium">Next: Tomorrow</p>
+                  <p className="text-sm font-medium text-gray-600">Profile Views</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.profileViews}</p>
+                  <div className="flex items-center mt-1">
+                    <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-600 font-medium">+{stats.weeklyGrowth.profileViews} this week</span>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-purple-600" />
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <Eye className="w-6 h-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all duration-300">
+          <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Profile Views</p>
-                  <p className="text-3xl font-bold text-gray-900">{mockStats.profileViews}</p>
-                  <p className="text-sm text-green-600 font-medium">+12 this week</p>
+                  <p className="text-sm font-medium text-gray-600">Response Rate</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.responseRate}%</p>
+                  <p className="text-sm text-purple-600 font-medium">Above average</p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <Eye className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <BarChart3 className="w-6 h-6 text-purple-600" />
                 </div>
               </div>
             </CardContent>
@@ -328,39 +369,25 @@ const SeekerDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Profile Completion */}
-            <Card className="hover:shadow-lg transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center space-x-2">
-                    <Target className="w-5 h-5 text-blue-600" />
-                    <span>Complete Your Profile</span>
-                  </CardTitle>
-                  <Badge variant="default">{mockUser.profileCompletion}% Complete</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Progress value={mockUser.profileCompletion} className="mb-4" />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-xl">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">Basic Info</span>
+            {/* Profile Completion Alert */}
+            <Alert className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                    <Target className="w-5 h-5 text-white" />
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-xl">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">Resume</span>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-xl">
-                    <Clock className="w-5 h-5 text-yellow-600" />
-                    <span className="text-sm font-medium text-yellow-800">Portfolio</span>
+                  <div>
+                    <h3 className="font-semibold text-blue-900">Complete Your Profile - {user.profileCompletion}%</h3>
+                    <p className="text-sm text-blue-700">Add portfolio projects to increase your visibility</p>
                   </div>
                 </div>
-                <Button variant="outline" className="mt-4 w-full">
+                <Button size="sm">
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Portfolio Projects
+                  Complete
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+              <Progress value={user.profileCompletion} className="mt-3" />
+            </Alert>
 
             {/* Recent Applications */}
             <Card className="hover:shadow-lg transition-all duration-300">
@@ -377,7 +404,7 @@ const SeekerDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockRecentApplications.map((application) => (
+                  {recentApplications.map((application) => (
                     <div key={application.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-xl flex items-center justify-center text-xl">
                         {application.logo}
@@ -408,13 +435,14 @@ const SeekerDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Recommended Jobs */}
+            {/* AI Recommended Jobs */}
             <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-2">
-                    <Zap className="w-5 h-5 text-yellow-500" />
-                    <span>Recommended for You</span>
+                    <Sparkles className="w-5 h-5 text-yellow-500" />
+                    <span>AI Recommended for You</span>
+                    <Badge variant="warning" className="bg-yellow-100 text-yellow-800">Smart Match</Badge>
                   </CardTitle>
                   <Button variant="ghost" size="sm">
                     View All <ArrowRight className="w-4 h-4 ml-1" />
@@ -423,7 +451,7 @@ const SeekerDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockRecommendedJobs.map((job) => (
+                  {recommendedJobs.map((job) => (
                     <div key={job.id} className="border border-gray-200 rounded-xl p-4 hover:border-blue-200 transition-all duration-300 hover:shadow-md">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-start space-x-3">
@@ -431,7 +459,10 @@ const SeekerDashboard = () => {
                             {job.logo}
                           </div>
                           <div>
-                            <h4 className="font-semibold text-gray-900">{job.title}</h4>
+                            <div className="flex items-center space-x-2">
+                              <h4 className="font-semibold text-gray-900">{job.title}</h4>
+                              {job.isHot && <Badge variant="destructive" className="bg-red-100 text-red-800">🔥 Hot</Badge>}
+                            </div>
                             <p className="text-sm text-gray-600">{job.company}</p>
                           </div>
                         </div>
@@ -479,79 +510,46 @@ const SeekerDashboard = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Quick Actions */}
             <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-blue-600" />
+                  <Zap className="w-5 h-5 text-yellow-500" />
                   <span>Quick Actions</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button className="w-full justify-start text-left">
                     <Search className="w-4 h-4 mr-3" />
-                    Browse All Jobs
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <FileText className="w-4 h-4 mr-3" />
-                    Update Resume
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <BookOpen className="w-4 h-4 mr-3" />
-                    Skill Assessment
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Users className="w-4 h-4 mr-3" />
-                    Network Events
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Upcoming Interviews */}
-            <Card className="hover:shadow-lg transition-all duration-300">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Calendar className="w-5 h-5 text-purple-600" />
-                  <span>Upcoming Interviews</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {mockUpcomingInterviews.map((interview) => (
-                    <div key={interview.id} className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                      <div className="flex items-start space-x-3 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-50 to-purple-50 border border-purple-200 rounded-lg flex items-center justify-center text-sm">
-                          {interview.logo}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-gray-900 text-sm">{interview.jobTitle}</h4>
-                          <p className="text-xs text-gray-600">{interview.company}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4 text-purple-600" />
-                          <span className="text-gray-700">{interview.date} at {interview.time}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Users className="w-4 h-4 text-purple-600" />
-                          <span className="text-gray-700">{interview.interviewer}</span>
-                        </div>
-                        <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                          {interview.type}
-                        </Badge>
-                      </div>
+                    <div className="text-left">
+                      <div className="font-medium">Browse Jobs</div>
+                      <div className="text-xs opacity-80">Find your perfect match</div>
                     </div>
-                  ))}
+                  </Button>
+                  <Button className="w-full justify-start text-left" variant="outline">
+                    <Sparkles className="w-4 h-4 mr-3" />
+                    <div className="text-left">
+                      <div className="font-medium">AI Recommendations</div>
+                      <div className="text-xs opacity-60">Personalized matches</div>
+                    </div>
+                  </Button>
+                  <Button className="w-full justify-start text-left" variant="outline">
+                    <FileText className="w-4 h-4 mr-3" />
+                    <div className="text-left">
+                      <div className="font-medium">Update Resume</div>
+                      <div className="text-xs opacity-60">Keep it fresh</div>
+                    </div>
+                  </Button>
+                  <Button className="w-full justify-start text-left" variant="outline">
+                    <BookOpen className="w-4 h-4 mr-3" />
+                    <div className="text-left">
+                      <div className="font-medium">Skill Assessment</div>
+                      <div className="text-xs opacity-60">Boost your profile</div>
+                    </div>
+                  </Button>
                 </div>
-                <Button variant="outline" className="w-full mt-4" size="sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  View Full Calendar
-                </Button>
               </CardContent>
             </Card>
 
@@ -559,67 +557,58 @@ const SeekerDashboard = () => {
             <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5 text-green-600" />
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
                   <span>Your Performance</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Application Response Rate</span>
-                    <span className="text-sm font-semibold text-gray-900">67%</span>
+                    <span className="text-sm text-gray-600">Response Rate</span>
+                    <span className="text-sm font-semibold text-gray-900">{stats.responseRate}%</span>
                   </div>
-                  <Progress value={67} />
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Interview Success Rate</span>
-                    <span className="text-sm font-semibold text-gray-900">75%</span>
-                  </div>
-                  <Progress value={75} />
+                  <Progress value={stats.responseRate} />
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Profile Completeness</span>
-                    <span className="text-sm font-semibold text-gray-900">{mockUser.profileCompletion}%</span>
+                    <span className="text-sm font-semibold text-gray-900">{user.profileCompletion}%</span>
                   </div>
-                  <Progress value={mockUser.profileCompletion} />
+                  <Progress value={user.profileCompletion} />
                 </div>
                 
-                <div className="mt-4 p-3 bg-green-50 rounded-xl">
+                <div className="mt-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
                   <div className="flex items-center space-x-2 mb-1">
                     <Award className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">Great Progress!</span>
+                    <span className="text-sm font-medium text-green-800">Great Performance!</span>
                   </div>
-                  <p className="text-xs text-green-700">You're performing better than 78% of job seekers in your field.</p>
+                  <p className="text-xs text-green-700">You're performing well in your job search</p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Learning Resources */}
+            {/* Quick Stats */}
             <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <BookOpen className="w-5 h-5 text-orange-600" />
-                  <span>Skill Development</span>
+                  <MousePointer className="w-5 h-5 text-blue-600" />
+                  <span>Quick Stats</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="p-3 bg-orange-50 rounded-xl">
-                    <h4 className="text-sm font-semibold text-orange-900 mb-1">Recommended Course</h4>
-                    <p className="text-xs text-orange-700 mb-2">Advanced React Development</p>
-                    <Button size="sm" variant="outline" className="w-full text-xs">
-                      <ExternalLink className="w-3 h-3 mr-1" />
-                      Start Learning
-                    </Button>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-blue-50 rounded-xl">
+                    <div className="flex items-center justify-center mb-1">
+                      <Heart className="w-4 h-4 text-blue-600 mr-1" />
+                      <span className="text-lg font-bold text-blue-900">{stats.savedJobs}</span>
+                    </div>
+                    <p className="text-xs text-blue-700">Saved Jobs</p>
                   </div>
-                  
-                  <div className="p-3 bg-blue-50 rounded-xl">
-                    <h4 className="text-sm font-semibold text-blue-900 mb-1">Skill Assessment</h4>
-                    <p className="text-xs text-blue-700 mb-2">Test your JavaScript knowledge</p>
-                    <Button size="sm" variant="outline" className="w-full text-xs">
-                      <Target className="w-3 h-3 mr-1" />
-                      Take Test
-                    </Button>
+                  <div className="text-center p-3 bg-purple-50 rounded-xl">
+                    <div className="flex items-center justify-center mb-1">
+                      <CheckCircle className="w-4 h-4 text-purple-600 mr-1" />
+                      <span className="text-lg font-bold text-purple-900">{Math.round(stats.responseRate)}%</span>
+                    </div>
+                    <p className="text-xs text-purple-700">Success Rate</p>
                   </div>
                 </div>
               </CardContent>
