@@ -38,6 +38,10 @@ import Settings from "./pages/seeker/settings/settings";
 
 // Employer Pages
 
+// Admin Pages
+import UserManagementPage from "./pages/admin/users/UserManagementPage.jsx";
+import JobManagementPage from "./pages/admin/jobs/JobManagementPage.jsx";
+import AdminJobPostDetailsPage from "./pages/admin/jobs/AdminJobPostDetailsPage.jsx";
 
 // Error Pages
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
@@ -222,6 +226,23 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <AdminDashboard />,
+      },
+      {
+        path: "users",
+        element: <UserManagementPage />,
+      },
+      { // NEW JOB MANAGEMENT ROUTES
+        path: "jobs",
+        children: [
+          {
+            index: true, // This will be /admin/jobs
+            element: <JobManagementPage />,
+          },
+          {
+            path: ":id", // This will be /admin/jobs/:id
+            element: <AdminJobPostDetailsPage />,
+          },
+        ],
       }
     ],
   },

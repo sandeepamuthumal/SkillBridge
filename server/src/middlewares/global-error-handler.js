@@ -1,4 +1,10 @@
 export const globalErrorHandler = (err, req, res, next) => {
+    // console.error('--- GLOBAL ERROR HANDLER ---');
+    // console.error('Error Name:', err.name);
+    // console.error('Error Message:', err.message);
+    // if (err.stack) {
+    //     console.error('Error Stack:', err.stack);
+    // }
     console.error(err);
     switch (err.name) {
         case 'ValidationError':
