@@ -247,11 +247,15 @@ export const getJobSeekerById = async(req, res, next) => {
             throw new NotFoundError("Job Seeker profile not found");
         }
 
+        //increase profile views
+        jobSeeker.profileViews += 1;
+        await jobSeeker.save();
+
         const responseData = {
             // ... (your existing responseData structure) ...
-            firstName: jobSeeker.userId ? .firstName,
-            lastName: jobSeeker.userId ? .lastName,
-            email: jobSeeker.userId ? .email,
+            firstName: jobSeeker.userId ? jobSeeker.userId.firstName : null,
+            lastName: jobSeeker.userId ? jobSeeker.userId.lastName : null,
+            email: jobSeeker.userId ? jobSeeker.userId.email : null,
             userId: { // Add userId object as frontend expects p.userId._id
                 _id: jobSeeker.userId._id,
                 firstName: jobSeeker.userId.firstName,
@@ -269,8 +273,8 @@ export const getJobSeekerById = async(req, res, next) => {
                 name: jobSeeker.cityId.name,
                 country: jobSeeker.cityId.country,
             } : null,
-            cityName: jobSeeker.cityId ? .name || null,
-            cityCountry: jobSeeker.cityId ? .country || null,
+            cityName: jobSeeker.cityId ? jobSeeker.cityId.name : null,
+            cityCountry: jobSeeker.cityId ? jobSeeker.cityId.country : null,
             availability: jobSeeker.availability,
             profileVisibility: jobSeeker.profileVisibility,
             profileViews: jobSeeker.profileViews,

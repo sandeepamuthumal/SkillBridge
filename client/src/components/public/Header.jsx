@@ -162,11 +162,11 @@ const Navbar = () => {
               <UserAvatar />
             ) : (
               <>
-                <Link to="/signin">
+                <a href="/signin">
                   <Button variant="ghost" className="text-gray-700">
                     Sign In
                   </Button>
-                </Link>
+                </a>
                 <Link to="/signup">
                   <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                     Get Started
@@ -246,11 +246,11 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/signin" onClick={() => setIsOpen(false)}>
+                    <a href="/signin" onClick={() => setIsOpen(false)}>
                       <Button variant="ghost" className="text-gray-700 justify-start w-full">
                         Sign In
                       </Button>
-                    </Link>
+                    </a>
                     <Link to="/signup" onClick={() => setIsOpen(false)}>
                       <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 justify-start w-full">
                         Get Started
