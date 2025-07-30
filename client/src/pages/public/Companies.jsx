@@ -14,6 +14,7 @@ import {
   Heart,
   Eye,
   Globe,
+  ArrowUp, // Import ArrowUp icon for the scroll-to-top button
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,9 @@ const Companies = () => {
   const [selectedIndustry, setSelectedIndustry] = useState("all");
   const [selectedSize, setSelectedSize] = useState("all");
   const [followedCompanies, setFollowedCompanies] = useState(new Set());
+
+  // New state for scroll-to-top button visibility
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   const industries = [
     { value: "all", label: "All Industries" },
@@ -95,6 +99,22 @@ const Companies = () => {
     fetchCompanies();
   }, []);
 
+  // Effect for scroll-to-top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) { // Show button after scrolling down 300px
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll); // Add scroll event listener
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Clean up the event listener
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
+
   const filteredCompanies = companies.filter((company) => {
     const lowerSearch = searchTerm.toLowerCase();
     
@@ -139,6 +159,14 @@ const Companies = () => {
       newFollowed.add(companyId);
     }
     setFollowedCompanies(newFollowed);
+  };
+
+  // Function to scroll to the top of the page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scroll animation
+    });
   };
 
   return (
@@ -477,6 +505,20 @@ const Companies = () => {
           </Button>
         </div>
       </div>
+
+      {/* Scroll-to-Top Button */}
+      {showScrollToTop && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
+          style={{ width: '56px', height: '56px' }} // Explicit size for the circle
+        >
+          <ArrowUp className="h-6 w-6" />
+          <span className="sr-only">Scroll to top</span>
+        </Button>
+      )}
     </div>
   );
 };
