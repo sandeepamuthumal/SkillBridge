@@ -21,6 +21,8 @@ const HomePage = () => {
     });
   };
 
+ 
+
   // Effect hook to add and remove scroll event listener
   useEffect(() => {
     // Handler for the scroll event

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 const About = () => {
   // Dynamic content arrays defined inside the component
@@ -234,7 +235,7 @@ const About = () => {
                 size="lg"
                 className="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
-                Join Our Mission
+                 <Link to="/signup">Join Our Mission</Link>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
