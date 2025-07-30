@@ -116,5 +116,22 @@ export const seekerProfileAPI = {
                 data: [] // Return empty array as fallback
             };
         }
+    },
+
+    //get dashboard overview
+    getDashboardOverview: async() => {
+        try {
+            const response = await api.get('/jobseeker/dashboard/overview');
+            return {
+                success: true,
+                data: response.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred while fetching dashboard overview',
+                data: [] // Return empty array as fallback
+            };
+        }
     }
 };

@@ -606,3 +606,98 @@ export const getJobRecommendations = async(req, res, next) => {
         });
     }
 }
+
+export const getDashboardOverview = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId);
+        const jobSeeker = await JobSeeker.findOne({ userId });
+
+        // Get basic stats
+        const [totalApplications, applications, savedJobs] = await Promise.all([
+            Application.countDocuments({ jobSeekerId: jobSeeker._id }),
+            Application.find({ jobSeekerId: jobSeeker._id }).populate('jobPostId'),
+            user.savedJobs.length
+        ]);
+
+        const activeApplications = applications.filter(app =>
+            !['Rejected', 'Withdrawn', 'Offer Accepted', 'Offer Declined'].includes(app.status)
+        ).length;
+
+        const responseRate = totalApplications > 0 ? ((applications.filter(app => app.status !== 'Applied').length) / totalApplications) * 100 : 0;
+
+        // Calculate weekly growth (optional - can be added later)
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+        const weeklyApplications = await Application.countDocuments({
+            jobSeekerId: jobSeeker._id,
+            createdAt: { $gte: lastWeek }
+        });
+
+
+
+        // Get recent applications (last 5)
+        const docs = await Application
+            .find({ jobSeekerId: jobSeeker._id })
+            .populate({
+                path: 'jobPostId',
+                populate: [
+                    { path: 'employerId', select: 'companyName logoUrl' },
+                    { path: 'cityId', select: 'name' }
+                ]
+            })
+            .sort({ createdAt: -1 }) // Mongoose sort spec
+            .limit(5) // instead of slice
+            .lean(); // optional, return plain objects
+
+        const recentApplications = docs.map(app => ({
+            id: app._id,
+            jobTitle: app.jobPostId.title,
+            company: app.jobPostId.employerId.companyName,
+            logo: app.jobPostId.employerId.logoUrl,
+            appliedDate: formatRelativeTime(app.createdAt),
+            status: app.status,
+            location: app.jobPostId.cityId.name,
+            salary: `${app.jobPostId.salaryRange.currency} ${app.jobPostId.salaryRange.min.toLocaleString()} - ${app.jobPostId.salaryRange.max.toLocaleString()}`
+        }));
+
+        res.json({
+            user: {
+                name: user.firstName,
+                email: user.email,
+                profileCompletion: jobSeeker.profileCompleteness,
+                lastLogin: formatRelativeTime(user.lastLogin)
+            },
+            stats: {
+                totalApplications,
+                activeApplications,
+                savedJobs,
+                profileViews: jobSeeker.profileViews || 0, // Track this when employers view
+                responseRate: Math.round(responseRate * 10) / 10,
+                weeklyGrowth: {
+                    applications: weeklyApplications,
+                    profileViews: 0, // Calculate if tracking
+                    savedJobs: 0 // Calculate if needed
+                }
+            },
+            recentApplications
+        });
+
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+function formatRelativeTime(date) {
+    const now = new Date();
+    const diff = now - new Date(date);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return 'Today';
+    if (days === 1) return '1 day ago';
+    if (days < 7) return `${days} days ago`;
+    if (days < 14) return '1 week ago';
+    return `${Math.floor(days / 7)} weeks ago`;
+}
