@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react"; // Import useState and useEffect
 import {
   ArrowRight,
   Target,
@@ -13,6 +13,7 @@ import {
   Palette,
   Brain,
   Shield,
+  ArrowUp, // Import ArrowUp icon
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -183,12 +184,40 @@ const About = () => {
     },
   ];
 
+  // State for scroll-to-top button visibility
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+  // Effect for scroll-to-top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button after scrolling down 100px (adjust for sensitivity)
+      if (window.scrollY > 100) {
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll); // Add scroll event listener
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Clean up the event listener
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
+
+  // Function to scroll to the top of the page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scroll animation
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-     <div className="absolute inset-0 bg-black/60 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop')] bg-cover bg-center bg-blend-overlay"></div>
+        <div className="absolute inset-0 bg-black/60 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop')] bg-cover bg-center bg-blend-overlay"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
@@ -415,6 +444,20 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* Scroll-to-Top Button */}
+      {showScrollToTop && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={scrollToTop}
+         className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
+          style={{ width: '56px', height: '56px' }} // Explicit size for the circle
+        >
+          <ArrowUp className="h-6 w-6" />
+          <span className="sr-only">Scroll to top</span>
+        </Button>
+      )}
     </div>
   );
 };

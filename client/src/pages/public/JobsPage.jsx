@@ -10,7 +10,8 @@ import {
   Bookmark, // Added for job card details
   Building2, // Added for job card details
   Calendar, // Added for job card details
-} from "lucide-react";
+  ArrowUp, // Import ArrowUp icon for the scroll-to-top button
+} from "lucide-react"; //
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,11 +36,14 @@ const JobsPage = () => {
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [jobListings, setJobListings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1); // New: Current page number
-  const [jobsPerPage] = useState(6); // New: Number of jobs to load per page
-  const [hasMoreJobs, setHasMoreJobs] = useState(true); // New: To control visibility of "Load More" button
+  const [page, setPage] = useState(1);
+  const [jobsPerPage] = useState(6);
+  const [hasMoreJobs, setHasMoreJobs] = useState(true);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // New state for scroll-to-top button visibility
+  const [showScrollToTop, setShowScrollToTop] = useState(false); //
 
   const jobCategories = [
     { value: "all", label: "All Categories" },
@@ -55,13 +59,28 @@ const JobsPage = () => {
     { value: "Colombo", label: "Colombo" },
     { value: "Kandy", label: "Kandy" },
     { value: "Galle", label: "Galle" },
-    
   ];
 
   // Load initial jobs and saved jobs
   useEffect(() => {
-    loadJobPosts(page, jobsPerPage, true); // Pass true for initial load
-  }, [page, jobsPerPage, isAuthenticated]); // Re-run when page, jobsPerPage or auth status changes
+    loadJobPosts(page, jobsPerPage, true);
+  }, [page, jobsPerPage, isAuthenticated]);
+
+  // Effect for scroll-to-top button visibility
+  useEffect(() => { //
+    const handleScroll = () => { //
+      if (window.scrollY > 100) { // Show button after scrolling down 300px
+        setShowScrollToTop(true); //
+      } else {
+        setShowScrollToTop(false); //
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll); // Add scroll event listener
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Clean up the event listener
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
 
   /**
    * Loads job posts from the API and updates the job listings state.
@@ -198,6 +217,14 @@ const JobsPage = () => {
 
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1); // Increment page to load next set of jobs
+  };
+
+  // Function to scroll to the top of the page
+  const scrollToTop = () => { //
+    window.scrollTo({ //
+      top: 0, //
+      behavior: "smooth", // Smooth scroll animation
+    });
   };
 
   return (
@@ -353,7 +380,7 @@ const JobsPage = () => {
         )}
 
         {/* Load More Button */}
-        {hasMoreJobs && !loading && filteredJobs.length > 0 && ( // Show button if there might be more jobs and not currently loading, and some jobs are displayed
+        {hasMoreJobs && !loading && filteredJobs.length > 0 && (
           <div className="text-center mt-16">
             <Button
               variant="outline"
@@ -365,11 +392,25 @@ const JobsPage = () => {
             </Button>
           </div>
         )}
-         {/* Message when no jobs are found after filtering */}
-         {!loading && filteredJobs.length === 0 && (
+        {/* Message when no jobs are found after filtering */}
+        {!loading && filteredJobs.length === 0 && (
           <p className="text-center text-gray-500 py-8">No opportunities found matching your criteria.</p>
         )}
       </div>
+
+      {/* Scroll-to-Top Button */}
+      {showScrollToTop && ( //
+        <Button //
+          variant="default" //
+          size="icon" //
+          onClick={scrollToTop} //
+          className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
+          style={{ width: '56px', height: '56px' }} // Explicit size for the circle
+        >
+          <ArrowUp className="h-6 w-6" /> {/* */}
+          <span className="sr-only">Scroll to top</span> {/* */}
+        </Button>
+      )}
     </div>
   );
 };

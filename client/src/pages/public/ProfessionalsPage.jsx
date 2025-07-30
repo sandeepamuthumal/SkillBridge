@@ -5,6 +5,7 @@ import {
   Search,
   Filter,
   ArrowRight,
+  ArrowUp, // Import ArrowUp icon for the scroll-to-top button
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,10 @@ const ProfessionalsPage = () => {
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedExperience, setSelectedExperience] = useState("all");
 
+  // New state for scroll-to-top button visibility
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+
   const roles = [
     { value: "all", label: "All Roles" },
     { value: "developer", label: "Developer" },
@@ -75,6 +80,23 @@ const ProfessionalsPage = () => {
 
     fetchProfessionals();
   }, []);
+
+  // Effect for scroll-to-top button visibility - made more sensitive
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button after scrolling down 100px (adjust for sensitivity)
+      if (window.scrollY > 100) {
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll); // Add scroll event listener
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Clean up the event listener
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
 
   const filteredProfessionals = professionals.filter((p) => {
     const searchLower = searchTerm.toLowerCase();
@@ -112,6 +134,14 @@ const ProfessionalsPage = () => {
 
     return matchesSearch && matchesRole && matchesExperience;
   });
+
+  // Function to scroll to the top of the page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scroll animation
+    });
+  };
 
   if (loading)
     return (
@@ -241,6 +271,20 @@ const ProfessionalsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Scroll-to-Top Button */}
+      {showScrollToTop && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
+          style={{ width: '56px', height: '56px' }} // Explicit size for the circle
+        >
+          <ArrowUp className="h-6 w-6" />
+          <span className="sr-only">Scroll to top</span>
+        </Button>
+      )}
     </div>
   );
 };
