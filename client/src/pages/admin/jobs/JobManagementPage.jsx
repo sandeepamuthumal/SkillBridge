@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input'; // For pagination page input
-import { Loader2, Eye, Trash2, CheckCircle, XCircle } from 'lucide-react'; // Icons
+import { Input } from '@/components/ui/input';
+import { Loader2, Eye, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-const JobManagementPage = () => {
+const JobManagementPage = ({ defaultFilter = 'All' }) => {
   const { adminFetchAllJobPosts, adminApproveJobPost, adminDeleteJobPost } = useAuth();
   const [jobPosts, setJobPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState('All'); // Initial state for dropdown
+  const [activeFilterDisplay, setActiveFilterDisplay] = useState(defaultFilter); // This state drives the dropdown display
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [confirmAction, setConfirmAction] = useState('');
@@ -22,16 +22,16 @@ const JobManagementPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(10); // Items per page
+  const [limit, setLimit] = useState(10);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const loadJobPosts = async () => {
+  
+  const loadData = useCallback(async (page, pageSize, filterState) => { 
     setLoading(true);
     try {
-      // Get status from URL for API call, default to '' for 'All'
-      const statusParam = searchParams.get('status') || '';
-
-      const response = await adminFetchAllJobPosts(currentPage, limit, statusParam);
+      const statusParam = filterState === 'Pending Approval' ? 'pending' : (filterState === 'All' ? '' : filterState);
+      
+      const response = await adminFetchAllJobPosts(page, pageSize, statusParam);
 
       if (response.success) {
         setJobPosts(response.data.jobPosts);
@@ -44,40 +44,70 @@ const JobManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminFetchAllJobPosts]); 
 
+  
   useEffect(() => {
-    // Set local filterStatus state from URL searchParams on initial load or URL change
-    const statusFromUrl = searchParams.get('status');
-    if (statusFromUrl === 'pending') {
-      setFilterStatus('Pending Approval');
-    } else if (statusFromUrl) {
-      setFilterStatus(statusFromUrl);
-    } else {
-      setFilterStatus('All');
+    
+    let determinedFilterForFetch = defaultFilter; 
+
+    if (defaultFilter === 'All') { 
+        const statusFromUrl = searchParams.get('status');
+        if (statusFromUrl === 'pending') {
+            determinedFilterForFetch = 'Pending Approval';
+        } else if (statusFromUrl) {
+            determinedFilterForFetch = statusFromUrl;
+        }
+        
+    }
+    
+    if (determinedFilterForFetch !== activeFilterDisplay) {
+        setActiveFilterDisplay(determinedFilterForFetch);
     }
 
-    // Always load jobs when dependencies change
-    loadJobPosts();
-  }, [currentPage, limit, searchParams]);
+    
+    loadData(currentPage, limit, determinedFilterForFetch);
 
-  // Handler for filter dropdown change
+    
+    if (defaultFilter === 'All') {
+        const currentUrlStatus = searchParams.get('status');
+        const targetUrlStatus = determinedFilterForFetch === 'Pending Approval' ? 'pending' : (determinedFilterForFetch === 'All' ? '' : determinedFilterForFetch);
+        if (currentUrlStatus !== targetUrlStatus) {
+            const newParams = new URLSearchParams(searchParams);
+            if (targetUrlStatus === '') {
+                newParams.delete('status');
+            } else {
+                newParams.set('status', targetUrlStatus);
+            }
+            
+            if (newParams.toString() !== searchParams.toString()) {
+                setSearchParams(newParams, { replace: true });
+            }
+        }
+    }
+
+
+  }, [currentPage, limit, searchParams, defaultFilter, activeFilterDisplay, loadData]); 
+ 
+
+
   const handleFilterChange = (value) => {
-    setFilterStatus(value); // Update local state for dropdown display
-    setCurrentPage(1); // Reset to page 1 when filter changes
+    
+    if (defaultFilter === 'All') {
+        setCurrentPage(1); 
 
-    // Update URL search params to reflect the filter
-    setSearchParams(prev => {
-      const newParams = new URLSearchParams(prev);
-      if (value === 'All') {
-        newParams.delete('status');
-      } else if (value === 'Pending Approval') {
-        newParams.set('status', 'pending'); // Use a consistent 'pending' string for URL and backend
-      } else {
-        newParams.set('status', value);
-      }
-      return newParams;
-    });
+        setSearchParams(prev => {
+          const newParams = new URLSearchParams(prev);
+          if (value === 'All') {
+            newParams.delete('status');
+          } else if (value === 'Pending Approval') {
+            newParams.set('status', 'pending');
+          } else {
+            newParams.set('status', value);
+          }
+          return newParams;
+        });
+    }
   };
 
   const handleApproveClick = (job) => {
@@ -105,7 +135,8 @@ const JobManagementPage = () => {
       if (result.success) {
         toast.success(result.message);
         setIsConfirmModalOpen(false);
-        loadJobPosts(); // Reload jobs after action
+        
+        loadData(currentPage, limit, activeFilterDisplay); 
       } else {
         toast.error(result.error || `Failed to ${confirmAction} job post.`);
       }
@@ -124,29 +155,34 @@ const JobManagementPage = () => {
 
   const handleLimitChange = (value) => {
     setLimit(Number(value));
-    setCurrentPage(1); // Reset to first page on limit change
+    setCurrentPage(1); 
   };
+
+  const showFilterDropdown = defaultFilter === 'All'; 
 
   return (
     <div className="space-y-6">
       <Card className="shadow-sm border border-border">
         <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle className="text-2xl font-bold text-text">Job Post Management</CardTitle>
-          {/* Use handleFilterChange for onValueChange */}
-          <Select onValueChange={handleFilterChange} value={filterStatus}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Filter by Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All Statuses</SelectItem>
-              <SelectItem value="Draft">Draft</SelectItem>
-              <SelectItem value="Published">Published</SelectItem>
-              <SelectItem value="Pending Approval">Pending Approval</SelectItem>
-              <SelectItem value="Paused">Paused</SelectItem>
-              <SelectItem value="Closed">Closed</SelectItem>
-              <SelectItem value="Expired">Expired</SelectItem>
-            </SelectContent>
-          </Select>
+          <CardTitle className="text-2xl font-bold text-text">
+            {defaultFilter === 'Pending Approval' ? 'Pending Job Approvals' : 'Job Post Management'}
+          </CardTitle>
+          {showFilterDropdown && (
+            <Select onValueChange={handleFilterChange} value={activeFilterDisplay}> {/* Use activeFilterDisplay for value */}
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filter by Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All Statuses</SelectItem>
+                <SelectItem value="Draft">Draft</SelectItem>
+                <SelectItem value="Published">Published</SelectItem>
+                <SelectItem value="Pending Approval">Pending Approval</SelectItem>
+                <SelectItem value="Paused">Paused</SelectItem>
+                <SelectItem value="Closed">Closed</SelectItem>
+                <SelectItem value="Expired">Expired</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -178,13 +214,14 @@ const JobManagementPage = () => {
                     ) : (
                       jobPosts.map((job) => (
                         <TableRow key={job._id}>
-                          <TableCell className="font-medium">{job.employerName}</TableCell> {/* Populated employer name */}
+                          <TableCell className="font-medium">{job.employerName}</TableCell>
                           <TableCell>{job.title}</TableCell>
                           <TableCell>{new Date(job.createdAt).toLocaleDateString()}</TableCell>
                           <TableCell>
                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                               job.status === 'Published' && job.isApproved ? 'bg-green-100 text-green-700' :
-                              job.status === 'Draft' && !job.isApproved ? 'bg-yellow-100 text-yellow-700' :
+                              job.status === 'Paused' && !job.isApproved ? 'bg-yellow-100 text-yellow-700' :
+                              job.status === 'Draft' ? 'bg-gray-100 text-gray-700' :
                               job.status === 'Paused' ? 'bg-blue-100 text-blue-700' :
                               'bg-gray-100 text-gray-700'
                             }`}>
@@ -199,8 +236,7 @@ const JobManagementPage = () => {
                             </span>
                           </TableCell>
                           <TableCell className="text-right flex justify-end space-x-2">
-                            {/* Modified condition for the Approve button */}
-                            {!job.isApproved && ( // Show Approve button ONLY if it's NOT already approved
+                            {!job.isApproved && (
                               <Button
                                 variant="outline"
                                 size="sm"
