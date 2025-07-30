@@ -3,14 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, CheckCircle, ArrowLeft, XCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { useAuth } from '@/context/AuthContext'; 
+import { useAuth } from '@/context/AuthContext';
 
 const AdminJobPostDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { adminFetchJobPostById, adminApproveJobPost } = useAuth(); 
+  const { adminFetchJobPostById, adminApproveJobPost } = useAuth();
   const [jobPost, setJobPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [approving, setApproving] = useState(false);
@@ -124,10 +124,14 @@ const AdminJobPostDetailsPage = () => {
         <CardHeader className="pb-4">
           <CardTitle className="text-3xl font-bold">{jobPost.title}</CardTitle>
           <CardDescription className="flex items-center space-x-2 text-lg text-gray-600">
-            <span>by {jobPost.employerName}</span> 
+            <span>by {jobPost.employerName}</span>
             <Badge
               className={`ml-2 ${
-                jobPost.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                
+                jobPost.status === 'Paused' && !jobPost.isApproved ? 'bg-yellow-100 text-yellow-700' :
+                jobPost.isApproved ? 'bg-green-100 text-green-700' : 
+                'bg-red-100 text-red-700' 
+                
               }`}
             >
               {jobPost.isApproved ? 'Approved' : 'Pending Approval'}
@@ -182,9 +186,9 @@ const AdminJobPostDetailsPage = () => {
                   <strong>Years of Experience:</strong> {jobPost.experienceYears.min} - {jobPost.experienceYears.max} years
                 </p>
               )}
-              <p className="text-gray-700"><strong>Category:</strong> {jobPost.categoryName}</p> 
-              <p className="text-gray-700"><strong>Type:</strong> {jobPost.typeName}</p> 
-              <p className="text-gray-700"><strong>Location:</strong> {jobPost.cityName}, {jobPost.cityCountry}</p> 
+              <p className="text-gray-700"><strong>Category:</strong> {jobPost.categoryName}</p>
+              <p className="text-gray-700"><strong>Type:</strong> {jobPost.typeName}</p>
+              <p className="text-gray-700"><strong>Location:</strong> {jobPost.cityName}, {jobPost.cityCountry}</p>
               <p className="text-gray-700"><strong>Work Arrangement:</strong> {jobPost.workArrangement}</p>
               <p className="text-gray-700"><strong>Posted On:</strong> {new Date(jobPost.createdAt).toLocaleDateString()}</p>
               <p className="text-gray-700"><strong>Application Deadline:</strong> {new Date(jobPost.deadline).toLocaleDateString()}</p>
