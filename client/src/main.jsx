@@ -41,6 +41,7 @@ import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
 import Settings from "./pages/seeker/settings/settings";
 
 // Employer Pages
+import PostNewJob from "./pages/employer/dashboard/postNewJob.jsx";
 
 // Admin Pages
 import UserManagementPage from "./pages/admin/users/UserManagementPage.jsx";
@@ -218,6 +219,10 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: <EmployerDashboard />,
       },
+      {
+        path: "jobs/create",
+        element: <PostNewJob />,
+      }
     ],
   },
   
@@ -240,15 +245,19 @@ const router = createBrowserRouter([
         path: "users",
         element: <UserManagementPage />,
       },
-      { // NEW JOB MANAGEMENT ROUTES
+      { 
         path: "jobs",
         children: [
           {
-            index: true, // This will be /admin/jobs
+            index: true, 
             element: <JobManagementPage />,
           },
           {
-            path: ":id", // This will be /admin/jobs/:id
+            path: "pending",
+            element: <JobManagementPage defaultFilter="pending" />,
+          },
+          {
+            path: ":id", 
             element: <AdminJobPostDetailsPage />,
           },
         ],

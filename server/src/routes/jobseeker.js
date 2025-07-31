@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { auth, authorize } from "../middlewares/auth.js";
 import { createMulterUpload } from "../utils/multerConfig.js";
-import { deleteApplication, getAllPublicJobSeekers, seekerApplications, submitJobApplication } from "../controllers/JobSeekerController.js";
+import { deleteApplication, getAllPublicJobSeekers, getDashboardOverview, getJobRecommendations, seekerApplications, submitJobApplication } from "../controllers/JobSeekerController.js";
 
 
 // Import JobSeekerController methods
@@ -56,14 +56,9 @@ jobseekerRouter.post("/apply/job", auth, authorize('Job Seeker'), applicationUpl
 jobseekerRouter.get("/job/applications", auth, authorize('Job Seeker'), seekerApplications);
 jobseekerRouter.delete("/job/applications/:id", auth, authorize('Job Seeker'), deleteApplication);
 
-//Job seeker applications
-jobseekerRouter.post("/apply/job", auth, authorize('Job Seeker'), applicationUploader.fields([
-    { name: 'cv', maxCount: 1 },
-    { name: 'coverLetter', maxCount: 1 }
-]), submitJobApplication);
-
-jobseekerRouter.get("/job/applications", auth, authorize('Job Seeker'), seekerApplications);
-jobseekerRouter.delete("/job/applications/:id", auth, authorize('Job Seeker'), deleteApplication);
+//Job seeker jobs
+jobseekerRouter.get("/jobs/recommended", auth, authorize('Job Seeker'), getJobRecommendations);
+jobseekerRouter.get("/dashboard/overview", auth, authorize('Job Seeker'), getDashboardOverview);
 
 // GET job seeker profile by userId (most general, so it goes last)
 jobseekerRouter.get("/:seekerId", getJobSeekerById); // This is now in the correct position

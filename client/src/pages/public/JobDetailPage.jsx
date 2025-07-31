@@ -20,6 +20,7 @@ import {
     Share2,
     Flag,
     ArrowLeft,
+    ArrowUp, // Import ArrowUp icon
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
@@ -36,6 +37,7 @@ const JobDetailPage = () => {
     const navigate = useNavigate();
     const serverUrl = import.meta.env.VITE_SERVER_URL;
     const [showApplicationModal, setShowApplicationModal] = useState(false);
+    const [showScrollToTop, setShowScrollToTop] = useState(false); // New state for scroll to top button
 
     useEffect(() => {
         if (jobId) {
@@ -45,6 +47,22 @@ const JobDetailPage = () => {
             const savedJobs = JSON.parse(localStorage.getItem("savedJobs")) || [];
             setIsSaved(savedJobs.some((savedJob) => savedJob._id === jobId));
         }
+
+        // Add scroll event listener for the "bottom to up" button
+        const handleScroll = () => {
+            if (window.scrollY > 100) { // Show button after scrolling down 300px
+                setShowScrollToTop(true);
+            } else {
+                setShowScrollToTop(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        // Cleanup function
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, [jobId]);
 
     const fetchJobDetails = async () => {
@@ -167,6 +185,14 @@ const JobDetailPage = () => {
 
     const goBack = () => {
         window.history.back();
+    };
+
+    // Function to scroll to the top of the page
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth", // For a smooth scrolling effect
+        });
     };
 
     if (loading) {
@@ -333,10 +359,10 @@ const JobDetailPage = () => {
                                         </p>
                                         <p
                                             className={`text-sm ${daysLeft <= 3
-                                                    ? "text-red-600"
-                                                    : daysLeft <= 7
-                                                        ? "text-orange-600"
-                                                        : "text-blue-600"
+                                                ? "text-red-600"
+                                                : daysLeft <= 7
+                                                    ? "text-orange-600"
+                                                    : "text-blue-600"
                                                 }`}
                                         >
                                             {isExpired
@@ -368,10 +394,10 @@ const JobDetailPage = () => {
                                     onClick={handleApply}
                                     disabled={isExpired || isApplying}
                                     className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 ${isExpired
-                                            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                            : isApplying
-                                                ? "bg-blue-400 text-white cursor-wait"
-                                                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                        : isApplying
+                                            ? "bg-blue-400 text-white cursor-wait"
+                                            : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         }`}
                                 >
                                     {isApplying ? (
@@ -390,8 +416,8 @@ const JobDetailPage = () => {
                                     <button
                                         onClick={handleSave}
                                         className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${isSaved
-                                                ? "bg-blue-600 text-white shadow-lg"
-                                                : "bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-300 hover:text-blue-600"
+                                            ? "bg-blue-600 text-white shadow-lg"
+                                            : "bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-300 hover:text-blue-600"
                                             }`}
                                     >
                                         {isSaved ? (
@@ -599,95 +625,61 @@ const JobDetailPage = () => {
                                                 className="w-10 h-10 rounded-full"
                                             />
                                         ) : (
-                                            <span className="text-3xl">
+                                            <span className="text-2xl">
                                                 {job.employerId.companyName.charAt(0)}
                                             </span>
                                         )}
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg text-gray-900">
+                                        <p className="text-lg font-semibold text-gray-900">
                                             {job.employerId.companyName}
-                                        </h4>
-                                        <p className="text-gray-600">{job.employerId.industry}</p>
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            {job.employerId.companySize} employees
+                                        </p>
                                     </div>
                                 </div>
-
-                                {job.employerId.companyDescription && (
-                                    <p className="text-gray-700 mb-4 leading-relaxed">
-                                        {job.employerId.companyDescription}
-                                    </p>
-                                )}
-
-                                <div className="space-y-2 mb-4">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-600">Company Size</span>
-                                        <span className="font-medium">
-                                            {job.employerId.companySize}{" "}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-600">Founded</span>
-                                        <span className="font-medium">
-                                            {job.employerId.foundedYear}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <button className="w-full flex items-center justify-center space-x-2 text-blue-600 hover:text-blue-700 font-semibold border-2 border-blue-200 rounded-xl py-3 hover:bg-blue-50 transition-all duration-300">
-                                    <ExternalLink className="w-4 h-4" />
-                                    <span>Visit Company Website</span>
-                                </button>
-                            </div>
-
-                            {/* Job Tags */}
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                                <h3 className="text-xl font-bold text-gray-900 mb-4">Job Tags</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {job.tags.map((tag, index) => (
-                                        <span
-                                            key={index}
-                                            className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Contact Information */}
-                            {job.contactEmail && (
-                                <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
-                                    <h3 className="text-lg font-bold text-green-900 mb-2">
-                                        Questions?
-                                    </h3>
-                                    <p className="text-green-800 text-sm mb-3">
-                                        Have questions about this position? Feel free to reach out.
-                                    </p>
+                                <p className="text-gray-700 mb-4">
+                                    {job.employerId.companyDescription}
+                                </p>
+                                {job.employerId.website && (
                                     <a
-                                        href={`mailto:${job.contactEmail}`}
-                                        className="text-green-700 font-semibold hover:text-green-800 text-sm"
+                                        href={job.employerId.website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
                                     >
-                                        {job.contactEmail}
+                                        Visit Company Website
+                                        <ExternalLink className="w-4 h-4 ml-1" />
                                     </a>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                
             </div>
+
             {/* Application Modal */}
+            {showApplicationModal && (
                 <ApplicationModal
                     isOpen={showApplicationModal}
-                    onClose={() => {
-                        setShowApplicationModal(false);
-                    }}
-                    job={job}
+                    onClose={() => setShowApplicationModal(false)}
                     onSubmit={handleApplicationSubmit}
+                    jobId={jobId}
                 />
-        </>
+            )}
 
+            {/* Scroll to Top Button */}
+            {showScrollToTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
+                    title="Scroll to top"
+                >
+                    <ArrowUp className="w-6 h-6" />
+                </button>
+            )}
+        </>
     );
 };
 

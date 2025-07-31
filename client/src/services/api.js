@@ -36,15 +36,15 @@ api.interceptors.response.use(
 );
 
 
-export const getAllCompanies = async () => {
-  const response = await api.get('/employers'); 
-  return response.data.data; 
+export const getAllCompanies = async() => {
+    const response = await api.get('/employers');
+    return response.data;
 };
 
-export const fetchJobs = async (filters) => {
-  const query = new URLSearchParams(filters).toString();
-  const response = await axios.get(`/api/jobs?${query}`);
-  return response.data;
+export const fetchJobs = async(filters) => {
+    const query = new URLSearchParams(filters).toString();
+    const response = await axios.get(`/api/jobs?${query}`);
+    return response.data;
 };
 
 

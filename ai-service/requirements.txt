@@ -4,3 +4,6 @@ python-multipart
 python-docx
 PyPDF2
 python-dateutil
+sentence-transformers
+scikit-learn
+pydantic
