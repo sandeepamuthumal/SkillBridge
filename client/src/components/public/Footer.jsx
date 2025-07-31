@@ -1,100 +1,75 @@
 
-import {
-  Building2,
-  MapPin,
-  Phone,
-  Mail,
-} from "lucide-react";
-function Footer() {
+import React from 'react';
+import { Users, Briefcase, Home } from 'lucide-react';
+import logo2 from '../../assets/logo2.png';
+import { Link } from 'react-router-dom';
+
+
+const Footer = () => {
   return (
-    <footer className="bg-secondary-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-gray-900 text-white py-16">
+      <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-white" />
-              </div>
-              <span className="ml-2 text-xl font-bold">SkillBridge</span>
-            </div>
-            <p className="text-secondary-300 text-sm">
-              Connecting talent with opportunity. Find your dream job or hire
-              the perfect candidate.
+          {/* Brand */}
+          <div className="col-span-2">
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logo2} alt="SkillBridge Logo" className="h-20 w-auto" />
+            </Link>
+            <p className="text-gray-400 text-lg leading-relaxed mb-6 max-w-md">
+              The AI-powered platform connecting Sri Lankan undergraduates with innovative startups.
+              Built for emerging talent, designed for the future.
             </p>
             <div className="flex space-x-4">
-              <div className="flex items-center text-secondary-300 text-sm">
-                <MapPin className="w-4 h-4 mr-2" />
-                Colombo, Sri Lanka
+              <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
+                <span className="text-sm font-bold">f</span>
+              </div>
+              <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
+                <span className="text-sm font-bold">in</span>
+              </div>
+              <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
+                <span className="text-sm font-bold">@</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {["Find Jobs", "Post Jobs", "Companies", "Candidates"].map(
-                (link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-secondary-300 hover:text-white text-sm transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                )
-              )}
+            <h4 className="text-lg font-semibold mb-6">For Students</h4>
+            <ul className="space-y-3">
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Find Opportunities</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Upload Resume</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Career Resources</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Success Stories</a></li>
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
-            <ul className="space-y-2">
-              {[
-                "Help Center",
-                "Contact Us",
-                "Privacy Policy",
-                "Terms of Service",
-              ].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-secondary-300 hover:text-white text-sm transition-colors"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+            <h4 className="text-lg font-semibold mb-6">For Startups</h4>
+            <ul className="space-y-3">
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Post Jobs</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Find Talent</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Partnership</a></li>
             </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <div className="space-y-2">
-              <div className="flex items-center text-secondary-300 text-sm">
-                <Phone className="w-4 h-4 mr-2" />
-                +94 11 234 5678
-              </div>
-              <div className="flex items-center text-secondary-300 text-sm">
-                <Mail className="w-4 h-4 mr-2" />
-                hello@skillbridge.com
-              </div>
-            </div>
           </div>
         </div>
 
-        <div className="border-t border-secondary-800 mt-8 pt-8 text-center">
-          <p className="text-secondary-300 text-sm">
-            © 2025 SkillBridge. All rights reserved.
-          </p>
+        <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-gray-400 mb-4 md:mb-0">
+              © 2025 SkillBridge. Built with ❤️ for Sri Lankan undergraduates.
+            </div>
+            <div className="flex space-x-6">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;
