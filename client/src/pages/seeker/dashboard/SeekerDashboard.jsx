@@ -241,12 +241,11 @@ const SeekerDashboard = () => {
                   <p className="text-3xl font-bold text-gray-900">
                     {stats.profileViews}
                   </p>
-                  {/* <div className="flex items-center mt-1">
-                    <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-600 font-medium">
-                      +{stats.weeklyGrowth.profileViews} this week
-                    </span>
-                  </div> */}
+              
+                   <p className="text-sm text-green-600 font-medium">
+                    {/* Need a text without weekly count */}
+                    Total Profile Views
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                   <Eye className="w-6 h-6 text-green-600" />

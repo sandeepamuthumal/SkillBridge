@@ -67,6 +67,7 @@ const Companies = () => {
     const fetchCompanies = async () => {
       try {
         const rawData = await getAllCompanies();
+        console.log(rawData);
 
         // Map the raw data from the API to the structure the component expects
         const transformedData = rawData.map(company => ({
@@ -90,7 +91,7 @@ const Companies = () => {
         setCompanies(transformedData);
       } catch (error) {
         console.error("Error fetching companies:", error);
-        setError("Failed to fetch companies. Please try again later.");
+        setError("Failed to fetch companies. Please try again later." + error);
       } finally {
         setLoading(false);
       }

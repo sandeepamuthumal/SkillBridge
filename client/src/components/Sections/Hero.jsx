@@ -98,7 +98,7 @@ const Hero = () => {
             className="border-2 border-gray-300 text-white px-8 py-4 text-lg rounded-full hover:bg-gray-700 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 text-black"
           >
             <Briefcase className="h-5 w-5 " />
-            Post Jobs
+            <Link to="/employer/jobs/create">Post Jobs</Link>
           </Button>
         </div>
 

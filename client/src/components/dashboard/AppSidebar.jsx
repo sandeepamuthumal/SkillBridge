@@ -257,16 +257,16 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
 
   const getRoleDisplayName = (role) => {
     switch (role) {
-      case 'admin': return 'Administrator';
-      case 'employer': return 'Employer';
+      case 'Admin': return 'Administrator';
+      case 'Employer': return 'Employer';
       default: return 'Job Seeker';
     }
   };
 
   const getRoleBadgeColor = (role) => {
     switch (role) {
-      case 'admin': return 'bg-red-100 text-red-700 border-red-200';
-      case 'employer': return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'Admin': return 'bg-red-100 text-red-700 border-red-200';
+      case 'Employer': return 'bg-amber-100 text-amber-700 border-amber-200';
       default: return 'bg-blue-100 text-blue-700 border-blue-200';
     }
   };

@@ -41,6 +41,7 @@ import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
 import Settings from "./pages/seeker/settings/settings";
 
 // Employer Pages
+import PostNewJob from "./pages/employer/dashboard/postNewJob.jsx";
 
 // Admin Pages
 import UserManagementPage from "./pages/admin/users/UserManagementPage.jsx";
@@ -218,6 +219,10 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: <EmployerDashboard />,
       },
+      {
+        path: "jobs/create",
+        element: <PostNewJob />,
+      }
     ],
   },
   
