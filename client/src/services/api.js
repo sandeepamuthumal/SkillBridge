@@ -35,6 +35,21 @@ api.interceptors.response.use(
     }
 );
 
+export const getProfile = async() => {
+    const response = await api.get('/employer/profile');
+    return response.data;
+};
+
+export const uploadLogo = async() => {
+    const response = await api.post('/employer/profile/image');
+    return response.data;
+};
+
+export const updateProfile = async() => {
+    const response = await api.put('/employer/profile/');
+    return response.data;
+};
+
 
 export const getAllCompanies = async() => {
     const response = await api.get('/employers');
