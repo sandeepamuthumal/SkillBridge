@@ -36,7 +36,7 @@ const ApplicationForm = () => {
 
     requirements: z.array(
       z.string().min(1, "Requirement is required")
-      ).nonempty("At least one requirement is required"),
+    ).nonempty("At least one requirement is required"),
 
     preferredSkills: z.array(z.string()).optional(),
 
@@ -75,16 +75,18 @@ const ApplicationForm = () => {
     tags: z.array(z.string()).optional(),
   });
 
-  // Initialize form with react-hook-form 
-  const { control, form, handleSubmit, watch, setValue, formState: { errors, isValid, isDirty } } = useForm({
+  const form = useForm({
     resolver: zodResolver(PostJobSchema)
   });
+
+  const { control, handleSubmit, watch, setValue, formState: { errors, isValid, isDirty } } = form;
+
 
   const watchedValues = watch();
 
   const onSubmit = async (data) => {
     try {
-      await onSave?.(data);
+      // await onSave?.(data);
       toast.success('Post successfully submitted for admin review');
     } catch (error) {
       toast.error('Failed to submit post');
@@ -97,7 +99,7 @@ const ApplicationForm = () => {
       <Card>
         <CardContent className="pt-6">
           <Form {...form}>
-            
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               {/* Company Information */}
               <div className="flex items-center gap-2">
@@ -105,7 +107,7 @@ const ApplicationForm = () => {
                 <h4 className="text-lg font-semibold">Job Information</h4>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                {/* <FormField
+                <FormField
                   control={control}
                   name="title"
                   render={({ field }) => (
@@ -117,13 +119,13 @@ const ApplicationForm = () => {
                         <Input placeholder="Enter your company name"
                           maxLength={100} {...field} />
                       </FormControl>
-                      <FormDescription>
+                      {/* <FormDescription>
                         {watchedValues.title?.length || 0}/100 characters
-                      </FormDescription>
+                      </FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
-                /> */}
+                />
               </div>
             </form>
           </Form>
