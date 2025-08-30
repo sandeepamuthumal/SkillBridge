@@ -57,7 +57,7 @@ import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import JobDetail from "./pages/seeker/jobs/JobDetail";
 import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
-
+import AdminManagementPage from "./pages/admin/users/AdminManagementPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -239,6 +239,10 @@ const router = createBrowserRouter([
       {
         path: "users",
         element: <UserManagementPage />,
+      },
+      { 
+        path: "admins",
+        element: <AdminManagementPage />,
       },
       { 
         path: "jobs",

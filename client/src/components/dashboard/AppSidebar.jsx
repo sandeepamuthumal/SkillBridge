@@ -99,6 +99,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               items: [
                 { title: "All Users", url: "/admin/users", isActive: isPathActive("/admin/users", currentPath) },
                 { title: "Admins", url: "/admin/admins", isActive: isPathActive("/admin/admins", currentPath) },
+                
                 { title: "Job Seekers", url: "/admin/users/seekers", isActive: isPathActive("/admin/users/seekers", currentPath) },
                 { title: "Employers", url: "/admin/users/employers", isActive: isPathActive("/admin/users/employers", currentPath) },
               ],
