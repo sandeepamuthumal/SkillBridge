@@ -102,25 +102,25 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               ], currentPath),
               items: [
                 {
-      title: "All Users",
-      url: "/admin/users",
-      isActive: currentPath === "/admin/users", 
-    },
-    {
-      title: "Admins",
-      url: "/admin/admins",
-      isActive: currentPath === "/admin/admins", 
-    },
-    {
-      title: "Job Seekers",
-      url: "/admin/users/seekers",
-      isActive: currentPath === "/admin/users/seekers", 
-    },
-    {
-      title: "Employers",
-      url: "/admin/users/employers",
-      isActive: currentPath === "/admin/users/employers", 
-    },
+                  title: "All Users",
+                  url: "/admin/users",
+                  isActive: currentPath === "/admin/users", 
+                },
+                {
+                  title: "Admins",
+                  url: "/admin/admins",
+                  isActive: currentPath === "/admin/admins", 
+                },
+                {
+                  title: "Job Seekers",
+                  url: "/admin/users/seekers",
+                  isActive: currentPath === "/admin/users/seekers", 
+                },
+                {
+                  title: "Employers",
+                  url: "/admin/users/employers",
+                  isActive: currentPath === "/admin/users/employers", 
+                },
               ],
             },
             {
