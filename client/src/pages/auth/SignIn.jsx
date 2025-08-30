@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { AlertCircle } from "lucide-react";
@@ -10,14 +10,11 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import { useRouteHelper } from "@/hooks/useRouteHelper";
 
-
 const SignIn = () => {
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signin, error, clearError } = useAuth();
   const { navigateDashboard } = useRouteHelper();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   
   const [form, setForm] = useState({
@@ -26,7 +23,6 @@ const SignIn = () => {
     rememberMe: false,
   });
 
-  const from = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
