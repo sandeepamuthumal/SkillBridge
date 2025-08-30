@@ -48,6 +48,11 @@ import ProfileManagementPage from "./pages/employer/profile/ProfileManagementPag
 import UserManagementPage from "./pages/admin/users/UserManagementPage.jsx";
 import JobManagementPage from "./pages/admin/jobs/JobManagementPage.jsx";
 import AdminJobPostDetailsPage from "./pages/admin/jobs/AdminJobPostDetailsPage.jsx";
+import JobSeekerManagementPage from "./pages/admin/users/JobSeekerManagementPage.jsx";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import JobDetail from "./pages/seeker/jobs/JobDetail";
+import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
+import AdminManagementPage from "./pages/admin/users/AdminManagementPage.jsx";
 
 // Error Pages
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
@@ -55,10 +60,6 @@ import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
 
-// Admin Pages
-import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import JobDetail from "./pages/seeker/jobs/JobDetail";
-import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
 
 
 
@@ -249,6 +250,14 @@ const router = createBrowserRouter([
       {
         path: "users",
         element: <UserManagementPage />,
+      },
+      { 
+        path: "admins",
+        element: <AdminManagementPage />,
+      },
+      {
+        path: "users/seekers",
+        element: <JobSeekerManagementPage />,
       },
       { 
         path: "jobs",

@@ -19,4 +19,5 @@ export const authAPI = {
     getAllUsers: () => api.get('/admin/users'), // New endpoint to fetch all users
     updateUserStatus: (userId, data) => api.patch(`/admin/users/${userId}/status`, data), // New endpoint for status update
     adminResetUserPassword: (userId, data) => api.patch(`/admin/users/${userId}/reset-password`, data)
+    
 };

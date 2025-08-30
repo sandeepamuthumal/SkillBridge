@@ -95,12 +95,32 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               title: "User Management",
               url: "/admin/users",
               icon: Users,
-              isActive: isPathActive("/admin/users", currentPath),
+              isActive: isPathActive("/admin/users", currentPath) || hasActiveSubItem([
+                  { url: "/admin/users/seekers" },
+                  { url: "/admin/users/employers" },
+                  { url: "/admin/admins" },
+              ], currentPath),
               items: [
-                { title: "All Users", url: "/admin/users", isActive: isPathActive("/admin/users", currentPath) },
-                { title: "Admins", url: "/admin/admins", isActive: isPathActive("/admin/admins", currentPath) },
-                { title: "Job Seekers", url: "/admin/users/seekers", isActive: isPathActive("/admin/users/seekers", currentPath) },
-                { title: "Employers", url: "/admin/users/employers", isActive: isPathActive("/admin/users/employers", currentPath) },
+                {
+      title: "All Users",
+      url: "/admin/users",
+      isActive: currentPath === "/admin/users", 
+    },
+    {
+      title: "Admins",
+      url: "/admin/admins",
+      isActive: currentPath === "/admin/admins", 
+    },
+    {
+      title: "Job Seekers",
+      url: "/admin/users/seekers",
+      isActive: currentPath === "/admin/users/seekers", 
+    },
+    {
+      title: "Employers",
+      url: "/admin/users/employers",
+      isActive: currentPath === "/admin/users/employers", 
+    },
               ],
             },
             {
