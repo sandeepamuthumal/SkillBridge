@@ -46,6 +46,7 @@ export const updateUserStatus = async (req, res, next) => {
     }
 };
 
+// Admin management functions start from here
 
 export const adminResetPassword = async (req, res, next) => {
     try {
@@ -235,6 +236,83 @@ export const reactivateAdmin = async (req, res, next) => {
             success: true,
             message: 'Admin user reactivated successfully',
             data: adminToUpdate.toJSON()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Get all job seekers
+export const getJobSeekers = async (req, res, next) => {
+    try {
+        const jobSeekers = await User.find({ role: 'Job Seeker' })
+            .select('-password -emailVerificationToken -passwordResetToken -loginAttempts -lockUntil')
+            .lean();
+
+        res.status(200).json({
+            success: true,
+            message: 'Job seekers fetched successfully',
+            data: jobSeekers
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update job seeker status
+export const updateJobSeekerStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const jobSeekerToUpdate = await User.findById(id);
+
+        if (!jobSeekerToUpdate) {
+            throw new NotFoundError('Job seeker not found.');
+        }
+
+        if (jobSeekerToUpdate.status === status) {
+             throw new ValidationError(`Job seeker is already ${status}.`);
+        }
+        
+        jobSeekerToUpdate.status = status;
+        await jobSeekerToUpdate.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Job seeker status updated to '${status}' successfully`,
+            data: jobSeekerToUpdate.toJSON()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Admin reset job seeker password
+export const adminResetJobSeekerPassword = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { newPassword } = req.body;
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        const user = await User.findByIdAndUpdate(
+            id, {
+                password: hashedPassword,
+                passwordResetToken: undefined,
+                passwordResetExpires: undefined,
+                loginAttempts: 0,
+                lockUntil: undefined,
+                isEmailVerified: true,
+            }, {
+                new: true,
+                runValidators: true,
+                select: '-password -emailVerificationToken -passwordResetToken -loginAttempts -lockUntil'
+            }
+        );
+        if (!user) {
+            throw new NotFoundError('Job seeker not found');
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Job seeker password reset successfully.'
         });
     } catch (error) {
         next(error);

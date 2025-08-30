@@ -11,7 +11,10 @@ import {
     updateAdminEmail,
     updateAdminPassword,
     deactivateAdmin,
-    reactivateAdmin
+    reactivateAdmin,
+    getJobSeekers, 
+    updateJobSeekerStatus, 
+    adminResetJobSeekerPassword 
 } from '../controllers/AdminController.js';
 import {
     signUpJobSeeker,
@@ -83,5 +86,8 @@ adminRouter.patch('/users/admins/:id/password', validateDTO(updateAdminPasswordD
 adminRouter.patch('/users/admins/:id/deactivate', deactivateAdmin);
 adminRouter.patch('/users/admins/:id/reactivate', reactivateAdmin);
 adminRouter.post('/signup/admin', validateDTO(adminSignupDTO), signUpAdmin);
+adminRouter.get('/users/seekers', getJobSeekers); 
+adminRouter.patch('/users/seekers/:id/status', updateJobSeekerStatus); 
+adminRouter.patch('/users/seekers/:id/reset-password', adminResetJobSeekerPassword);
 
 export { authRouter, adminRouter };

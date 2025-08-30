@@ -422,6 +422,7 @@ export const AuthProvider = ({ children }) => {
             adminUpdateAdminPassword,
             adminDeactivateAdmin,
             adminReactivateAdmin,
+            
         }}>
             {children}
         </AuthContext.Provider>
