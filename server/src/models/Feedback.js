@@ -1,11 +1,6 @@
 import mongoose from 'mongoose';
 
 const feedbackSchema = new mongoose.Schema({
-    applicationId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Application',
-        required: true
-    },
     employerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Employer',
