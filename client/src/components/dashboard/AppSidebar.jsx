@@ -24,7 +24,8 @@ import {
   Plus,
   BookmarkIcon,
   ChevronRight,
-  MoreHorizontal
+  MoreHorizontal,
+  MessageSquare
 } from 'lucide-react';
 
 // Import shadcn/ui components
@@ -134,7 +135,6 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               items: [
                 { title: "All Jobs", url: "/admin/jobs", isActive: currentPath === "/admin/jobs" && !location.pathname.includes('/pending') },
                 { title: "Pending Approval", url: "/admin/jobs/pending", isActive: isPathActive("/admin/jobs/pending", currentPath) },
-                { title: "Job Categories", url: "/admin/jobs/categories", isActive: isPathActive("/admin/jobs/categories", currentPath) },
               ],
             },
             {
@@ -143,17 +143,9 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               icon: BarChart3,
               isActive: isPathActive("/admin/reports", currentPath),
               items: [
-                { title: "User Analytics", url: "/admin/reports/users", isActive: isPathActive("/admin/reports/users", currentPath) },
                 { title: "Job Analytics", url: "/admin/reports/jobs", isActive: isPathActive("/admin/reports/jobs", currentPath) },
-                { title: "Platform Stats", url: "/admin/reports/platform", isActive: isPathActive("/admin/reports/platform", currentPath) },
               ],
-            },
-            {
-              title: "Settings",
-              url: "/admin/settings",
-              icon: Settings,
-              isActive: isPathActive("/admin/settings", currentPath),
-            },
+            }
           ],
         };
 
@@ -174,8 +166,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               isActive: isPathActive("/employer/jobs", currentPath),
               items: [
                 { title: "Post New Job", url: "/employer/jobs/create", isActive: isPathActive("/employer/jobs/create", currentPath) },
-                { title: "My Job Posts", url: "/employer/jobs", isActive: currentPath === "/employer/jobs" },
-                { title: "Draft Jobs", url: "/employer/jobs/drafts", isActive: isPathActive("/employer/jobs/drafts", currentPath) },
+                { title: "My Job Posts", url: "/employer/jobs", isActive: currentPath === "/employer/jobs" }
               ],
             },
             {
@@ -185,7 +176,6 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               isActive: isPathActive("/employer/applications", currentPath),
               items: [
                 { title: "All Applications", url: "/employer/applications", isActive: currentPath === "/employer/applications" },
-                { title: "Shortlisted", url: "/employer/applications/shortlisted", isActive: isPathActive("/employer/applications/shortlisted", currentPath) },
                 { title: "Interviewed", url: "/employer/applications/interviewed", isActive: isPathActive("/employer/applications/interviewed", currentPath) },
               ],
             },
@@ -194,19 +184,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/employer/profile",
               icon: Building2,
               isActive: isPathActive("/employer/profile", currentPath),
-            },
-            {
-              title: "Analytics",
-              url: "/employer/analytics",
-              icon: BarChart3,
-              isActive: isPathActive("/employer/analytics", currentPath),
-            },
-            {
-              title: "Settings",
-              url: "/employer/settings",
-              icon: Settings,
-              isActive: isPathActive("/employer/settings", currentPath),
-            },
+            }
           ],
         };
 
@@ -246,15 +224,9 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
             {
               title: "Feedbacks",
               url: "/jobseeker/feedbacks",
-              icon: User,
+              icon: MessageSquare, 
               isActive: isPathActive("/jobseeker/feedbacks", currentPath),
-            },
-            {
-              title: "Settings",
-              url: "/jobseeker/settings",
-              icon: Settings,
-              isActive: isPathActive("/jobseeker/settings", currentPath),
-            },
+            }
           ],
         };
     }

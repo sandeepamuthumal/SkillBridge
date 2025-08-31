@@ -220,7 +220,9 @@ export const getAllPublicJobSeekers = async(req, res) => {
             })
             .populate("cityId");
 
-        res.json(seekers);
+        const filteredSeekers = seekers.filter(seeker => seeker.userId);
+
+        res.json(filteredSeekers);
     } catch (err) {
         console.error("Error getting public job seekers:", err);
         res.status(500).json({ message: "Server error" });

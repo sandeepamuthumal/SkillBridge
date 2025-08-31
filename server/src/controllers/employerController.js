@@ -1,8 +1,10 @@
 import Employer from "../models/Employer.js";
 import { NotFoundError } from "../errors/not-found-error.js";
 import { ValidationError } from "../errors/validation-error.js";
+import e from "express";
+import JobPost from "../models/JobPost.js";
 
-export const updateEmployerProfile = async (req, res, next) => {
+export const updateEmployerProfile = async(req, res, next) => {
     try {
         const {
             companyName,
@@ -34,10 +36,8 @@ export const updateEmployerProfile = async (req, res, next) => {
         if (twitter) updateData["socialLinks.twitter"] = twitter;
         if (linkedin) updateData["socialLinks.linkedin"] = linkedin;
 
-        const employer = await Employer.findOneAndUpdate(
-            { userId: req.user.id },
-            updateData,
-            { new: true, runValidators: true }
+        const employer = await Employer.findOneAndUpdate({ userId: req.user.id },
+            updateData, { new: true, runValidators: true }
         );
 
         if (!employer) {
@@ -100,12 +100,12 @@ export const getEmployerProfile = async(req, res, next) => {
             foundedYear: employer.foundedYear,
             companySize: employer.companySize,
             contactPersonName: employer.contactPersonName,
-            phone: employer.contactInfo?.phone,
-            address: employer.contactInfo?.address,
+            phone: employer.contactInfo ? employer.contactInfo.phone : null,
+            address: employer.contactInfo ? employer.contactInfo.address : null,
             logoUrl: employer.logoUrl,
-            linkedin: employer.socialLinks?.linkedin,
-            facebook: employer.socialLinks?.facebook,
-            twitter: employer.socialLinks?.twitter,
+            linkedin: employer.socialLinks ? employer.socialLinks.linkedin : null,
+            facebook: employer.socialLinks ? employer.socialLinks.facebook : null,
+            twitter: employer.socialLinks ? employer.socialLinks.twitter : null,
         };
 
         res.status(200).json({
@@ -166,10 +166,15 @@ export async function createEmployer(req, res) {
 
 export async function getAllEmployers(req, res) {
     try {
-        const employer = await Employer.find();
-        if (!employer.length) return res.status(404).json({ message: "No employers found." });
-        console.log(employer);
-        res.status(200).json(employer);
+        const employers = await Employer.find().populate({
+            path: 'userId',
+            select: 'firstName lastName email',
+            match: { status: 'active', isEmailVerified: true } // Only include active users
+        });
+
+        const activeEmployers = employers.filter(emp => emp.userId);
+
+        res.status(200).json(activeEmployers);
     } catch (error) {
         res.status(500).json({ message: "Error Occured When Getting All Employers" });
         console.error("Error occured in controller when getting All employers", error);
@@ -179,17 +184,29 @@ export async function getAllEmployers(req, res) {
 export async function getEmployerById(req, res) {
     try {
         const id = req.params.id;
-        const employer = await Employer.findById(id);
+        let employer = await Employer.findById(id).populate({
+            path: 'userId',
+            select: 'firstName  lastName email',
+        });
         if (!employer) {
             res.status(404).json({ message: "Invalid Employer ID.." });
         }
+
+        //get employer job posts stats
+        const allJobCount = await JobPost.countDocuments({ employerId: id });
+        const activeJobCount = await JobPost.countDocuments({ employerId: id, status: "Published", deadline: { $gte: new Date() } });
+        const hiredCount = await JobPost.countDocuments({ employerId: id, status: "Closed" });
+
+        employer = employer.toObject(); // Convert Mongoose document to plain object
+        employer.jobStats = {
+            allJobCount,
+            activeJobCount,
+            hiredCount
+        };
+
         res.status(200).json(employer);
     } catch (error) {
-        res.status(500).json({
-            message: "Error Occured When Get Specific Employer",
-            employer: id
-        });
-        console.error("Error occured in controller when Get Specific employer", id, error);
+        res.status(500).json({ message: "Error Occured When Getting Specific Employer", error: error.message });
     }
 }
 
@@ -210,3 +227,28 @@ export async function deleteEmployerById(req, res) {
     }
 }
 
+export async function getJobPostsByEmployer(req, res) {
+    try {
+        const id = req.params.id;
+        const filter = {
+            employerId: id,
+            status: "Published",
+            isApproved: true,
+            deadline: { $gte: new Date() },
+        };
+        const jobs = await JobPost.find(filter)
+            .populate("employerId", "companyName logoUrl")
+            .populate("categoryId", "name")
+            .populate("typeId", "name")
+            .populate("cityId", "name")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: jobs
+        });
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).json({ success: false, error: "Server error while fetching jobs", message: error.message });
+    }
+}

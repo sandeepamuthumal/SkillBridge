@@ -60,6 +60,7 @@ import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
 import { FeedbackPage } from "./pages/seeker/feedbacks/feedbackPage";
+import CompanyDetailPage from "./pages/public/CompanyDetailPage";
 
 
 
@@ -75,27 +76,31 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-        {
-          path: "about",
-          element: <AboutPage />,
-        },
-        {
-          path: "companies",
-          element: <Companies />,
-        },
-        {
-          path: "jobs",
-          element: <JobsPage />,
-        },
+      {
+        path: "about",
+        element: <AboutPage />,
+      },
+      {
+        path: "companies",
+        element: <Companies />,
+      },
+      {
+        path: "jobs",
+        element: <JobsPage />,
+      },
       {
         path: "jobs/:jobId",
         element: <JobDetailPage />,
       },
-        {
-          path: "professionals",
-          element: <ProfessionalsPage />,
-        },
-        // ADD THE NEW ROUTE FOR THE PUBLIC SEEKER PROFILE HERE
+      {
+        path: "companies/:employerId",
+        element: <CompanyDetailPage />,
+      },
+      {
+        path: "professionals",
+        element: <ProfessionalsPage />,
+      },
+      // ADD THE NEW ROUTE FOR THE PUBLIC SEEKER PROFILE HERE
       {
         path: "seeker-profile/:seekerId",
         element: <SeekerProfilePage />,
@@ -103,7 +108,7 @@ const router = createBrowserRouter([
     ],
   },
 
-  
+
 
   // Authentication Routes (Public - only for non-authenticated users)
   {
@@ -144,7 +149,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-  
+
   // Legacy auth routes (for backward compatibility)
   {
     path: "/signin",
@@ -162,7 +167,7 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-  
+
   // Jobseeker Protected Routes
   {
     path: "/jobseeker",
@@ -201,7 +206,7 @@ const router = createBrowserRouter([
         path: "applications",
         element: <ApplicationsPage />,
       },
-       {
+      {
         path: "feedbacks",
         element: <FeedbackPage />,
       },
@@ -211,7 +216,7 @@ const router = createBrowserRouter([
       }
     ],
   },
-  
+
   // Employer Protected Routes
   {
     path: "/employer",
@@ -236,8 +241,8 @@ const router = createBrowserRouter([
       }
     ],
   },
-  
-  
+
+
   // Admin Protected Routes
   {
     path: "/admin",
@@ -256,7 +261,7 @@ const router = createBrowserRouter([
         path: "users",
         element: <UserManagementPage />,
       },
-      { 
+      {
         path: "admins",
         element: <AdminManagementPage />,
       },
@@ -264,11 +269,11 @@ const router = createBrowserRouter([
         path: "users/seekers",
         element: <JobSeekerManagementPage />,
       },
-      { 
+      {
         path: "jobs",
         children: [
           {
-            index: true, 
+            index: true,
             element: <JobManagementPage />,
           },
           {
@@ -276,14 +281,14 @@ const router = createBrowserRouter([
             element: <JobManagementPage defaultFilter="pending" />,
           },
           {
-            path: ":id", 
+            path: ":id",
             element: <AdminJobPostDetailsPage />,
           },
         ],
       }
     ],
   },
-  
+
   // Error Routes
   {
     path: "/unauthorized",
