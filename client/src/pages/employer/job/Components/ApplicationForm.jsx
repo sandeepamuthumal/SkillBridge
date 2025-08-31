@@ -18,7 +18,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { useAuth } from '@/context/AuthContext';
+import ArrayInputField from './ArrayInputField.jsx';
 
 
 const ApplicationForm = () => {
@@ -32,7 +32,9 @@ const ApplicationForm = () => {
       .min(1, "Job description is required")
       .max(5000, "Job description cannot exceed 5000 characters"),
 
-    responsibilities: z.array(z.string()).optional(),
+    responsibilities: z.array(
+      z.string().min(1, "Responsibility is required")
+    ).nonempty("At least one Responsibility is required"),
 
     requirements: z.array(
       z.string().min(1, "Requirement is required")
@@ -76,7 +78,13 @@ const ApplicationForm = () => {
   });
 
   const form = useForm({
-    resolver: zodResolver(PostJobSchema)
+    resolver: zodResolver(PostJobSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      responsibilities: [],
+      requirements: [],
+    }
   });
 
   const { control, handleSubmit, watch, setValue, formState: { errors, isValid, isDirty } } = form;
@@ -86,7 +94,7 @@ const ApplicationForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      // await onSave?.(data);
+      await onSave?.(data);
       toast.success('Post successfully submitted for admin review');
     } catch (error) {
       toast.error('Failed to submit post');
@@ -94,44 +102,134 @@ const ApplicationForm = () => {
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
           <Form {...form}>
-
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               {/* Company Information */}
               <div className="flex items-center gap-2">
                 <Briefcase className="h-5 w-5 text-blue-600" />
                 <h4 className="text-lg font-semibold">Job Information</h4>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <FormField
-                  control={control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Company Name <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your company name"
-                          maxLength={100} {...field} />
-                      </FormControl>
-                      {/* <FormDescription>
-                        {watchedValues.title?.length || 0}/100 characters
-                      </FormDescription> */}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <FormField
+                    control={control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Job title <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your job title"
+                            maxLength={100} {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          {watchedValues.title?.length || 0}/100 characters
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <FormField
+                    control={control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Job Description <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe the job role..."
+                            rows={4}
+                            maxLength={5000}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {watchedValues.description?.length || 0}/5000 characters
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <FormField
+                    control={control}
+                    name="responsibilities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Responsibilities <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <ArrayInputField
+                            values={field.value || []} // bind to react-hook-form
+                            onChange={field.onChange}  // updates RHF state
+                            placeholder="Add Responsibilities"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <FormField
+                    control={control}
+                    name="requirements"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Requirements <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <ArrayInputField
+                            values={field.value || []} 
+                            onChange={field.onChange}  
+                            placeholder="Add Requirements"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex justify-end pt-4 border-t">
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="gap-2"
+                    size="lg"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-4 w-4" />
+                        Post Job
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
-    </div>
+    </div >
   )
 }
 

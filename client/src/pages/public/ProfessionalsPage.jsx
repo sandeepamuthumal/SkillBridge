@@ -172,12 +172,14 @@ const ProfessionalsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
       {/* Hero */}
-      <div className="relative bg-gradient-to-r from-green-600 to-teal-600 text-white overflow-hidden">
+      <div className="relative bg-gradient-to-r from-blue-500 to-purple-500 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&h=400&fit=crop')] bg-cover bg-center bg-blend-overlay"
           aria-hidden="true"
-        />
+        >
+          <div className="absolute inset-0 bg-black opacity-60"></div>
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-8">
             <br />
@@ -242,13 +244,13 @@ const ProfessionalsPage = () => {
             {filteredProfessionals.length} Professional
             {filteredProfessionals.length !== 1 ? "s" : ""} Found
           </h2>
-          <Button
+          {/* <Button
             variant="outline"
             className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
           >
             <Filter className="h-4 w-4" />
             More Filters
-          </Button>
+          </Button> */}
         </div>
 
         {filteredProfessionals.length === 0 ? (

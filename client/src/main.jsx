@@ -48,17 +48,20 @@ import ProfileManagementPage from "./pages/employer/profile/ProfileManagementPag
 import UserManagementPage from "./pages/admin/users/UserManagementPage.jsx";
 import JobManagementPage from "./pages/admin/jobs/JobManagementPage.jsx";
 import AdminJobPostDetailsPage from "./pages/admin/jobs/AdminJobPostDetailsPage.jsx";
+import JobSeekerManagementPage from "./pages/admin/users/JobSeekerManagementPage.jsx";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import JobDetail from "./pages/seeker/jobs/JobDetail";
+import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
+import AdminManagementPage from "./pages/admin/users/AdminManagementPage.jsx";
 
 // Error Pages
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
+import { FeedbackPage } from "./pages/seeker/feedbacks/feedbackPage";
+import CompanyDetailPage from "./pages/public/CompanyDetailPage";
 
-// Admin Pages
-import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
-import JobDetail from "./pages/seeker/jobs/JobDetail";
-import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
 
 
 
@@ -73,27 +76,31 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-        {
-          path: "about",
-          element: <AboutPage />,
-        },
-        {
-          path: "companies",
-          element: <Companies />,
-        },
-        {
-          path: "jobs",
-          element: <JobsPage />,
-        },
+      {
+        path: "about",
+        element: <AboutPage />,
+      },
+      {
+        path: "companies",
+        element: <Companies />,
+      },
+      {
+        path: "jobs",
+        element: <JobsPage />,
+      },
       {
         path: "jobs/:jobId",
         element: <JobDetailPage />,
       },
-        {
-          path: "professionals",
-          element: <ProfessionalsPage />,
-        },
-        // ADD THE NEW ROUTE FOR THE PUBLIC SEEKER PROFILE HERE
+      {
+        path: "companies/:employerId",
+        element: <CompanyDetailPage />,
+      },
+      {
+        path: "professionals",
+        element: <ProfessionalsPage />,
+      },
+      // ADD THE NEW ROUTE FOR THE PUBLIC SEEKER PROFILE HERE
       {
         path: "seeker-profile/:seekerId",
         element: <SeekerProfilePage />,
@@ -101,7 +108,7 @@ const router = createBrowserRouter([
     ],
   },
 
-  
+
 
   // Authentication Routes (Public - only for non-authenticated users)
   {
@@ -142,7 +149,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-  
+
   // Legacy auth routes (for backward compatibility)
   {
     path: "/signin",
@@ -160,7 +167,7 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-  
+
   // Jobseeker Protected Routes
   {
     path: "/jobseeker",
@@ -200,12 +207,16 @@ const router = createBrowserRouter([
         element: <ApplicationsPage />,
       },
       {
+        path: "feedbacks",
+        element: <FeedbackPage />,
+      },
+      {
         path: "settings",
         element: <Settings />,
       }
     ],
   },
-  
+
   // Employer Protected Routes
   {
     path: "/employer",
@@ -230,8 +241,8 @@ const router = createBrowserRouter([
       }
     ],
   },
-  
-  
+
+
   // Admin Protected Routes
   {
     path: "/admin",
@@ -250,11 +261,19 @@ const router = createBrowserRouter([
         path: "users",
         element: <UserManagementPage />,
       },
-      { 
+      {
+        path: "admins",
+        element: <AdminManagementPage />,
+      },
+      {
+        path: "users/seekers",
+        element: <JobSeekerManagementPage />,
+      },
+      {
         path: "jobs",
         children: [
           {
-            index: true, 
+            index: true,
             element: <JobManagementPage />,
           },
           {
@@ -262,14 +281,14 @@ const router = createBrowserRouter([
             element: <JobManagementPage defaultFilter="pending" />,
           },
           {
-            path: ":id", 
+            path: ":id",
             element: <AdminJobPostDetailsPage />,
           },
         ],
       }
     ],
   },
-  
+
   // Error Routes
   {
     path: "/unauthorized",

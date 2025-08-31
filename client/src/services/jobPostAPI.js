@@ -114,4 +114,20 @@ export const jobPostAPI = {
             };
         }
     },
+
+    getJobPostsByEmployer: async(id) => {
+        try {
+            const response = await api.get('/employer/jobposts/' + id);
+            return {
+                success: true,
+                data: response.data.data
+            }
+        } catch (error) {
+            console.error('Error fetching job posts by employer:', error);
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    }
 };

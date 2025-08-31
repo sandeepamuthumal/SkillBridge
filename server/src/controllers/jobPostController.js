@@ -7,7 +7,6 @@ export const createJobPost = async(req, res, next) => {
         console.log(req.user);
         const userId = req.user._id;
         const employer = await Employer.findOne({ userId });
-        console.log(employer);
         const obj = req.body;
         obj.employerId = employer._id;
         const newJobPost = new JobPost(req.body);

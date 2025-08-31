@@ -79,7 +79,6 @@ const EmployerInfoSchema = z.object({
     logoUrl: z.string().optional(),    
 
     linkedin: z.string()
-        .regex(/^https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/,"Please enter a valid LinkedIn URL")
         .optional()
         .or(z.literal('')),
     
