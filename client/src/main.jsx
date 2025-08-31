@@ -59,6 +59,7 @@ import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
+import { FeedbackPage } from "./pages/seeker/feedbacks/feedbackPage";
 
 
 
@@ -199,6 +200,10 @@ const router = createBrowserRouter([
       {
         path: "applications",
         element: <ApplicationsPage />,
+      },
+       {
+        path: "feedbacks",
+        element: <FeedbackPage />,
       },
       {
         path: "settings",

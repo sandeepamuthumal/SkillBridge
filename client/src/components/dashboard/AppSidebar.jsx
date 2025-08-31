@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom'; // Add this import
 import logo2 from "@/assets/logo2.png";
-import { 
-  Menu, 
-  X, 
-  Home, 
-  Users, 
-  Briefcase, 
-  Settings, 
-  Bell, 
+import {
+  Menu,
+  X,
+  Home,
+  Users,
+  Briefcase,
+  Settings,
+  Bell,
   Search,
   User,
   LogOut,
@@ -56,7 +56,7 @@ import {
 
 function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 }) {
   const location = useLocation(); // Get current location
-  
+
   // Helper function to check if a path is active
   const isPathActive = (path, currentPath) => {
     if (path === currentPath) return true;
@@ -71,7 +71,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
 
   const getNavigationData = (role, userInfo) => {
     const currentPath = location.pathname;
-    
+
     const baseData = {
       user: {
         name: userInfo.firstName || "John Doe",
@@ -96,31 +96,31 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/admin/users",
               icon: Users,
               isActive: isPathActive("/admin/users", currentPath) || hasActiveSubItem([
-                  { url: "/admin/users/seekers" },
-                  { url: "/admin/users/employers" },
-                  { url: "/admin/admins" },
+                { url: "/admin/users/seekers" },
+                { url: "/admin/users/employers" },
+                { url: "/admin/admins" },
               ], currentPath),
               items: [
                 {
-      title: "All Users",
-      url: "/admin/users",
-      isActive: currentPath === "/admin/users", 
-    },
-    {
-      title: "Admins",
-      url: "/admin/admins",
-      isActive: currentPath === "/admin/admins", 
-    },
-    {
-      title: "Job Seekers",
-      url: "/admin/users/seekers",
-      isActive: currentPath === "/admin/users/seekers", 
-    },
-    {
-      title: "Employers",
-      url: "/admin/users/employers",
-      isActive: currentPath === "/admin/users/employers", 
-    },
+                  title: "All Users",
+                  url: "/admin/users",
+                  isActive: currentPath === "/admin/users",
+                },
+                {
+                  title: "Admins",
+                  url: "/admin/admins",
+                  isActive: currentPath === "/admin/admins",
+                },
+                {
+                  title: "Job Seekers",
+                  url: "/admin/users/seekers",
+                  isActive: currentPath === "/admin/users/seekers",
+                },
+                {
+                  title: "Employers",
+                  url: "/admin/users/employers",
+                  isActive: currentPath === "/admin/users/employers",
+                },
               ],
             },
             {
@@ -128,12 +128,12 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/admin/jobs",
               icon: Briefcase,
               isActive: isPathActive("/admin/jobs", currentPath) || hasActiveSubItem([
-                  { url: "/admin/jobs/pending" }, // These now logically map to filters on the main page
-                  { url: "/admin/jobs/categories" },
+                { url: "/admin/jobs/pending" }, // These now logically map to filters on the main page
+                { url: "/admin/jobs/categories" },
               ], currentPath),
               items: [
-                { title: "All Jobs", url: "/admin/jobs", isActive: currentPath === "/admin/jobs" && !location.pathname.includes('/pending') }, 
-                { title: "Pending Approval", url: "/admin/jobs/pending", isActive: isPathActive("/admin/jobs/pending", currentPath) }, 
+                { title: "All Jobs", url: "/admin/jobs", isActive: currentPath === "/admin/jobs" && !location.pathname.includes('/pending') },
+                { title: "Pending Approval", url: "/admin/jobs/pending", isActive: isPathActive("/admin/jobs/pending", currentPath) },
                 { title: "Job Categories", url: "/admin/jobs/categories", isActive: isPathActive("/admin/jobs/categories", currentPath) },
               ],
             },
@@ -228,7 +228,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               items: [
                 { title: "Browse All", url: "/jobseeker/jobs", isActive: currentPath === "/jobseeker/jobs" },
                 { title: "Recommended", url: "/jobseeker/jobs/recommended", isActive: isPathActive("/jobseeker/jobs/recommended", currentPath) },
-                { title: "Saved", url: "/jobseeker/jobs/saved", isActive: isPathActive("/jobseeker/jobs/saved", currentPath) }, 
+                { title: "Saved", url: "/jobseeker/jobs/saved", isActive: isPathActive("/jobseeker/jobs/saved", currentPath) },
               ],
             },
             {
@@ -242,6 +242,12 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/jobseeker/profile",
               icon: User,
               isActive: isPathActive("/jobseeker/profile", currentPath),
+            },
+            {
+              title: "Feedbacks",
+              url: "/jobseeker/feedbacks",
+              icon: User,
+              isActive: isPathActive("/jobseeker/feedbacks", currentPath),
             },
             {
               title: "Settings",
@@ -299,7 +305,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
             <SidebarMenuButton size="lg" asChild>
               <a href="/">
                 <img src={logo2} alt="SkillBridge Logo" className="h-14 w-auto" />
-                
+
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -324,8 +330,8 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                 >
                   <SidebarMenuItem>
                     <div className="flex items-center w-full">
-                      <SidebarMenuButton 
-                        asChild 
+                      <SidebarMenuButton
+                        asChild
                         tooltip={item.title}
                         isActive={isItemActive}
                         className="data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:border-r-2 data-[active=true]:border-blue-500 flex-1 hover:bg-gray-50"
@@ -335,7 +341,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                           <span>{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
-                      
+
                       {/* Collapse toggle button */}
                       {hasSubItems && (
                         <CollapsibleTrigger asChild>
@@ -359,7 +365,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                         <SidebarMenuSub>
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton 
+                              <SidebarMenuSubButton
                                 asChild
                                 isActive={subItem.isActive}
                                 className="data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:font-medium"
