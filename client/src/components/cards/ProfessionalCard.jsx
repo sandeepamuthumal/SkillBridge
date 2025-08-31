@@ -72,6 +72,9 @@ const ProfessionalCard = ({ professional: p }) => {
     setIsModalOpen(false);
   };
 
+  // Determine if achievements section should be rendered at all
+  const shouldShowAchievements = achievementsArray.length > 0;
+
   return (
     <>
       <Card
@@ -147,9 +150,10 @@ const ProfessionalCard = ({ professional: p }) => {
           )}
 
           {/* SKILLS & ACHIEVEMENTS */}
-          <div className="flex flex-col md:flex-row gap-6 mt-4">
+          {/* Changed flex-col md:flex-row to flex-wrap and adjusted flex-1 classes */}
+          <div className="flex flex-wrap gap-6 mt-4">
             {/* Skills */}
-            <div className="flex-1">
+            <div className={shouldShowAchievements ? "flex-1 min-w-[45%]" : "w-full"}>
               <h4 className="text-sm font-semibold text-gray-800 mb-2">
                 Skills:
               </h4>
@@ -195,12 +199,12 @@ const ProfessionalCard = ({ professional: p }) => {
               )}
             </div>
 
-            {/* Achievements */}
-            <div className="flex-1">
-              <h4 className="text-sm font-semibold text-gray-800 mb-2">
-                Achievements:
-              </h4>
-              {achievementsArray.length > 0 ? (
+            {/* Achievements - Only render if there are achievements */}
+            {shouldShowAchievements && (
+              <div className="flex-1 min-w-[45%]">
+                <h4 className="text-sm font-semibold text-gray-800 mb-2">
+                  Achievements:
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {achievementsArray.map((ach) => (
                     <Badge
@@ -213,12 +217,8 @@ const ProfessionalCard = ({ professional: p }) => {
                     </Badge>
                   ))}
                 </div>
-              ) : (
-                <p className="text-sm italic text-gray-400">
-                  No achievements listed.
-                </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

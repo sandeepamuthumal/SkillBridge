@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowDown, Upload, Users, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HowItWorks = () => {
   const steps = [
@@ -73,7 +74,7 @@ const HowItWorks = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Bridge Your Future?</h3>
             <p className="text-gray-600 mb-6">Join thousands of undergraduates who are already connecting with innovative startups.</p>
             <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
-              Get Started Now
+              <Link to="/signup">Get Started Now</Link>
             </button>
           </div>
         </div>

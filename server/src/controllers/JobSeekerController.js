@@ -220,7 +220,9 @@ export const getAllPublicJobSeekers = async(req, res) => {
             })
             .populate("cityId");
 
-        res.json(seekers);
+        const filteredSeekers = seekers.filter(seeker => seeker.userId);
+
+        res.json(filteredSeekers);
     } catch (err) {
         console.error("Error getting public job seekers:", err);
         res.status(500).json({ message: "Server error" });
@@ -530,4 +532,174 @@ export const deleteApplication = async(req, res, next) => {
     } catch (error) {
         next(error);
     }
+}
+
+export const getJobRecommendations = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const jobSeeker = await JobSeeker.findOne({ userId });
+        const query = {
+            status: 'Published',
+            isApproved: true,
+            deadline: { $gte: new Date() }
+        };
+
+        if (Array.isArray(jobSeeker.jobPreferences.categories) && jobSeeker.jobPreferences.categories.length > 0) {
+            query.categoryId = { $in: jobSeeker.jobPreferences.categories };
+        }
+
+        const jobPosts = await JobPost.find(query).sort({ createdAt: -1 });
+
+        // Format jobSeeker
+        const formattedSeeker = {
+            skills: jobSeeker.skills,
+            statement: jobSeeker.statement,
+            fieldOfStudy: jobSeeker.fieldOfStudy,
+            projects: jobSeeker.projects,
+            experiences: jobSeeker.experiences
+        };
+
+        const formattedJobs = jobPosts.map(job => ({
+            id: job._id,
+            title: job.title,
+            description: job.description,
+            requirements: job.requirements,
+            preferredSkills: job.preferredSkills
+        }));
+
+        const pythonServiceUrl = process.env.PYTHON_AI_SERVICE_URL || 'http://localhost:8000';
+
+        const response = await axios.post(`${pythonServiceUrl}/recommend-jobs`, {
+            jobSeeker: formattedSeeker,
+            jobs: formattedJobs
+        });
+
+        const recommendJobs = await Promise.all(
+            response.data.recommendedJobs.map(async(job) => {
+                const jobPost = await JobPost.findById(job.id)
+                    .populate('employerId', 'companyName logoUrl')
+                    .populate('categoryId', 'name')
+                    .populate('typeId', 'name')
+                    .populate('cityId', 'name');
+
+                if (!jobPost) return null;
+
+                const jobData = jobPost.toObject();
+                jobData.similarity = job.similarity;
+                jobData.matchLabel = job.matchLabel;
+                jobData.details = job.details;
+
+                return jobData;
+            })
+        );
+
+        const filteredJobs = recommendJobs.filter(Boolean);
+
+        res.status(200).json({
+            success: true,
+            data: filteredJobs
+        });
+    } catch (error) {
+        console.error('AI match error:', error);
+
+        res.status(500).json({
+            success: false,
+            message: error.response ? error.response.data || error.message : 'Server error'
+        });
+    }
+}
+
+export const getDashboardOverview = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId);
+        const jobSeeker = await JobSeeker.findOne({ userId });
+
+        // Get basic stats
+        const [totalApplications, applications, savedJobs] = await Promise.all([
+            Application.countDocuments({ jobSeekerId: jobSeeker._id }),
+            Application.find({ jobSeekerId: jobSeeker._id }).populate('jobPostId'),
+            user.savedJobs.length
+        ]);
+
+        const activeApplications = applications.filter(app =>
+            !['Rejected', 'Withdrawn', 'Offer Accepted', 'Offer Declined'].includes(app.status)
+        ).length;
+
+        const responseRate = totalApplications > 0 ? ((applications.filter(app => app.status !== 'Applied').length) / totalApplications) * 100 : 0;
+
+        // Calculate weekly growth (optional - can be added later)
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+        const weeklyApplications = await Application.countDocuments({
+            jobSeekerId: jobSeeker._id,
+            createdAt: { $gte: lastWeek }
+        });
+
+
+
+        // Get recent applications (last 5)
+        const docs = await Application
+            .find({ jobSeekerId: jobSeeker._id })
+            .populate({
+                path: 'jobPostId',
+                populate: [
+                    { path: 'employerId', select: 'companyName logoUrl' },
+                    { path: 'cityId', select: 'name' }
+                ]
+            })
+            .sort({ createdAt: -1 }) // Mongoose sort spec
+            .limit(5) // instead of slice
+            .lean(); // optional, return plain objects
+
+        const recentApplications = docs.map(app => ({
+            id: app._id,
+            jobTitle: app.jobPostId.title,
+            company: app.jobPostId.employerId.companyName,
+            logo: app.jobPostId.employerId.logoUrl,
+            appliedDate: formatRelativeTime(app.createdAt),
+            status: app.status,
+            location: app.jobPostId.cityId.name,
+            salary: `${app.jobPostId.salaryRange.currency} ${app.jobPostId.salaryRange.min.toLocaleString()} - ${app.jobPostId.salaryRange.max.toLocaleString()}`
+        }));
+
+        res.json({
+            user: {
+                name: user.firstName,
+                email: user.email,
+                profileCompletion: jobSeeker.profileCompleteness,
+                lastLogin: formatRelativeTime(user.lastLogin)
+            },
+            stats: {
+                totalApplications,
+                activeApplications,
+                savedJobs,
+                profileViews: jobSeeker.profileViews || 0, // Track this when employers view
+                responseRate: Math.round(responseRate * 10) / 10,
+                weeklyGrowth: {
+                    applications: weeklyApplications,
+                    profileViews: 0, // Calculate if tracking
+                    savedJobs: 0 // Calculate if needed
+                }
+            },
+            recentApplications
+        });
+
+    } catch (error) {
+        next(error);
+    }
+
+}
+
+function formatRelativeTime(date) {
+    const now = new Date();
+    const diff = now - new Date(date);
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return 'Today';
+    if (days === 1) return '1 day ago';
+    if (days < 7) return `${days} days ago`;
+    if (days < 14) return '1 week ago';
+    return `${Math.floor(days / 7)} weeks ago`;
 }

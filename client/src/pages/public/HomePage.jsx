@@ -21,12 +21,14 @@ const HomePage = () => {
     });
   };
 
+ 
+
   // Effect hook to add and remove scroll event listener
   useEffect(() => {
     // Handler for the scroll event
     const handleScroll = () => {
       // Show the button if the user has scrolled down more than 300 pixels
-      if (window.scrollY > 300) {
+      if (window.scrollY > 100) {
         setShowScrollToTop(true);
       } else {
         setShowScrollToTop(false);

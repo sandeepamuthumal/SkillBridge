@@ -25,7 +25,7 @@ const JobSeekerFields = ({ control, errors, primaryColor }) => {
               <Input
                 {...field}
                 id="firstName"
-                placeholder="John"
+                placeholder="Example"
                 className={`h-11 ${errors.firstName ? 'border-red-500' : ''}`}
               />
             )}
@@ -65,7 +65,7 @@ const JobSeekerFields = ({ control, errors, primaryColor }) => {
               {...field}
               id="email"
               type="email"
-              placeholder="john@uoc.lk"
+              placeholder="example@usj.lk"
               className={`h-11 ${errors.email ? 'border-red-500' : ''}`}
             />
           )}
@@ -117,7 +117,7 @@ const JobSeekerFields = ({ control, errors, primaryColor }) => {
             <Input
               {...field}
               id="fieldOfStudy"
-              placeholder="Computer Science"
+              placeholder="Software Engineering"
               className={`h-11 ${errors.fieldOfStudy ? 'border-red-500' : ''}`}
             />
           )}

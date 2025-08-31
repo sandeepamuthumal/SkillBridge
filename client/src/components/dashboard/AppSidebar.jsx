@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom'; // Add this import
 import logo2 from "@/assets/logo2.png";
-import { 
-  Menu, 
-  X, 
-  Home, 
-  Users, 
-  Briefcase, 
-  Settings, 
-  Bell, 
+import {
+  Menu,
+  X,
+  Home,
+  Users,
+  Briefcase,
+  Settings,
+  Bell,
   Search,
   User,
   LogOut,
@@ -24,7 +24,8 @@ import {
   Plus,
   BookmarkIcon,
   ChevronRight,
-  MoreHorizontal
+  MoreHorizontal,
+  MessageSquare
 } from 'lucide-react';
 
 // Import shadcn/ui components
@@ -56,7 +57,7 @@ import {
 
 function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 }) {
   const location = useLocation(); // Get current location
-  
+
   // Helper function to check if a path is active
   const isPathActive = (path, currentPath) => {
     if (path === currentPath) return true;
@@ -71,7 +72,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
 
   const getNavigationData = (role, userInfo) => {
     const currentPath = location.pathname;
-    
+
     const baseData = {
       user: {
         name: userInfo.firstName || "John Doe",
@@ -96,31 +97,31 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/admin/users",
               icon: Users,
               isActive: isPathActive("/admin/users", currentPath) || hasActiveSubItem([
-                  { url: "/admin/users/seekers" },
-                  { url: "/admin/users/employers" },
-                  { url: "/admin/admins" },
+                { url: "/admin/users/seekers" },
+                { url: "/admin/users/employers" },
+                { url: "/admin/admins" },
               ], currentPath),
               items: [
                 {
-                  title: "All Users",
-                  url: "/admin/users",
-                  isActive: currentPath === "/admin/users", 
-                },
-                {
-                  title: "Admins",
-                  url: "/admin/admins",
-                  isActive: currentPath === "/admin/admins", 
-                },
-                {
-                  title: "Job Seekers",
-                  url: "/admin/users/seekers",
-                  isActive: currentPath === "/admin/users/seekers", 
-                },
-                {
-                  title: "Employers",
-                  url: "/admin/users/employers",
-                  isActive: currentPath === "/admin/users/employers", 
-                },
+      title: "All Users",
+      url: "/admin/users",
+      isActive: currentPath === "/admin/users", 
+    },
+    {
+      title: "Admins",
+      url: "/admin/admins",
+      isActive: currentPath === "/admin/admins", 
+    },
+    {
+      title: "Job Seekers",
+      url: "/admin/users/seekers",
+      isActive: currentPath === "/admin/users/seekers", 
+    },
+    {
+      title: "Employers",
+      url: "/admin/users/employers",
+      isActive: currentPath === "/admin/users/employers", 
+    },
               ],
             },
             {
@@ -128,8 +129,8 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/admin/jobs",
               icon: Briefcase,
               isActive: isPathActive("/admin/jobs", currentPath) || hasActiveSubItem([
-                  { url: "/admin/jobs/pending" }, // These now logically map to filters on the main page
-                  { url: "/admin/jobs/categories" },
+                { url: "/admin/jobs/pending" }, // These now logically map to filters on the main page
+                { url: "/admin/jobs/categories" },
               ], currentPath),
               items: [
                 { title: "All Jobs", url: "/admin/jobs", isActive: currentPath === "/admin/jobs" && !location.pathname.includes('/pending') }, 
@@ -147,13 +148,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                 { title: "Job Analytics", url: "/admin/reports/jobs", isActive: isPathActive("/admin/reports/jobs", currentPath) },
                 // { title: "Platform Stats", url: "/admin/reports/platform", isActive: isPathActive("/admin/reports/platform", currentPath) },
               ],
-            },
-            {
-              title: "Settings",
-              url: "/admin/settings",
-              icon: Settings,
-              isActive: isPathActive("/admin/settings", currentPath),
-            },
+            }
           ],
         };
 
@@ -174,8 +169,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               isActive: isPathActive("/employer/jobs", currentPath),
               items: [
                 { title: "Post New Job", url: "/employer/jobs/create", isActive: isPathActive("/employer/jobs/create", currentPath) },
-                { title: "My Job Posts", url: "/employer/jobs", isActive: currentPath === "/employer/jobs" },
-                { title: "Draft Jobs", url: "/employer/jobs/drafts", isActive: isPathActive("/employer/jobs/drafts", currentPath) },
+                { title: "My Job Posts", url: "/employer/jobs", isActive: currentPath === "/employer/jobs" }
               ],
             },
             {
@@ -185,7 +179,6 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               isActive: isPathActive("/employer/applications", currentPath),
               items: [
                 { title: "All Applications", url: "/employer/applications", isActive: currentPath === "/employer/applications" },
-                { title: "Shortlisted", url: "/employer/applications/shortlisted", isActive: isPathActive("/employer/applications/shortlisted", currentPath) },
                 { title: "Interviewed", url: "/employer/applications/interviewed", isActive: isPathActive("/employer/applications/interviewed", currentPath) },
               ],
             },
@@ -194,19 +187,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               url: "/employer/profile",
               icon: Building2,
               isActive: isPathActive("/employer/profile", currentPath),
-            },
-            {
-              title: "Analytics",
-              url: "/employer/analytics",
-              icon: BarChart3,
-              isActive: isPathActive("/employer/analytics", currentPath),
-            },
-            {
-              title: "Settings",
-              url: "/employer/settings",
-              icon: Settings,
-              isActive: isPathActive("/employer/settings", currentPath),
-            },
+            }
           ],
         };
 
@@ -228,7 +209,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               items: [
                 { title: "Browse All", url: "/jobseeker/jobs", isActive: currentPath === "/jobseeker/jobs" },
                 { title: "Recommended", url: "/jobseeker/jobs/recommended", isActive: isPathActive("/jobseeker/jobs/recommended", currentPath) },
-                { title: "Saved", url: "/jobseeker/jobs/saved", isActive: isPathActive("/jobseeker/jobs/saved", currentPath) }, 
+                { title: "Saved", url: "/jobseeker/jobs/saved", isActive: isPathActive("/jobseeker/jobs/saved", currentPath) },
               ],
             },
             {
@@ -244,11 +225,11 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               isActive: isPathActive("/jobseeker/profile", currentPath),
             },
             {
-              title: "Settings",
-              url: "/jobseeker/settings",
-              icon: Settings,
-              isActive: isPathActive("/jobseeker/settings", currentPath),
-            },
+              title: "Feedbacks",
+              url: "/jobseeker/feedbacks",
+              icon: MessageSquare, 
+              isActive: isPathActive("/jobseeker/feedbacks", currentPath),
+            }
           ],
         };
     }
@@ -277,16 +258,16 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
 
   const getRoleDisplayName = (role) => {
     switch (role) {
-      case 'admin': return 'Administrator';
-      case 'employer': return 'Employer';
+      case 'Admin': return 'Administrator';
+      case 'Employer': return 'Employer';
       default: return 'Job Seeker';
     }
   };
 
   const getRoleBadgeColor = (role) => {
     switch (role) {
-      case 'admin': return 'bg-red-100 text-red-700 border-red-200';
-      case 'employer': return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'Admin': return 'bg-red-100 text-red-700 border-red-200';
+      case 'Employer': return 'bg-amber-100 text-amber-700 border-amber-200';
       default: return 'bg-blue-100 text-blue-700 border-blue-200';
     }
   };
@@ -299,7 +280,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
             <SidebarMenuButton size="lg" asChild>
               <a href="/">
                 <img src={logo2} alt="SkillBridge Logo" className="h-14 w-auto" />
-                
+
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -324,8 +305,8 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                 >
                   <SidebarMenuItem>
                     <div className="flex items-center w-full">
-                      <SidebarMenuButton 
-                        asChild 
+                      <SidebarMenuButton
+                        asChild
                         tooltip={item.title}
                         isActive={isItemActive}
                         className="data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:border-r-2 data-[active=true]:border-blue-500 flex-1 hover:bg-gray-50"
@@ -335,7 +316,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                           <span>{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
-                      
+
                       {/* Collapse toggle button */}
                       {hasSubItems && (
                         <CollapsibleTrigger asChild>
@@ -359,7 +340,7 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                         <SidebarMenuSub>
                           {item.items.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton 
+                              <SidebarMenuSubButton
                                 asChild
                                 isActive={subItem.isActive}
                                 className="data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:font-medium"

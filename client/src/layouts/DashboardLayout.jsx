@@ -6,41 +6,77 @@ import {
   User,
   LogOut,
   ChevronDown,
+  Menu,
+  RefreshCw,
 } from "lucide-react";
 // Import shadcn/ui components
 
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import AppSidebar from "@/components/dashboard/AppSidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import Footer from "@/components/dashboard/Footer";
 import { useAuth } from "@/context/AuthContext";
-
-
+import { Button } from "@/components/ui/button";
 
 function DashboardLayout() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
   const userRole = user?.role;
   const userInfo = user || {};
   const dropdownRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
 
   // Close dropdown when clicking outside
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-          setIsProfileMenuOpen(false);
-        }
-      };
-  
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
     setIsProfileMenuOpen(false);
-    navigate('/');
+    navigate("/");
+  };
+
+  const handleRefreshData = async () => {
+    setLoading(true);
+    location.reload();
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getGreeting = () => {
+    const hour = currentTime.getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const getUserDisplayName = () => {
+    return (
+      userInfo.firstName ||
+      userInfo.name ||
+      userInfo.email?.split("@")[0] ||
+      "User"
+    );
   };
 
   return (
@@ -48,28 +84,38 @@ function DashboardLayout() {
       <AppSidebar userRole={userRole} userInfo={userInfo} />
       <SidebarInset>
         {/* Header */}
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-surface px-4 justify-between">
-          <SidebarTrigger className="-ml-1 text-secondary-600 hover:text-primary-600" />
-
-          {/* Search Bar */}
-          <div className="flex-1 max-w-lg mx-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-9 pr-4 py-2 text-sm border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent bg-background"
-              />
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-surface bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 justify-between ">
+          <div className="flex items-center space-x-3">
+            {/* Mock SidebarTrigger - Replace with actual */}
+            <SidebarTrigger className="-ml-1 text-secondary-600 hover:text-primary-600" />
+            <div>
+              <h1 className="text-lg font-semibold">
+                {getGreeting()}, {getUserDisplayName()}! 👋{" "}
+              </h1>
+              <p className="text-blue-200 text-sm mt-1">
+                Bridge Your Skills to Your Dream Career
+              </p>
             </div>
           </div>
 
           {/* Right Side */}
           <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleRefreshData}
+              disabled={loading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
             {/* Notifications */}
-            <button className="relative p-2 text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors">
+            {/* <button className="relative p-2 text-secondary-600 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors">
               <Bell className="w-4 h-4" />
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-danger-500 rounded-full"></span>
-            </button>
+            </button> */}
 
             {/* Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
@@ -104,11 +150,11 @@ function DashboardLayout() {
 
         {/* Main Content */}
         <div className="flex flex-1 flex-col gap-4 p-4">
-            <Outlet />
+          <Outlet />
         </div>
 
         {/* Footer */}
-        <Footer/>
+        <Footer />
       </SidebarInset>
     </SidebarProvider>
   );

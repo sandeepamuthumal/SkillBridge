@@ -13,6 +13,10 @@ import professionalsRoutes from './routes/professionals.js';
 import jobRoutes from './routes/jobRoutes.js';
 import employerRoutes from './routes/employerRoutes.js';
 import adminJobRouter from './routes/adminJobs.js';
+import employerRouter from './routes/employer.js';
+import jobPostRouter from './routes/jobpost.js';
+import jobCategoryRouter from './routes/jobCategory.js';
+import jobTypeRouter from './routes/jobType.js';
 import adminReportRouter from './routes/adminReportRoutes.js';
 
 const __filename = fileURLToPath(
@@ -74,5 +78,10 @@ app.use("/api/jobseeker", jobseekerRouter);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/employers', employerRoutes);
 app.use(globalErrorHandler);
+
+app.use("/api/employer", employerRouter);
+app.use("/api/jobpost", jobPostRouter);
+app.use("/api/jobcategory", jobCategoryRouter);
+app.use("/api/jobtype", jobTypeRouter);
 
 export { app };

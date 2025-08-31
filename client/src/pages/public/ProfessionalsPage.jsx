@@ -5,6 +5,7 @@ import {
   Search,
   Filter,
   ArrowRight,
+  ArrowUp, // Import ArrowUp icon for the scroll-to-top button
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,10 @@ const ProfessionalsPage = () => {
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedExperience, setSelectedExperience] = useState("all");
 
+  // New state for scroll-to-top button visibility
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+
   const roles = [
     { value: "all", label: "All Roles" },
     { value: "developer", label: "Developer" },
@@ -75,6 +80,23 @@ const ProfessionalsPage = () => {
 
     fetchProfessionals();
   }, []);
+
+  // Effect for scroll-to-top button visibility - made more sensitive
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button after scrolling down 100px (adjust for sensitivity)
+      if (window.scrollY > 100) {
+        setShowScrollToTop(true);
+      } else {
+        setShowScrollToTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll); // Add scroll event listener
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Clean up the event listener
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
 
   const filteredProfessionals = professionals.filter((p) => {
     const searchLower = searchTerm.toLowerCase();
@@ -113,6 +135,14 @@ const ProfessionalsPage = () => {
     return matchesSearch && matchesRole && matchesExperience;
   });
 
+  // Function to scroll to the top of the page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Smooth scroll animation
+    });
+  };
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -142,12 +172,14 @@ const ProfessionalsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-teal-50">
       {/* Hero */}
-      <div className="relative bg-gradient-to-r from-green-600 to-teal-600 text-white overflow-hidden">
+      <div className="relative bg-gradient-to-r from-blue-500 to-purple-500 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&h=400&fit=crop')] bg-cover bg-center bg-blend-overlay"
           aria-hidden="true"
-        />
+        >
+          <div className="absolute inset-0 bg-black opacity-60"></div>
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-8">
             <br />
@@ -212,13 +244,13 @@ const ProfessionalsPage = () => {
             {filteredProfessionals.length} Professional
             {filteredProfessionals.length !== 1 ? "s" : ""} Found
           </h2>
-          <Button
+          {/* <Button
             variant="outline"
             className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
           >
             <Filter className="h-4 w-4" />
             More Filters
-          </Button>
+          </Button> */}
         </div>
 
         {filteredProfessionals.length === 0 ? (
@@ -241,6 +273,20 @@ const ProfessionalsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Scroll-to-Top Button */}
+      {showScrollToTop && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
+          style={{ width: '56px', height: '56px' }} // Explicit size for the circle
+        >
+          <ArrowUp className="h-6 w-6" />
+          <span className="sr-only">Scroll to top</span>
+        </Button>
+      )}
     </div>
   );
 };

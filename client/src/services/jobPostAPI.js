@@ -1,6 +1,9 @@
 import api from './api';
 
 export const jobPostAPI = {
+
+
+
     getAllJobs: async() => {
         try {
             const response = await api.get('/jobs');
@@ -73,6 +76,54 @@ export const jobPostAPI = {
             }
         } catch (error) {
             console.error('Error fetching saved jobs:', error);
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    },
+
+    getRecommendedJobs: async() => {
+        try {
+            const response = await api.get('/jobseeker/jobs/recommended');
+            return {
+                success: true,
+                data: response.data.data
+            }
+        } catch (error) {
+            console.error('Error fetching recommended jobs:', error);
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    },
+    createJobPost: async(jobPost) => {
+        try {
+            const response = await api.post('/jobpost', jobPost);
+            return {
+                success: true,
+                data: response.data.data,
+                message: response.data.message
+            }
+        } catch (error) {
+            console.error('Error creating job post:', error.response.data.message);
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    },
+
+    getJobPostsByEmployer: async(id) => {
+        try {
+            const response = await api.get('/employer/jobposts/' + id);
+            return {
+                success: true,
+                data: response.data.data
+            }
+        } catch (error) {
+            console.error('Error fetching job posts by employer:', error);
             return {
                 success: false,
                 error: error.response ? error.response.data.message : 'An unexpected error occurred'

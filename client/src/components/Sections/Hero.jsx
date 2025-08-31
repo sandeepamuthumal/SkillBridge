@@ -3,6 +3,7 @@ import { Users, Briefcase, ArrowDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import carousel1 from "../public/img/carousel-1.jpg";
+import { Element, animateScroll as scroll } from 'react-scroll';
 
 const backgroundImages = [
   "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1920&q=80",
@@ -27,6 +28,16 @@ const Hero = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+   
+    // Function to scroll to the bottom of the page
+    const scrollToBottom = () => {
+      window.scrollTo({ //
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+         // Smooth scroll animation
+      });
+    };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
@@ -87,7 +98,7 @@ const Hero = () => {
             className="border-2 border-gray-300 text-white px-8 py-4 text-lg rounded-full hover:bg-gray-700 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 text-black"
           >
             <Briefcase className="h-5 w-5 " />
-            Post Jobs
+            <Link to="/employer/jobs/create">Post Jobs</Link>
           </Button>
         </div>
 
@@ -111,15 +122,15 @@ const Hero = () => {
         </div>
       </div>
 
-      <Link
-        to="features"
-        smooth={true}
-        duration={750}
+      <a
+    
+        onClick={() => scrollToBottom()}
+      
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer"
         aria-label="Scroll down to features"
       >
         <ArrowDown className="h-6 w-6 text-gray-300" />
-      </Link>
+      </a>
     </section>
   );
 };

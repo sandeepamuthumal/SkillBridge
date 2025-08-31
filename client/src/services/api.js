@@ -35,16 +35,36 @@ api.interceptors.response.use(
     }
 );
 
-
-export const getAllCompanies = async () => {
-  const response = await api.get('/employers'); 
-  return response.data.data; 
+export const getProfile = async() => {
+    const response = await api.get('/employer/profile');
+    return response.data;
 };
 
-export const fetchJobs = async (filters) => {
-  const query = new URLSearchParams(filters).toString();
-  const response = await axios.get(`/api/jobs?${query}`);
-  return response.data;
+export const uploadLogo = async() => {
+    const response = await api.post('/employer/profile/image');
+    return response.data;
+};
+
+export const updateProfile = async() => {
+    const response = await api.put('/employer/profile/');
+    return response.data;
+};
+
+
+export const getAllCompanies = async() => {
+    const response = await api.get('/employers');
+    return response.data;
+};
+
+export const getCompanyById = async(id) => {
+    const response = await api.get(`/employer/${id}`);
+    return response.data;
+};
+
+export const fetchJobs = async(filters) => {
+    const query = new URLSearchParams(filters).toString();
+    const response = await axios.get(`/api/jobs?${query}`);
+    return response.data;
 };
 
 

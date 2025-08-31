@@ -141,14 +141,14 @@ const JobCard = ({ job, onClick, onApply }) => {
                 {/* Skills Tags */}
                 <div className="mb-5">
                     <div className="flex flex-wrap gap-2">
-                        {job.tags.slice(0, 4).map((tag, index) => (
+                        {job.preferredSkills.slice(0, 4).map((tag, index) => (
                             <span key={index} className="bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium border border-blue-100">
                                 {tag}
                             </span>
                         ))}
-                        {job.tags.length > 4 && (
+                        {job.preferredSkills.length > 4 && (
                             <span className="text-gray-500 text-xs bg-gray-50 px-2 py-1 rounded-lg">
-                                +{job.tags.length - 4} more
+                                +{job.preferredSkills.length - 4} more
                             </span>
                         )}
                     </div>
