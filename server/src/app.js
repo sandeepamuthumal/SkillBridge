@@ -13,7 +13,7 @@ import professionalsRoutes from './routes/professionals.js';
 import jobRoutes from './routes/jobRoutes.js';
 import employerRoutes from './routes/employerRoutes.js';
 import adminJobRouter from './routes/adminJobs.js';
-
+import adminReportRouter from './routes/adminReportRoutes.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -69,6 +69,7 @@ app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
 app.use("/api/admin", adminRouter);
 app.use("/api/admin/jobs", adminJobRouter);
+app.use("/api/admin/reports", adminReportRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/employers', employerRoutes);

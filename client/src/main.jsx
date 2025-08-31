@@ -52,6 +52,7 @@ import JobDetail from "./pages/seeker/jobs/JobDetail";
 import ApplicationsPage from "./pages/seeker/applications/ApplicationsPage";
 import AdminManagementPage from "./pages/admin/users/AdminManagementPage.jsx";
 import EmployerManagementPage from "./pages/admin/users/EmployerManagementPage.jsx";
+import JobAnalyticsPage from "./pages/admin/reports/JobAnalyticsPage.jsx";
 
 // Error Pages
 import Unauthorized from "./pages/errors/Unauthorized.jsx";
@@ -268,6 +269,15 @@ const router = createBrowserRouter([
           {
             path: ":id", 
             element: <AdminJobPostDetailsPage />,
+          },
+        ],
+      },
+      {
+        path: "reports",
+        children: [
+          {
+            path: "jobs",
+            element: <JobAnalyticsPage />,
           },
         ],
       }
