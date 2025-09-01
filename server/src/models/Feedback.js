@@ -11,6 +11,10 @@ const feedbackSchema = new mongoose.Schema({
         ref: 'JobSeeker',
         required: true
     },
+    jobTitle: {
+        type: String,
+        required: true,
+    },
     rating: {
         type: Number,
         min: 1,
@@ -22,8 +26,7 @@ const feedbackSchema = new mongoose.Schema({
         required: true,
         maxlength: 1000
     },
-    strengths: [String],
-    areasForImprovement: [String],
+    skills: [String],
     wouldRecommend: {
         type: Boolean,
         default: false

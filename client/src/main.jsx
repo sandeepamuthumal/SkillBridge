@@ -25,7 +25,6 @@ import ProfessionalsPage from "./pages/public/ProfessionalsPage.jsx";
 import JobDetailPage from "./pages/public/JobDetailPage";
 import SeekerProfilePage from "./pages/public/SeekerProfilePage.jsx"; // <-- Import the new public seeker profile page
 
-
 // Auth Pages
 import SignIn from "./pages/auth/SignIn.jsx";
 import SignUp from "./pages/auth/SignUp.jsx";
@@ -59,11 +58,10 @@ import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
-import { FeedbackPage } from "./pages/seeker/feedbacks/feedbackPage";
+import FeedbackPage from "./pages/seeker/feedbacks/feedbackPage";
 import CompanyDetailPage from "./pages/public/CompanyDetailPage";
-
-
-
+import EmployerApplications from "./pages/employer/applications/EmployerApplications";
+import CandidateFeedback from "./pages/employer/feedbacks/CandidateFeedback";
 
 const router = createBrowserRouter([
   // Public Routes with MainLayout
@@ -107,8 +105,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
-
 
   // Authentication Routes (Public - only for non-authenticated users)
   {
@@ -213,7 +209,7 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <Settings />,
-      }
+      },
     ],
   },
 
@@ -236,12 +232,19 @@ const router = createBrowserRouter([
         element: <PostNewJob />,
       },
       {
+        path: "applications",
+        element: <EmployerApplications />,
+      },
+      {
+        path: "candidate-feedbacks",
+        element: <CandidateFeedback />,
+      },
+      {
         path: "profile",
         element: <ProfileManagementPage />,
-      }
+      },
     ],
   },
-
 
   // Admin Protected Routes
   {
@@ -285,7 +288,7 @@ const router = createBrowserRouter([
             element: <AdminJobPostDetailsPage />,
           },
         ],
-      }
+      },
     ],
   },
 

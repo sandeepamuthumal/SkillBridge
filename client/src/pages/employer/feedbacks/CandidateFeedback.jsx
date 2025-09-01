@@ -12,10 +12,11 @@ import {
   Plus,
   X,
 } from "lucide-react";
-import FeedbackStats from "./components/FeedbackStats";
+import AddFeedbackModal from "./components/AddFeedbackModal";
 import FeedbackCard from "./components/FeedbackCard";
+import FeedbackStats from "../../seeker/feedbacks/components/FeedbackStats";
 import { feedbackAPI } from "@/services/feedbackAPI";
-
+import { toast } from "react-toastify";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   return (
@@ -75,9 +76,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-const FeedbackPage = () => {
+const CandidateFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -109,6 +111,26 @@ const FeedbackPage = () => {
     currentPage * feedbacksPerPage
   );
 
+  const handleAddFeedback = async (newFeedback) => {
+    try {
+      //submit to backend
+      console.log("Submitting feedback:", newFeedback);
+      const response = await feedbackAPI.createFeedback(newFeedback);
+
+      if (response.success) {
+        // Refresh feedback list
+        loadFeedbacks();
+        setIsModalOpen(false);
+        toast.success("Feedback added successfully");
+      } else {
+        console.error("Failed to add feedback:", response.error);
+      }
+      setCurrentPage(1); // Reset to first page
+    } catch (error) {
+      console.error("Error adding feedback:", error);
+    }
+  };
+
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -128,28 +150,34 @@ const FeedbackPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <MessageSquare className="text-blue-600" />
-              My Feedbacks
+              Candidate Feedbacks
             </h1>
             <p className="text-gray-600 mt-1">
-              Reviews and ratings from your previous employers
+              Add feedback for candidates you've worked with
             </p>
           </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 from-blue-600 to-purple-600 bg-gradient-to-r text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <Plus size={16} />
+              Add Feedback
+            </button>
+          </div>
         </div>
-
-        {/* Stats */}
-        <FeedbackStats feedbacks={feedbacks} />
 
         {/* Feedbacks List */}
         <div className="space-y-4">
           {currentFeedbacks.length > 0 ? (
             currentFeedbacks.map((feedback) => (
-              <FeedbackCard key={feedback._id} feedback={feedback} />
+              <FeedbackCard key={feedback.id} feedback={feedback} />
             ))
           ) : (
             <div className="text-center py-12">
@@ -158,8 +186,7 @@ const FeedbackPage = () => {
                 No feedbacks yet
               </h3>
               <p className="text-gray-600">
-                Complete projects and get feedback from employers to build your
-                reputation
+                Start by adding feedback for candidates you've worked with
               </p>
             </div>
           )}
@@ -173,9 +200,16 @@ const FeedbackPage = () => {
             onPageChange={handlePageChange}
           />
         )}
+
+        {/* Add Feedback Modal */}
+        <AddFeedbackModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleAddFeedback}
+        />
       </div>
     </div>
   );
 };
 
-export default FeedbackPage;
+export default CandidateFeedback;

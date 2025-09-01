@@ -56,10 +56,10 @@ const EmployerInfoSchema = z.object({
         .optional(),
 
     foundedYear: z.preprocess(
-    (val) => (val ? Number(val) : undefined),
-    z.number()
-        .min(1800, 'Founded year cannot be before 1800')
-        .max(new Date().getFullYear(), `Founded year cannot be after ${new Date().getFullYear()}`)),
+        (val) => (val ? Number(val) : undefined),
+        z.number()
+            .min(1800, 'Founded year cannot be before 1800')
+            .max(new Date().getFullYear(), `Founded year cannot be after ${new Date().getFullYear()}`)),
 
     companySize: z.enum(['startup', 'small', 'medium', 'large'])
         .default("startup"),
@@ -75,13 +75,13 @@ const EmployerInfoSchema = z.object({
     address: z.string()
         .regex(/^[a-zA-Z0-9\s,./-]+$/, "Address can only contain letters, numbers, spaces, and , . / -")
         .optional(),
-        
-    logoUrl: z.string().optional(),    
+
+    logoUrl: z.string().optional(),
 
     linkedin: z.string()
         .optional()
         .or(z.literal('')),
-    
+
     twitter: z.string()
         .regex(/^https?:\/\/(www\.)?twitter\.com\/[A-Za-z0-9_]+\/?$/, "Please enter a valid Twitter URL")
         .optional()
@@ -228,7 +228,7 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
 
     const calculateCompletion = () => {
         const requiredFields = ['companyName', 'industry', 'companySize'];
-        const optionalFields = ['companyDescription', 'companyWebsite', 'foundedYear', 
+        const optionalFields = ['companyDescription', 'companyWebsite', 'foundedYear',
             'contactPersonName', 'phone', 'address', 'facebook', 'linkedin', 'twitter'];
 
         const requiredCompleted = requiredFields.filter(field =>
@@ -243,9 +243,9 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
         let completedFields = requiredCompleted + optionalCompleted;
 
         if (watchedValues.verified) {
-            const extraPoints = 10; 
+            const extraPoints = 10;
             completedFields += extraPoints;
-            totalFields += extraPoints; 
+            totalFields += extraPoints;
         }
 
         return Math.round((completedFields / totalFields) * 100);
@@ -269,16 +269,16 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
             {/* Progress Bar */}
             <Card>
                 <CardContent className="pt-6">
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">Profile Completion</span>
-                    <span className="text-muted-foreground">{overallCompletion}%</span>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium">Profile Completion</span>
+                            <span className="text-muted-foreground">{overallCompletion}%</span>
+                        </div>
+                        <Progress value={overallCompletion} className="h-2" />
+                        <p className="text-xs text-muted-foreground">
+                            Complete your company profile to increase visibility to top candidates.
+                        </p>
                     </div>
-                    <Progress value={overallCompletion} className="h-2" />
-                    <p className="text-xs text-muted-foreground">
-                    Complete your company profile to increase visibility to top candidates.
-                    </p>
-                </div>
                 </CardContent>
             </Card>
             {/* Main Form */}
@@ -372,8 +372,8 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                                     Company Name <span className="text-red-500">*</span>
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Enter your company name" 
-                                                    maxLength={100} {...field} />
+                                                    <Input placeholder="Enter your company name"
+                                                        maxLength={100} {...field} />
                                                 </FormControl>
                                                 <FormDescription>
                                                     {watchedValues.companyName?.length || 0}/100 characters
@@ -392,7 +392,23 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                                     Industry <span className="text-red-500">*</span>
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="E.g., Information Technology, Healthcare, Finance" {...field} />
+                                                    <Select {...field} onValueChange={(value) => field.onChange(value)} value={field.value || ''}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select industry" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="technology">Technology</SelectItem>
+                                                            <SelectItem value="software">Software Development</SelectItem>
+                                                            <SelectItem value="finance">Finance & Banking</SelectItem>
+                                                            <SelectItem value="healthcare">Healthcare</SelectItem>
+                                                            <SelectItem value="education">Education</SelectItem>
+                                                            <SelectItem value="ecommerce">E-commerce</SelectItem>
+                                                            <SelectItem value="consulting">Consulting</SelectItem>
+                                                            <SelectItem value="other">Other</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+
+                                                    {/* <Input placeholder="E.g., Information Technology, Healthcare, Finance" {...field} /> */}
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -432,11 +448,11 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
-                                                    Company Website 
+                                                    Company Website
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input type="url" 
-                                                    placeholder="https://www.example.com" {...field} />
+                                                    <Input type="url"
+                                                        placeholder="https://www.example.com" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -449,11 +465,11 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
-                                                    Founded Year 
+                                                    Founded Year
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input type="number"
-                                                    placeholder="E.g., 2010" {...field} />
+                                                        placeholder="E.g., 2010" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -461,32 +477,32 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                     />
 
                                     <FormField
-                                    control={control}
-                                    name="companySize"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Company Size</FormLabel>
-                                        <FormControl>
-                                            <Select
-                                            {...field} 
-                                            onValueChange={(value) => field.onChange(value)} 
-                                            value={field.value || ''} 
-                                            >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select company size" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {companySizeOptions.map((option) => (
-                                                <SelectItem key={option} value={option}>
-                                                    {option}
-                                                </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
+                                        control={control}
+                                        name="companySize"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Company Size</FormLabel>
+                                                <FormControl>
+                                                    <Select
+                                                        {...field}
+                                                        onValueChange={(value) => field.onChange(value)}
+                                                        value={field.value || ''}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select company size" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {companySizeOptions.map((option) => (
+                                                                <SelectItem key={option} value={option}>
+                                                                    {option}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                             </div>
@@ -508,8 +524,8 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                                     Contact Person Name
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Enter full name of the contact person" 
-                                                    {...field} />
+                                                    <Input placeholder="Enter full name of the contact person"
+                                                        {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -522,7 +538,7 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>
-                                                    Phone 
+                                                    Phone
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="E.g., +94771234567" {...field} />
@@ -542,8 +558,8 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                                     Address
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Enter your company address, e.g., 123 Main St, Colombo" 
-                                                    {...field} />
+                                                    <Input placeholder="Enter your company address, e.g., 123 Main St, Colombo"
+                                                        {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -567,16 +583,16 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                             <FormItem>
                                                 <FormLabel>
                                                     <div className="flex items-center gap-2">
-                                                    <Linkedin className="h-5 w-5 text-blue-600" />
-                                                    <span className="text-sm font-medium">LinkedIn</span>
+                                                        <Linkedin className="h-5 w-5 text-blue-600" />
+                                                        <span className="text-sm font-medium">LinkedIn</span>
                                                     </div>
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="https://www.linkedin.com/in/username" 
-                                                    {...field} />
+                                                    <Input placeholder="https://www.linkedin.com/in/username"
+                                                        {...field} />
                                                 </FormControl>
                                                 <FormDescription>
-                                                  Add your LinkedIn profile URL
+                                                    Add your LinkedIn profile URL
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
@@ -590,16 +606,16 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                             <FormItem>
                                                 <FormLabel>
                                                     <div className="flex items-center gap-2">
-                                                    <Twitter className="h-5 w-5 text-blue-600" />
-                                                    <span className="text-sm font-medium">Twitter</span>
+                                                        <Twitter className="h-5 w-5 text-blue-600" />
+                                                        <span className="text-sm font-medium">Twitter</span>
                                                     </div>
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="https://twitter.com/usernam" 
-                                                    {...field} />
+                                                    <Input placeholder="https://twitter.com/usernam"
+                                                        {...field} />
                                                 </FormControl>
                                                 <FormDescription>
-                                                  Add your Twitter profile URL
+                                                    Add your Twitter profile URL
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
@@ -613,16 +629,16 @@ const EmployerInfoForm = ({ initialData = {}, onSave, isLoading = false }) => {
                                             <FormItem>
                                                 <FormLabel>
                                                     <div className="flex items-center gap-2">
-                                                    <Facebook className="h-5 w-5 text-blue-600" />
-                                                    <span className="text-sm font-medium">Facebook</span>
+                                                        <Facebook className="h-5 w-5 text-blue-600" />
+                                                        <span className="text-sm font-medium">Facebook</span>
                                                     </div>
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="https://www.facebook.com/username" 
-                                                    {...field} />
+                                                    <Input placeholder="https://www.facebook.com/username"
+                                                        {...field} />
                                                 </FormControl>
                                                 <FormDescription>
-                                                  Add your Facebook profile URL
+                                                    Add your Facebook profile URL
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
