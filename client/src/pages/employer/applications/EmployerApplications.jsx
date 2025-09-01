@@ -1,4 +1,3 @@
-import { applicationAPI } from "@/services/jobseeker/applicationAPI";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   flexRender,
@@ -32,8 +31,9 @@ import {
   Target,
   Star,
   ArrowLeft,
+  ArrowDownFromLine,
 } from "lucide-react";
-import ApplicationDetailView from "./ApplicationDetailView";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,16 +52,17 @@ import {
 import { SelectValue } from "@radix-ui/react-select";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import ApplicationDetailView from "@/pages/seeker/applications/ApplicationDetailView";
+import { applicationAPI } from "@/services/employer/applicationAPI";
 
-const ApplicationsPage = () => {
+const EmployerApplications = () => {
   const [applications, setApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const serverUrl = import.meta.env.VITE_SERVER_URL;
-  const navigate = useNavigate();
 
   // Load all job applications on component mount
   useEffect(() => {
@@ -71,7 +72,7 @@ const ApplicationsPage = () => {
   const loadApplications = async () => {
     setLoading(true);
     try {
-      const result = await applicationAPI.getSeekerJobApplications();
+      const result = await applicationAPI.getEmployerJobApplications();
       console.log("Application response : ", result);
       if (result.success) {
         setApplications(result.data);
@@ -132,99 +133,68 @@ const ApplicationsPage = () => {
     setSelectedApplication(application);
   };
 
-  const handleWithdrawApplication = (applicationId) => {
-    //add sweet alert confirmation
-    Swal.fire({
-      title: "Are you sure you want to withdraw this application?",
-      text: "You will not be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, withdraw it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        applicationAPI.deleteApplication(applicationId)
-          .then((response) => {
-            if (response.success) {
-              setApplications((prev) =>
-                prev.filter((app) => app._id !== applicationId)
-              );
-              Swal.fire(
-                "Withdrawn!",
-                "Application withdrawn successfully",
-                "success"
-              );
-            } else {
-              console.error("Error withdrawing application:", response.error);
-              toast.error("Failed to withdraw application. Please try again.");
-            }
-          })
-          .catch((error) => {
-            console.error("Error withdrawing application:", error);
-            toast.error("Failed to withdraw application. Please try again.");
-          });
-      }
-    });
-  };
-
   const handleDownloadResume = (resumeUrl) => {
     const url = serverUrl + resumeUrl;
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
-
-  const handleJobPostView = (jobPostId) => {
-      navigate(`/jobseeker/jobs/${jobPostId}`);
-  }
 
   const columns = useMemo(
     () => [
+      {
+        accessorKey: "jobSeekerId.userId.firstName",
+        header: "Job Seeker",
+        cell: ({ row }) => {
+          const seeker = row.original.jobSeekerId;
+          return (
+            <Link to={`/seeker-profile/${seeker.userId._id}`} target="_blank">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-lg flex items-center justify-center text-lg">
+                  {seeker.profilePictureUrl ? (
+                    <img
+                      src={serverUrl + seeker.profilePictureUrl}
+                      alt={seeker.userId.firstName}
+                      className="w-8 h-8"
+                    />
+                  ) : (
+                    seeker.userId.firstName.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    {seeker.userId.firstName + " " + seeker.userId.lastName}
+                  </div>
+
+                  <div className="text-sm text-gray-600">
+                    {seeker.statementHeader}
+                  </div>
+
+                  <Badge variant="secondary" className="mt-1">
+                    {row.original.jobSeekerId.university}
+                  </Badge>
+                </div>
+              </div>
+            </Link>
+          );
+        },
+      },
       {
         accessorKey: "jobPostId.title",
         header: "Job Title",
         cell: ({ row }) => {
           const job = row.original.jobPostId;
           return (
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-lg flex items-center justify-center text-lg">
-                {job.employerId.logoUrl ? (
-                  <img
-                    src={serverUrl + job.employerId.logoUrl}
-                    alt={job.employerId.companyName}
-                    className="w-8 h-8"
-                  />
-                ) : (
-                  job.employerId.companyName.charAt(0).toUpperCase()
-                )}
-              </div>
-              <div>
-                <div className="font-semibold text-gray-900">{job.title}</div>
-                <div className="text-sm text-gray-600">
-                  {job.employerId.companyName}
+            <Link to={`/jobs/${job._id}`} target="_blank">
+              <div className="flex items-center space-x-3">
+                <div>
+                  <div className="font-semibold text-gray-900">{job.title}</div>
+                  <div className="text-sm text-gray-600">
+                    #{job._id.slice(-6).toUpperCase()}
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         },
-      },
-      {
-        accessorKey: "jobPostId.cityId.name",
-        header: "Location",
-        cell: ({ row }) => (
-          <div className="flex items-center space-x-1 text-gray-600">
-            <MapPin className="w-4 h-4" />
-            <span>{row.original.jobPostId.cityId.name}</span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "jobPostId.typeId.name",
-        header: "Type",
-        cell: ({ row }) => (
-          <Badge variant="secondary">
-            {row.original.jobPostId.typeId.name}
-          </Badge>
-        ),
       },
       {
         accessorKey: "appliedDate",
@@ -254,39 +224,24 @@ const ApplicationsPage = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() => handleViewApplication(row.original._id)}
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleDownloadResume(row.original.resumeUrl)}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Resume
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleJobPostView(row.original.jobPostId._id)}>
-                <ExternalLink className="w-4 h-4 mr-2" />
-                View Job Post
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleWithdrawApplication(row.original._id)}
-                className="text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Withdraw Application
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              title="View Application"
+              onClick={() => handleViewApplication(row.original._id)}
+            >
+              <Eye className="w-4 h-4 text-warning-500" />
+            </Button>
+            <Button
+              variant="outline"
+              title="Download Resume"
+              size="sm"
+              onClick={() => handleDownloadResume(row.original.resumeUrl)}
+            >
+              <ArrowDownFromLine />
+            </Button>
+          </div>
         ),
       },
     ],
@@ -300,7 +255,10 @@ const ApplicationsPage = () => {
         app.jobPostId.title
           .toLowerCase()
           .includes(globalFilter.toLowerCase()) ||
-        app.jobPostId.employerId.companyName
+        app.jobSeekerId.userId.firstName
+          .toLowerCase()
+          .includes(globalFilter.toLowerCase()) ||
+        app.jobSeekerId.university
           .toLowerCase()
           .includes(globalFilter.toLowerCase()) ||
         app.status.toLowerCase().includes(globalFilter.toLowerCase());
@@ -355,10 +313,10 @@ const ApplicationsPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                My Applications
+                All Job Applications
               </h1>
               <p className="text-gray-600 mt-1">
-                Track your job applications and their progress
+                Manage and review applications for your job postings
               </p>
             </div>
             <div className="text-sm text-gray-500">
@@ -376,7 +334,7 @@ const ApplicationsPage = () => {
             <div className="flex-1 max-w-md relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
-                placeholder="Search jobs, companies, or status..."
+                placeholder="Search seekers, jobs, universities, or status..."
                 value={globalFilter}
                 onChange={(e) => setGlobalFilter(e.target.value)}
                 className="pl-10"
@@ -413,7 +371,7 @@ const ApplicationsPage = () => {
         {/* Data Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-[900px] w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
@@ -543,7 +501,7 @@ const ApplicationsPage = () => {
             <p className="text-gray-600">
               {globalFilter || statusFilter !== "All"
                 ? "Try adjusting your search or filter criteria"
-                : "You haven't applied to any jobs yet"}
+                : "You have no job applications yet"}
             </p>
           </div>
         )}
@@ -552,4 +510,4 @@ const ApplicationsPage = () => {
   );
 };
 
-export default ApplicationsPage;
+export default EmployerApplications;

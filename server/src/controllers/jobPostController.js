@@ -64,3 +64,22 @@ export const deleteJobPost = async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+export const deleteInactiveJobPosts = async(req, res) => {
+    try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const deleted = await JobPost.deleteMany({ isActive: false });
+        console.log('Deleted inactive job posts:', deleted);
+
+        res.status(200).json({
+            success: true,
+            message: 'Inactive job posts deleted successfully',
+        });
+
+    } catch (error) {
+        console.error('Error deleting inactive job posts:', error);
+        res.status(500).json({ message: 'Server error while deleting inactive job posts' });
+    }
+};

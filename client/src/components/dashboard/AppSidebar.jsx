@@ -170,14 +170,16 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               ],
             },
             {
-              title: "Applications",
+              title: "Job Applications",
               url: "/employer/applications",
               icon: FileText,
-              isActive: isPathActive("/employer/applications", currentPath),
-              items: [
-                { title: "All Applications", url: "/employer/applications", isActive: currentPath === "/employer/applications" },
-                { title: "Interviewed", url: "/employer/applications/interviewed", isActive: isPathActive("/employer/applications/interviewed", currentPath) },
-              ],
+              isActive: isPathActive("/employer/applications", currentPath)
+            },
+            {
+              title: "Candidate Feedbacks",
+              url: "/employer/candidate-feedbacks",
+              icon: MessageSquare, 
+              isActive: isPathActive("/employer/candidate-feedbacks", currentPath),
             },
             {
               title: "Company Profile",
@@ -216,16 +218,16 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               isActive: isPathActive("/jobseeker/applications", currentPath),
             },
             {
-              title: "Profile",
-              url: "/jobseeker/profile",
-              icon: User,
-              isActive: isPathActive("/jobseeker/profile", currentPath),
-            },
-            {
               title: "Feedbacks",
               url: "/jobseeker/feedbacks",
               icon: MessageSquare, 
               isActive: isPathActive("/jobseeker/feedbacks", currentPath),
+            },
+              {
+              title: "Profile",
+              url: "/jobseeker/profile",
+              icon: User,
+              isActive: isPathActive("/jobseeker/profile", currentPath),
             }
           ],
         };
