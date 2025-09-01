@@ -17,7 +17,8 @@ import employerRouter from './routes/employer.js';
 import jobPostRouter from './routes/jobpost.js';
 import jobCategoryRouter from './routes/jobCategory.js';
 import jobTypeRouter from './routes/jobType.js';
-
+import adminReportRouter from './routes/adminReportRoutes.js';
+import adminDashboardRouter from './routes/adminDashboardRoutes.js';
 
 const __filename = fileURLToPath(
     import.meta.url);

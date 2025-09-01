@@ -103,25 +103,25 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               ], currentPath),
               items: [
                 {
-                  title: "All Users",
-                  url: "/admin/users",
-                  isActive: currentPath === "/admin/users",
-                },
-                {
-                  title: "Admins",
-                  url: "/admin/admins",
-                  isActive: currentPath === "/admin/admins",
-                },
-                {
-                  title: "Job Seekers",
-                  url: "/admin/users/seekers",
-                  isActive: currentPath === "/admin/users/seekers",
-                },
-                {
-                  title: "Employers",
-                  url: "/admin/users/employers",
-                  isActive: currentPath === "/admin/users/employers",
-                },
+      title: "All Users",
+      url: "/admin/users",
+      isActive: currentPath === "/admin/users", 
+    },
+    {
+      title: "Admins",
+      url: "/admin/admins",
+      isActive: currentPath === "/admin/admins", 
+    },
+    {
+      title: "Job Seekers",
+      url: "/admin/users/seekers",
+      isActive: currentPath === "/admin/users/seekers", 
+    },
+    {
+      title: "Employers",
+      url: "/admin/users/employers",
+      isActive: currentPath === "/admin/users/employers", 
+    },
               ],
             },
             {
@@ -133,8 +133,9 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
                 { url: "/admin/jobs/categories" },
               ], currentPath),
               items: [
-                { title: "All Jobs", url: "/admin/jobs", isActive: currentPath === "/admin/jobs" && !location.pathname.includes('/pending') },
-                { title: "Pending Approval", url: "/admin/jobs/pending", isActive: isPathActive("/admin/jobs/pending", currentPath) },
+                { title: "All Jobs", url: "/admin/jobs", isActive: currentPath === "/admin/jobs" && !location.pathname.includes('/pending') }, 
+                { title: "Pending Approval", url: "/admin/jobs/pending", isActive: isPathActive("/admin/jobs/pending", currentPath) }, 
+                // { title: "Job Categories", url: "/admin/jobs/categories", isActive: isPathActive("/admin/jobs/categories", currentPath) },
               ],
             },
             {
@@ -143,7 +144,9 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
               icon: BarChart3,
               isActive: isPathActive("/admin/reports", currentPath),
               items: [
+                // { title: "User Analytics", url: "/admin/reports/users", isActive: isPathActive("/admin/reports/users", currentPath) },
                 { title: "Job Analytics", url: "/admin/reports/jobs", isActive: isPathActive("/admin/reports/jobs", currentPath) },
+                // { title: "Platform Stats", url: "/admin/reports/platform", isActive: isPathActive("/admin/reports/platform", currentPath) },
               ],
             }
           ],
