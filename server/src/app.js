@@ -18,6 +18,7 @@ import jobPostRouter from './routes/jobpost.js';
 import jobCategoryRouter from './routes/jobCategory.js';
 import jobTypeRouter from './routes/jobType.js';
 import adminReportRouter from './routes/adminReportRoutes.js';
+import adminDashboardRouter from './routes/adminDashboardRoutes.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -74,6 +75,7 @@ app.use("/api/professionals", professionalsRoutes);
 app.use("/api/admin", adminRouter);
 app.use("/api/admin/jobs", adminJobRouter);
 app.use("/api/admin/reports", adminReportRouter);
+app.use("/api/admin/dashboard", adminDashboardRouter);
 app.use("/api/jobseeker", jobseekerRouter);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/employers', employerRoutes);
