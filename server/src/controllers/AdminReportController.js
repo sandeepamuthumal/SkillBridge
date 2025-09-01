@@ -2,6 +2,7 @@ import JobPost from '../models/JobPost.js';
 import Application from '../models/Application.js';
 import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
+import { NotFoundError } from '../errors/not-found-error.js';
 
 export const getJobAnalytics = async (req, res, next) => {
   try {
@@ -29,6 +30,7 @@ export const getJobAnalytics = async (req, res, next) => {
       pipeline.push({ $match: { status } });
     }
 
+    
     pipeline.push(
       {
         $lookup: {
@@ -39,41 +41,10 @@ export const getJobAnalytics = async (req, res, next) => {
         },
       },
       {
-        $project: {
-          title: '$title',
-          employerName: '$employerName',
-          viewCount: '$viewCount',
-          status: '$status',
-          categoryId: '$categoryId',
-          typeId: '$typeId',
-          cityName: '$cityName',
-          cityCountry: '$cityCountry',
-          appliedCount: { $size: '$applications' },
-          shortlistedCount: {
-            $size: {
-              $filter: {
-                input: '$applications',
-                as: 'app',
-                cond: { $eq: ['$$app.status', 'Shortlisted'] },
-              },
-            },
-          },
-          rejectedCount: {
-            $size: {
-              $filter: {
-                input: '$applications',
-                as: 'app',
-                cond: { $eq: ['$$app.status', 'Rejected'] },
-              },
-            },
-          },
-        },
-      },
-      {
         $lookup: {
           from: 'employers',
           localField: 'employerId',
-          foreignField: '_id',
+          foreignField: '_id', 
           as: 'employerDetails',
         },
       },
@@ -117,14 +88,28 @@ export const getJobAnalytics = async (req, res, next) => {
           title: 1,
           status: 1,
           viewCount: 1,
-          appliedCount: 1,
-          shortlistedCount: 1,
-          rejectedCount: 1,
+          appliedCount: { $size: '$applications' },
+          shortlistedCount: {
+            $size: {
+              $filter: {
+                input: '$applications',
+                as: 'app',
+                cond: { $eq: ['$$app.status', 'Shortlisted'] },
+              },
+            },
+          },
+          rejectedCount: {
+            $size: {
+              $filter: {
+                input: '$applications',
+                as: 'app',
+                cond: { $eq: ['$$app.status', 'Rejected'] },
+              },
+            },
+          },
           employerName: '$employerDetails.companyName',
           categoryName: '$categoryDetails.name',
           typeName: '$typeDetails.name',
-          cityName: '$cityName',
-          cityCountry: '$cityCountry',
         },
       },
       {
@@ -149,6 +134,7 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
     try {
         const { dateRange, jobCategory, jobType, status } = req.query;
 
+        
         const pipeline = [];
 
         if (dateRange && dateRange !== 'all') {
@@ -170,7 +156,7 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
         if (status && status !== 'all') {
             pipeline.push({ $match: { status } });
         }
-
+    
         pipeline.push(
             {
                 $lookup: {
@@ -178,37 +164,6 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
                     localField: '_id',
                     foreignField: 'jobPostId',
                     as: 'applications',
-                },
-            },
-            {
-                $project: {
-                    title: '$title',
-                    employerName: '$employerName',
-                    viewCount: '$viewCount',
-                    status: '$status',
-                    categoryId: '$categoryId',
-                    typeId: '$typeId',
-                    cityName: '$cityName',
-                    cityCountry: '$cityCountry',
-                    appliedCount: { $size: '$applications' },
-                    shortlistedCount: {
-                        $size: {
-                            $filter: {
-                                input: '$applications',
-                                as: 'app',
-                                cond: { $eq: ['$$app.status', 'Shortlisted'] },
-                            },
-                        },
-                    },
-                    rejectedCount: {
-                        $size: {
-                            $filter: {
-                                input: '$applications',
-                                as: 'app',
-                                cond: { $eq: ['$$app.status', 'Rejected'] },
-                            },
-                        },
-                    },
                 },
             },
             {
@@ -259,14 +214,28 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
                     title: 1,
                     status: 1,
                     viewCount: 1,
-                    appliedCount: 1,
-                    shortlistedCount: 1,
-                    rejectedCount: 1,
+                    appliedCount: { $size: '$applications' },
+                    shortlistedCount: {
+                        $size: {
+                            $filter: {
+                                input: '$applications',
+                                as: 'app',
+                                cond: { $eq: ['$$app.status', 'Shortlisted'] },
+                            },
+                        },
+                    },
+                    rejectedCount: {
+                        $size: {
+                            $filter: {
+                                input: '$applications',
+                                as: 'app',
+                                cond: { $eq: ['$$app.status', 'Rejected'] },
+                            },
+                        },
+                    },
                     employerName: '$employerDetails.companyName',
                     categoryName: '$categoryDetails.name',
                     typeName: '$typeDetails.name',
-                    cityName: '$cityName',
-                    cityCountry: '$cityCountry',
                 },
             },
             {
@@ -276,16 +245,12 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
 
         const jobPostMetrics = await JobPost.aggregate(pipeline);
 
-        // Create a new PDF document
         const doc = new PDFDocument({ margin: 30 });
         const filename = `job_analytics_${Date.now()}.pdf`;
-
         res.setHeader('Content-disposition', `attachment; filename="${filename}"`);
         res.setHeader('Content-type', 'application/pdf');
-
         doc.pipe(res);
 
-        // PDF content generation
         doc.fontSize(18).text('SkillBridge Job Analytics Report', { align: 'center' }).moveDown();
         doc.fontSize(12).text(`Report Date: ${new Date().toLocaleDateString()}`).moveDown();
 
@@ -304,7 +269,6 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
         
         doc.fontSize(14).text('Detailed Job Analytics', { underline: true }).moveDown();
 
-        // Table headers
         const tableHeaders = ['Job Title', 'Employer', 'Applied', 'Shortlisted', 'Rejected'];
         const tableTop = doc.y;
         const tableLeft = 30;
@@ -319,7 +283,6 @@ export const exportJobAnalyticsPdf = async (req, res, next) => {
         doc.strokeColor('#aaaaaa').lineWidth(1).moveTo(tableLeft, doc.y).lineTo(tableLeft + tableWidth, doc.y).stroke();
         doc.font('Helvetica');
 
-        // Table data
         jobPostMetrics.forEach(job => {
             doc.y += 10;
             const y = doc.y;
