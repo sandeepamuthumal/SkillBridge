@@ -74,7 +74,8 @@ app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
 app.use("/api/admin", adminRouter);
 app.use("/api/admin/jobs", adminJobRouter);
-
+app.use("/api/admin/reports", adminReportRouter);
+app.use("/api/admin/dashboard", adminDashboardRouter);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/employers', employerRoutes);
 app.use("/api/employer", employerRouter);
