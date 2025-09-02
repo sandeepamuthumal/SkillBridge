@@ -217,6 +217,7 @@ export const getAllPublicJobSeekers = async(req, res) => {
             .populate({
                 path: "userId", // <-- make sure this matches your schema field name
                 select: "firstName lastName email",
+                match: { status: "active", isEmailVerified: true }
             })
             .populate("cityId");
 
@@ -537,7 +538,7 @@ export const deleteApplication = async(req, res, next) => {
 export const getJobRecommendations = async(req, res, next) => {
     try {
         const userId = req.user._id;
-        const jobSeeker = await JobSeeker.findOne({ userId });
+        const jobSeeker = await JobSeeker.findOne({ userId }).populate("userId");
         const query = {
             status: 'Published',
             isApproved: true,
@@ -552,6 +553,8 @@ export const getJobRecommendations = async(req, res, next) => {
 
         // Format jobSeeker
         const formattedSeeker = {
+            id: jobSeeker._id,
+            name: jobSeeker.userId.firstName + ' ' + jobSeeker.userId.lastName,
             skills: jobSeeker.skills,
             statement: jobSeeker.statement,
             fieldOfStudy: jobSeeker.fieldOfStudy,

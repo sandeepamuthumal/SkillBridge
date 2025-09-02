@@ -55,6 +55,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import StatusFilter from "./Components/StatusFilter.jsx";
 import { useAuth } from "@/context/AuthContext";
+import { format } from 'date-fns';
 
 const ManageJob = () => {
     const [loading, setLoading] = useState(true);
@@ -83,7 +84,7 @@ const ManageJob = () => {
     const loadJobPosts = async () => {
         setLoading(true);
         try {
-            const result = await jobPostAPI.getJobPostsByEmployer();
+            const result = await jobPostAPI.getEmployerJobPosts();
             console.log("Job Post response : ", result);
             if (result.success) {
                 setJobPosts(result.data);
@@ -107,18 +108,6 @@ const ManageJob = () => {
             ),
         },
         {
-            accessorKey: "salaryRange",
-            header: "Salary",
-            cell: ({ row }) => {
-                const { min, max, currency } = row.original.salaryRange;
-                return (
-                    <span>
-                        {currency} {min.toLocaleString()} - {max.toLocaleString()}
-                    </span>
-                );
-            },
-        },
-        {
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => (
@@ -130,6 +119,20 @@ const ManageJob = () => {
                 >
                     {row.original.status}
                 </span>
+            ),
+        },
+        {
+            accessorKey: "createdAt",
+            header: "Posted On",
+            cell: ({ row }) => (
+                <div className="font-medium text-gray-900">{format(row.original.createdAt, "PPP")}</div>
+            ),
+        },
+        {
+            accessorKey: "deadline",
+            header: "Deadline",
+            cell: ({ row }) => (
+                <div className="font-medium text-gray-900">{format(new Date(row.original.deadline), "PPP")}</div>
             ),
         },
         {
@@ -154,12 +157,17 @@ const ManageJob = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuItem
-                            onClick={() => handleJobPostView(row.original.jobPostId._id)}>
+                            onClick={() => navigate(`/employer/jobs/view/${row.original._id}`)}>
                             <ExternalLink className="w-4 h-4 mr-2" />
                             View Job Post
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => handleJobPostView(row.original.jobPostId._id)}>
+                            onClick={() => navigate(`/employer/jobs/seekers/suggestions/${row.original._id}`)}>
+                            <ExternalLink className="w-4 h-4 mr-2" />
+                            Seeker Suggestions
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => navigate(`/employer/jobs/edit/${row.original._id}`)}>
                             <Edit className="w-4 h-4 mr-2" />
                             Edit Job Post
                         </DropdownMenuItem>
@@ -207,7 +215,7 @@ const ManageJob = () => {
             confirmButtonText: "Yes, delete it!",
         }).then((result) => {
             if (result.isConfirmed) {
-                jobPostAPI.deleteJobPost(jobPostId)
+                jobPostAPI.inactiveJobPost(jobPostId)
                     .then((response) => {
                         if (response.success) {
                             setJobPosts((prev) =>

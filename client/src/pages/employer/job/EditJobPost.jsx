@@ -2,7 +2,8 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Card, CardContent } from '@/components/ui/card';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,10 +18,13 @@ import {
   BookText,
   MapPin,
   Building2,
-  Users
+  Users,
+  ArrowLeft,
+  Save,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import ArrayInputField from './ArrayInputField.jsx';
+
 import {
   Popover,
   PopoverContent,
@@ -32,9 +36,14 @@ import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { jobPostAPI } from '@/services/jobPostAPI.js';
 import { seekerProfileAPI } from '@/services/jobseeker/seekerProfileAPI.js';
+import ArrayInputField from './Components/ArrayInputField';
+import Swal from 'sweetalert2';
 
-const ApplicationForm = () => {
-  // Enhanced validation schema with new fields
+const EditJobPost = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  // Same validation schema as create form
   const PostJobSchema = z.object({
     title: z.string()
       .min(1, "Job title is required")
@@ -44,7 +53,6 @@ const ApplicationForm = () => {
       .min(1, "Job description is required")
       .max(5000, "Job description cannot exceed 5000 characters"),
 
-    // New required fields
     city: z.string()
       .min(1, "City is required"),
 
@@ -72,11 +80,11 @@ const ApplicationForm = () => {
       (val) => (val === "" || val === undefined ? undefined : Number(val)),
       z
         .number({
-          required_error: "Experience years is required",
           invalid_type_error: "Experience years must be a number",
         })
         .min(0, "Experience years cannot be negative")
         .max(50, "Experience years cannot exceed 50")
+        .optional()
     ),
 
     salaryRange: z.object({
@@ -105,6 +113,10 @@ const ApplicationForm = () => {
       (val) => {
         if (val instanceof Date && !isNaN(val.getTime())) {
           return val;
+        }
+        if (typeof val === 'string' && val) {
+          const date = new Date(val);
+          return !isNaN(date.getTime()) ? date : undefined;
         }
         return undefined;
       },
@@ -151,51 +163,157 @@ const ApplicationForm = () => {
   const [cities, setCities] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
   const [jobCategories, setJobCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [jobPostData, setJobPostData] = useState(null);
 
+  // Load dropdown data and job post data
   useEffect(() => {
-    (async () => {
+    const loadData = async () => {
       try {
-        const citiesRes = await seekerProfileAPI.getCities();
+        setIsLoadingData(true);
+        
+        // Load dropdown data
+        const [citiesRes, jobTypesRes, jobCategoriesRes, jobPostRes] = await Promise.all([
+          seekerProfileAPI.getCities(),
+          seekerProfileAPI.getJobTypes(),
+          seekerProfileAPI.getJobCategories(),
+          jobPostAPI.getJobById(id)
+        ]);
+
         setCities(citiesRes.data);
-        const jobTypesRes = await seekerProfileAPI.getJobTypes();
         setJobTypes(jobTypesRes.data);
-        const jobCategoriesRes = await seekerProfileAPI.getJobCategories();
         setJobCategories(jobCategoriesRes.data);
+
+        if (jobPostRes.success) {
+          const jobPost = jobPostRes.data;
+          setJobPostData(jobPost);
+          
+          // Populate form with existing data
+          form.reset({
+            title: jobPost.title || "",
+            description: jobPost.description || "",
+            city: jobPost.cityId?._id ||  "",
+            jobCategory: jobPost.categoryId?._id ||  "",
+            jobType: jobPost.typeId?._id || jobPost.jobType || "",
+            responsibilities: jobPost.responsibilities || [],
+            requirements: jobPost.requirements || [],
+            preferredSkills: jobPost.preferredSkills || [],
+            tags: jobPost.tags || [],
+            experienceLevel: jobPost.experienceLevel || "",
+            experienceYears: jobPost.experienceYears || undefined,
+            benefits: jobPost.benefits || [],
+            salaryRange: {
+              min: jobPost.salaryRange?.min || undefined,
+              max: jobPost.salaryRange?.max || undefined,
+              currency: jobPost.salaryRange?.currency || "",
+              negotiable: jobPost.salaryRange?.negotiable || false,
+            },
+            workArrangement: jobPost.workArrangement || "",
+            deadline: jobPost.deadline ? new Date(jobPost.deadline) : "",
+            maxApplications: jobPost.maxApplications || undefined
+          });
+        } else {
+          toast.error("Failed to load job post data");
+          navigate('/employer/jobs');
+        }
       } catch (err) {
         toast.error("Failed to load data");
         console.error("Data load failed", err);
+        navigate('/employer/jobs');
+      } finally {
+        setIsLoadingData(false);
       }
-    })();
-  }, []);
+    };
 
-  const { control, handleSubmit, watch, setValue, formState: { errors, isValid, isDirty } } = form;
+    if (id) {
+      loadData();
+    }
+  }, [id, form, navigate]);
 
+  const { control, handleSubmit, watch, formState: { errors, isDirty } } = form;
   const watchedValues = watch();
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const result = await jobPostAPI.createJobPost(data);
+      const result = await jobPostAPI.updateJobPost(id, data);
 
       if (result.success) {
-        toast.success(result.message || "Post successfully submitted for admin review");
-        form.reset();
+        toast.success(result.message || "Job post updated successfully");
+        navigate('/employer/jobs');
       } else {
-        toast.error(result.error || "Failed to submit post");
+        toast.error(result.error || "Failed to update job post");
       }
     } catch (error) {
       toast.error("Unexpected error occurred");
+      console.error("Update error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleGoBack = () => {
+    if (isDirty) {
+      // Confirm navigation if there are unsaved changes using swal
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You have unsaved changes. Are you sure you want to leave?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, leave!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/employer/jobs');
+        }
+      });
+    } else {
+      navigate('/employer/jobs');
+    }
+  };
+
+  if (isLoadingData) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading job post data...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleGoBack}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Jobs
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">Edit Job Post</h1>
+            <p className="text-gray-600">Update your job posting details</p>
+          </div>
+        </div>
+      </div>
+
       <Card>
-        <CardContent className="pt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Briefcase className="h-5 w-5 text-blue-600" />
+            {jobPostData?.title || "Edit Job Post"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               {/* Job Information */}
@@ -226,7 +344,7 @@ const ApplicationForm = () => {
                   />
                 </div>
 
-                {/* New Location & Category Fields */}
+                {/* Location & Category Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={control}
@@ -475,7 +593,7 @@ const ApplicationForm = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Experience Years <span className="text-red-500">*</span>
+                          Experience Years 
                         </FormLabel>
                         <FormControl>
                           <Input type="number"
@@ -700,28 +818,36 @@ const ApplicationForm = () => {
                 </div>
               </div>
 
-              {/* Submit Button */}
-              <div className="space-y-2">
-                <div className="flex justify-end pt-4 border-t">
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="gap-2"
-                    size="lg"
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4" />
-                        Post Job
-                      </>
-                    )}
-                  </Button>
-                </div>
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-6 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGoBack}
+                  className="gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Cancel
+                </Button>
+                
+                <Button
+                  type="submit"
+                  disabled={isLoading || !isDirty}
+                  className="gap-2"
+                  size="lg"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Update Job Post
+                    </>
+                  )}
+                </Button>
               </div>
             </form>
           </Form>
@@ -731,4 +857,4 @@ const ApplicationForm = () => {
   )
 }
 
-export default ApplicationForm
+export default EditJobPost

@@ -3,7 +3,7 @@ import api from './api';
 export const jobTypeAPI = {
     getAllJobTypes: async() => {
         try {
-            const response = await api.get('/jobtype');
+            const response = await api.get('/job-types');
             return {
                 success: true,
                 data: response.data.data

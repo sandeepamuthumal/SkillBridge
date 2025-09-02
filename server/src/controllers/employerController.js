@@ -255,7 +255,7 @@ export async function getJobPostsByEmployer(req, res) {
     }
 }
 
-export const getCandidateSuggestions = async(req, res, next) => {
+export const getSeekerSuggestions = async(req, res, next) => {
     try {
         const userId = req.user._id;
 
@@ -267,7 +267,10 @@ export const getCandidateSuggestions = async(req, res, next) => {
         }
 
         const jobPost = await JobPost.findById(req.params.id);
-        const candidates = await JobSeeker.find().populate({
+        const candidates = await JobSeeker.find({
+            profileVisibility: "Public",
+            "jobPreferences.categories": jobPost.categoryId
+        }).populate({
             path: 'userId',
             select: 'firstName lastName email',
             match: { status: 'active', isEmailVerified: true } // Only include active users

@@ -146,6 +146,7 @@ const jobSeekerSchema = new mongoose.Schema({
         max: Number
     },
     jobPreferences: {
+
         jobTypes: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'JobType'

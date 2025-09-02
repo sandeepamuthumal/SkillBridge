@@ -127,4 +127,6 @@ const jobPostSchema = new mongoose.Schema({
 jobPostSchema.index({ requirements: 1, categoryId: 1, typeId: 1 });
 jobPostSchema.index({ status: 1, isApproved: 1, deadline: 1 });
 
+
+
 export default mongoose.model('JobPost', jobPostSchema);

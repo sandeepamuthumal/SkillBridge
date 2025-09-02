@@ -67,6 +67,9 @@ import FeedbackPage from "./pages/seeker/feedbacks/feedbackPage";
 import CompanyDetailPage from "./pages/public/CompanyDetailPage";
 import EmployerApplications from "./pages/employer/applications/EmployerApplications";
 import CandidateFeedback from "./pages/employer/feedbacks/CandidateFeedback";
+import EditJobPost from "./pages/employer/job/EditJobPost";
+import JobPostView from "./pages/employer/job/JobPostView";
+import SeekerSuggestion from "./pages/employer/job/SeekerSuggestion";
 
 const router = createBrowserRouter([
   // Public Routes with MainLayout
@@ -251,7 +254,18 @@ const router = createBrowserRouter([
       {
         path: "jobs",
         element: <ManageJob />
-
+      },
+      {
+        path: "jobs/edit/:id",
+        element: <EditJobPost />
+      },
+      {
+        path: "jobs/view/:id",
+        element: <JobPostView />
+      },
+      {
+        path: "jobs/seekers/suggestions/:id",
+        element: <SeekerSuggestion />
       }
     ],
   },
