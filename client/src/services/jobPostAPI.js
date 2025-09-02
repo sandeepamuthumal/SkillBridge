@@ -4,7 +4,7 @@ export const jobPostAPI = {
 
 
 
-    getAllJobs: async() => {
+    getAllJobs: async () => {
         try {
             const response = await api.get('/jobs');
             return {
@@ -19,7 +19,7 @@ export const jobPostAPI = {
             };
         }
     },
-    getJobById: async(jobId) => {
+    getJobById: async (jobId) => {
         try {
             const response = await api.get(`/jobs/${jobId}`);
             return {
@@ -35,7 +35,7 @@ export const jobPostAPI = {
         }
     },
 
-    saveJobPost: async(jobId) => {
+    saveJobPost: async (jobId) => {
         try {
             const response = await api.post(`/jobs/save/${jobId}`);
             return {
@@ -51,7 +51,7 @@ export const jobPostAPI = {
         }
     },
 
-    unsaveJobPost: async(jobId) => {
+    unsaveJobPost: async (jobId) => {
         try {
             const response = await api.delete(`/jobs/save/${jobId}`);
             return {
@@ -67,7 +67,7 @@ export const jobPostAPI = {
         }
     },
 
-    getSavedJobs: async() => {
+    getSavedJobs: async () => {
         try {
             const response = await api.get('/jobs/saved');
             return {
@@ -83,7 +83,7 @@ export const jobPostAPI = {
         }
     },
 
-    getRecommendedJobs: async() => {
+    getRecommendedJobs: async () => {
         try {
             const response = await api.get('/jobseeker/jobs/recommended');
             return {
@@ -98,7 +98,7 @@ export const jobPostAPI = {
             };
         }
     },
-    createJobPost: async(jobPost) => {
+    createJobPost: async (jobPost) => {
         try {
             const response = await api.post('/jobpost', jobPost);
             return {
@@ -115,9 +115,9 @@ export const jobPostAPI = {
         }
     },
 
-    getJobPostsByEmployer: async(id) => {
+    getJobPostsByEmployer: async () => {
         try {
-            const response = await api.get('/employer/jobposts/' + id);
+            const response = await api.get('jobpost/employer/68808e0ed4e392aeea2de017');
             return {
                 success: true,
                 data: response.data.data
@@ -129,5 +129,19 @@ export const jobPostAPI = {
                 error: error.response ? error.response.data.message : 'An unexpected error occurred'
             };
         }
-    }
+    },
+
+    // Delete Job Post
+    deleteJobPost: async (jobPostId) => {
+        try {
+            const response = await api.delete(`jobpost/${jobPostId}`);
+            if (response.status === 200) {
+                return { success: true, message: response.data.message };
+            } else {
+                return { success: false, error: response.data.message || "Failed to delete job post" };
+            }
+        } catch (error) {
+            return { success: false, error: error.response?.data?.message || error.message };
+        }
+    },
 };
