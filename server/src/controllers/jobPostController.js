@@ -12,6 +12,8 @@ export const createJobPost = async(req, res, next) => {
         obj.typeId = req.body.jobType;
         obj.cityId = req.body.city;
         obj.categoryId = req.body.jobCategory;
+        obj.experienceYears.min = req.body.experienceYears;
+        obj.experienceYears.max = req.body.experienceYears;
         const newJobPost = new JobPost(req.body);
         const savedJobPost = await newJobPost.save();
 
