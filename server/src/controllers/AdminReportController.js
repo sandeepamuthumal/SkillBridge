@@ -319,9 +319,9 @@ export const getApplicationReport = async (req, res, next) => {
         const filter = {};
         if (dateRange && dateRange !== 'all') {
             const date = new Date();
-            if (dateRange === 'last30days') date.setDate(date.getDate() - 30);
-            if (dateRange === 'last6months') date.setMonth(date.getMonth() - 6);
-            if (dateRange === 'lastyear') date.setFullYear(date.getFullYear() - 1);
+            if (dateRange === 'last30Days') date.setDate(date.getDate() - 30);
+            if (dateRange === 'last6Months') date.setMonth(date.getMonth() - 6);
+            if (dateRange === 'lastYear') date.setFullYear(date.getFullYear() - 1);
             filter.appliedDate = { $gte: date };
         }
 
