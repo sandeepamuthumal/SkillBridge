@@ -32,8 +32,11 @@ async def parse_cv_file(file: UploadFile = File(...)):
 from fastapi import Request
 from pydantic import BaseModel
 from services.recommender import recommend_jobs
+from services.candidates import recommend_candidates
 
 class JobSeeker(BaseModel):
+    id: str
+    name: str = ""
     skills: list[str]
     statement: str = ""
     fieldOfStudy: str = ""
@@ -51,6 +54,9 @@ class MatchRequest(BaseModel):
     jobSeeker: JobSeeker
     jobs: list[Job]
 
+class CandidateMatchRequest(BaseModel):
+    job: Job
+    jobSeekers: list[JobSeeker]
 
 @app.post("/recommend-jobs")
 async def get_recommendations(payload: MatchRequest):
@@ -59,3 +65,11 @@ async def get_recommendations(payload: MatchRequest):
         return {"recommendedJobs": result}
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+@app.post("/recommend-candidates")
+async def get_candidate_suggestions(payload: CandidateMatchRequest):
+    try:
+        result = recommend_candidates(payload.job.dict(), [s.dict() for s in payload.jobSeekers])
+        return {"recommendedCandidates": result}
+    except Exception as e:
+        return {"error": str(e)}

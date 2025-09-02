@@ -3,6 +3,8 @@ import { NotFoundError } from "../errors/not-found-error.js";
 import { ValidationError } from "../errors/validation-error.js";
 import e from "express";
 import JobPost from "../models/JobPost.js";
+import JobSeeker from "../models/JobSeeker.js";
+import axios from "axios";
 
 export const updateEmployerProfile = async(req, res, next) => {
     try {
@@ -250,5 +252,72 @@ export async function getJobPostsByEmployer(req, res) {
     } catch (error) {
         console.error("Error fetching jobs:", error);
         res.status(500).json({ success: false, error: "Server error while fetching jobs", message: error.message });
+    }
+}
+
+export const getCandidateSuggestions = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+
+        const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+        const employer = await Employer.findOne({ userId });
+
+        if (!employer) {
+            throw new NotFoundError("Employer not found");
+        }
+
+        const jobPost = await JobPost.findById(req.params.id);
+        const candidates = await JobSeeker.find().populate({
+            path: 'userId',
+            select: 'firstName lastName email',
+            match: { status: 'active', isEmailVerified: true } // Only include active users
+        });
+
+        const formattedJobPost = {
+            id: jobPost._id,
+            title: jobPost.title,
+            description: jobPost.description,
+            requirements: jobPost.requirements,
+            preferredSkills: jobPost.preferredSkills
+        };
+
+        const formattedCandidates = candidates.map(candidate => ({
+            id: candidate._id,
+            skills: candidate.skills,
+            statement: candidate.statement,
+            projects: candidate.projects,
+            experiences: candidate.experiences,
+            fieldOfStudy: candidate.fieldOfStudy
+        }));
+
+        const response = await axios.post(`${pythonServiceUrl}/recommend-candidates`, {
+            job: formattedJobPost,
+            jobSeekers: formattedCandidates
+        });
+
+        const recommendCandidates = await Promise.all(
+            response.data.recommendedCandidates.map(async(candidate) => {
+                const suggestedCandidates = await JobSeeker.findById(candidate.id)
+                    .populate('userId', 'firstName lastName email');
+
+                if (!suggestedCandidates) return null;
+
+                const candidateData = suggestedCandidates.toObject();
+                candidateData.similarity = candidate.similarity;
+                candidateData.matchLabel = candidate.matchLabel;
+                candidateData.details = candidate.details;
+
+                return candidateData;
+            })
+        );
+
+        const filteredCandidates = recommendCandidates.filter(Boolean);
+
+        res.status(200).json({
+            success: true,
+            data: filteredCandidates,
+        });
+    } catch (error) {
+        next(error);
     }
 }

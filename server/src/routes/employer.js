@@ -1,5 +1,5 @@
 import express from "express";
-import { createEmployer, updateEmployerProfile, uploadLogo, getEmployerProfile, getAllEmployers, getEmployerById, deleteEmployerById, getJobPostsByEmployer } from "../controllers/employerController.js";
+import { createEmployer, updateEmployerProfile, uploadLogo, getEmployerProfile, getAllEmployers, getEmployerById, deleteEmployerById, getJobPostsByEmployer, getCandidateSuggestions } from "../controllers/employerController.js";
 import { auth, authorize } from "../middlewares/auth.js";
 import { createMulterUpload } from "../utils/multerConfig.js";
 import { employerApplications, updateApplicationStatus } from "../controllers/ApplicationController.js";
@@ -21,6 +21,7 @@ employerRouter.put("/profile", auth, authorize('Employer'), updateEmployerProfil
 employerRouter.post("/profile/logo", auth, authorize('Employer'), profileUploader.single('logoImage'), uploadLogo);
 
 employerRouter.get("/jobposts/:id", getJobPostsByEmployer); // To fetch employer details along with job posts
+employerRouter.get("/candidates/recommendations/:id", auth, authorize('Employer'), getCandidateSuggestions);
 
 employerRouter.get("/applications", auth, authorize('Employer'), employerApplications); // To fetch employer applications
 employerRouter.post("/application/:id/status", auth, authorize('Employer'), updateApplicationStatus);
