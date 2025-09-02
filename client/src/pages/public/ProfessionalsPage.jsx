@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/select";
 
 import ProfessionalCard from "@/components/cards/ProfessionalCard";
+import { seekerProfileAPI } from "@/services/jobseeker/seekerProfileAPI";
+import { toast } from "react-toastify";
 
 // Helper function to calculate total years of experience
 const calculateTotalYears = (experiences) => {
@@ -40,21 +42,12 @@ const ProfessionalsPage = () => {
   const [error, setError] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("all");
   const [selectedExperience, setSelectedExperience] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState("all");
+  const [cities, setCities] = useState([]);
 
   // New state for scroll-to-top button visibility
   const [showScrollToTop, setShowScrollToTop] = useState(false);
-
-
-  const roles = [
-    { value: "all", label: "All Roles" },
-    { value: "developer", label: "Developer" },
-    { value: "designer", label: "Designer" },
-    { value: "manager", label: "Manager" },
-    { value: "analyst", label: "Analyst" },
-    { value: "consultant", label: "Consultant" },
-  ];
 
   const experienceLevels = [
     { value: "all", label: "All Levels" },
@@ -81,6 +74,18 @@ const ProfessionalsPage = () => {
     fetchProfessionals();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const citiesRes = await seekerProfileAPI.getCities();
+        setCities(citiesRes.data);
+      } catch (err) {
+        toast.error("Failed to load data");
+        console.error("City load failed", err);
+      }
+    })();
+  }, []);
+
   // Effect for scroll-to-top button visibility - made more sensitive
   useEffect(() => {
     const handleScroll = () => {
@@ -104,9 +109,8 @@ const ProfessionalsPage = () => {
     // --- Search Logic (matchesSearch) ---
     const matchesSearch =
       (p.statementHeader && p.statementHeader.toLowerCase().includes(searchLower)) ||
-      (p.statement && p.statement.toLowerCase().includes(searchLower)) ||
+      (p.userId.firstName && p.userId.firstName.toLowerCase().includes(searchLower)) ||
       (p.university && p.university.toLowerCase().includes(searchLower)) ||
-      (p.cityId?.name && p.cityId.name.toLowerCase().includes(searchLower)) ||
       (Array.isArray(p.skills) &&
         p.skills.some((skill) => {
           const skillText = typeof skill === "object" && skill !== null && "name" in skill
@@ -116,12 +120,10 @@ const ProfessionalsPage = () => {
         })
       );
 
-    // --- Role Filter Logic (matchesRole) ---
-    const matchesRole =
-      selectedRole === "all" ||
-      (p.jobPreferences?.categories &&
-       Array.isArray(p.jobPreferences.categories) &&
-       p.jobPreferences.categories.some(category => category.name?.toLowerCase() === selectedRole));
+    // --- Location Filter Logic (matchesLocation) ---
+    const matchesLocation =
+      selectedLocation === "all" ||
+      (p.cityId?._id && p.cityId._id === selectedLocation);
 
     // --- Experience Filter Logic (matchesExperience) ---
     const totalYears = calculateTotalYears(p.experiences);
@@ -132,7 +134,7 @@ const ProfessionalsPage = () => {
       (selectedExperience === "senior" && totalYears > 5 && totalYears <= 10) ||
       (selectedExperience === "expert" && totalYears > 10);
 
-    return matchesSearch && matchesRole && matchesExperience;
+    return matchesSearch && matchesLocation && matchesExperience;
   });
 
   // Function to scroll to the top of the page
@@ -204,14 +206,15 @@ const ProfessionalsPage = () => {
                 />
               </div>
 
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="h-14 border-4 border-gray-400 rounded-xl text-gray-700 hover:border-purple-600 focus:border-purple-600 focus:ring-2 focus:ring-purple-300 transition-colors duration-300">
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  {roles.map((role) => (
-                    <SelectItem key={role.value} value={role.value}>
-                      {role.label}
+                  <SelectItem value="all">All Locations</SelectItem>
+                  {cities.map((city) => (
+                    <SelectItem key={city._id} value={city._id}>
+                      {city.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

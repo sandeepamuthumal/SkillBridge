@@ -27,6 +27,8 @@ import { jobPostAPI } from "@/services/jobPostAPI";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import JobCard from "@/components/jobposts/JobCard";
+import { seekerProfileAPI } from "@/services/jobseeker/seekerProfileAPI";
+import { toast } from "react-toastify";
 
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,21 +49,22 @@ const JobsPage = () => {
   // Debounced search term
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  const jobCategories = [
-    { value: "all", label: "All Categories" },
-    { value: "Technology", label: "Technology" },
-    { value: "Design", label: "Design" },
-    { value: "Marketing", label: "Marketing" },
-    { value: "Finance", label: "Finance" },
-    { value: "Operations", label: "Operations" },
-  ];
+  const [cities, setCities] = useState([]);
+  const [jobCategories, setJobCategories] = useState([]);
 
-  const locations = [
-    { value: "all", label: "All Locations" },
-    { value: "Colombo", label: "Colombo" },
-    { value: "Kandy", label: "Kandy" },
-    { value: "Galle", label: "Galle" },
-  ];
+  useEffect(() => {
+    (async () => {
+      try {
+        const citiesRes = await seekerProfileAPI.getCities();
+        setCities(citiesRes.data);
+        const jobCategoriesRes = await seekerProfileAPI.getJobCategories();
+        setJobCategories(jobCategoriesRes.data);
+      } catch (err) {
+        toast.error("Failed to load data");
+        console.error("Data load failed", err);
+      }
+    })();
+  }, []);
 
   // Debounce search term
   useEffect(() => {
@@ -141,13 +144,13 @@ const JobsPage = () => {
 
       if (result.success) {
         const jobs = result.data || [];
-        
+
         if (isInitialLoad) {
           setJobListings(jobs);
         } else {
           setJobListings((prev) => [...prev, ...jobs]);
         }
-        
+
         // Determine if there are more jobs
         setHasMoreJobs(jobs.length === limit);
         setTotalJobs(isInitialLoad ? jobs.length : (prev) => prev + jobs.length);
@@ -183,13 +186,13 @@ const JobsPage = () => {
 
   const loadSavedJobs = async () => {
     if (!isAuthenticated) return;
-    
+
     try {
       const savedResult = await jobPostAPI.getSavedJobs();
       if (savedResult.success) {
         const savedIds = new Set(savedResult.data.map((job) => job._id));
         setSavedJobs(savedIds);
-        
+
         // Update existing job listings to reflect saved status
         setJobListings((prev) =>
           prev.map((job) => ({
@@ -306,8 +309,9 @@ const JobsPage = () => {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {jobCategories.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                      <SelectItem key={cat._id} value={cat._id}>{cat.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -316,8 +320,9 @@ const JobsPage = () => {
                     <SelectValue placeholder="Location" />
                   </SelectTrigger>
                   <SelectContent>
-                    {locations.map((loc) => (
-                      <SelectItem key={loc.value} value={loc.value}>{loc.label}</SelectItem>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {cities.map((loc) => (
+                      <SelectItem key={loc._id} value={loc._id}>{loc.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -346,18 +351,16 @@ const JobsPage = () => {
           </h2>
           <div className="flex gap-4 items-center">
             {isFilterActive && (
-              <Button 
-                variant="ghost" 
-                onClick={handleClearFilters} 
+              <Button
+                variant="ghost"
+                onClick={handleClearFilters}
                 className="flex items-center gap-2 text-purple-600 hover:bg-purple-50 transition-colors"
                 disabled={loading}
               >
                 Clear Filters <X className="h-4 w-4" />
               </Button>
             )}
-            <Button variant="outline" className="flex items-center gap-2 hover:bg-gray-50 transition-colors">
-              <Filter className="h-4 w-4" /> More Filters
-            </Button>
+            
           </div>
         </div>
 
@@ -397,10 +400,10 @@ const JobsPage = () => {
         {/* Load More Button */}
         {hasMoreJobs && !loading && jobListings.length > 0 && (
           <div className="text-center mt-16">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              onClick={handleLoadMore} 
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={handleLoadMore}
               className="px-8 py-3 rounded-xl border-2 hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
@@ -422,8 +425,8 @@ const JobsPage = () => {
               Try adjusting your search criteria or clearing some filters
             </p>
             {isFilterActive && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleClearFilters}
                 className="px-6 py-2"
               >
@@ -436,11 +439,11 @@ const JobsPage = () => {
 
       {/* Scroll-to-Top */}
       {showScrollToTop && (
-        <Button 
-          variant="default" 
-          size="icon" 
-          onClick={scrollToTop} 
-          className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50" 
+        <Button
+          variant="default"
+          size="icon"
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-110 z-50"
           style={{ width: '56px', height: '56px' }}
         >
           <ArrowUp className="h-6 w-6" />

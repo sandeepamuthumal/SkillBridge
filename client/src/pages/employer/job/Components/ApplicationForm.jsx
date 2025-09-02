@@ -68,16 +68,18 @@ const ApplicationForm = () => {
       errorMap: () => ({ message: "Experience level is required" }),
     }),
 
-    experienceYears: z.preprocess(
-      (val) => (val === "" || val === undefined ? undefined : Number(val)),
-      z
-        .number({
+    experienceYears: z.object({
+      min: z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)), z.number({
           required_error: "Experience years is required",
-          invalid_type_error: "Experience years must be a number",
-        })
-        .min(0, "Experience years cannot be negative")
-        .max(50, "Experience years cannot exceed 50")
-    ),
+          invalid_type_error: "Experience years must be a number"
+        }).min(0, "Experience years cannot be negative").max(50, "Experience years cannot exceed 50")),
+      max: z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)), z.number({
+          required_error: "Experience years is required",
+          invalid_type_error: "Experience years must be a number"
+        }).min(0, "Experience years cannot be negative").max(50, "Experience years cannot exceed 50"))
+    }),
 
     salaryRange: z.object({
       min: z.preprocess(
@@ -130,7 +132,10 @@ const ApplicationForm = () => {
       preferredSkills: [],
       tags: [],
       experienceLevel: "",
-      experienceYears: undefined,
+      experienceYears: {
+        min: undefined,
+        max: undefined,
+      },
       benefits: [],
       salaryRange: {
         min: undefined,
@@ -438,7 +443,7 @@ const ApplicationForm = () => {
                   <Braces className="h-5 w-5 text-blue-600" />
                   <h4 className="text-lg font-semibold">Experience Requirements</h4>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={control}
                     name="experienceLevel"
@@ -471,15 +476,32 @@ const ApplicationForm = () => {
 
                   <FormField
                     control={control}
-                    name="experienceYears"
+                    name="experienceYears.min"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Experience Years <span className="text-red-500">*</span>
+                          Minimum Experience <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input type="number"
-                            placeholder="Add Experience Years" {...field} />
+                            placeholder="Min" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="experienceYears.max"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Maximum Experience <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="number"
+                            placeholder="Max" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

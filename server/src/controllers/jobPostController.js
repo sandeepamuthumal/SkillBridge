@@ -12,8 +12,6 @@ export const createJobPost = async(req, res, next) => {
         obj.typeId = req.body.jobType;
         obj.cityId = req.body.city;
         obj.categoryId = req.body.jobCategory;
-        obj.experienceYears.min = req.body.experienceYears;
-        obj.experienceYears.max = req.body.experienceYears;
         const newJobPost = new JobPost(req.body);
         const savedJobPost = await newJobPost.save();
 
@@ -115,8 +113,6 @@ export const updateJobPost = async(req, res) => {
         if (obj.jobType) obj.typeId = req.body.jobType;
         if (obj.city) obj.cityId = req.body.city;
         if (obj.jobCategory) obj.categoryId = req.body.jobCategory;
-        if (obj.experienceYears) obj.experienceYears.min = req.body.experienceYears;
-        if (obj.experienceYears) obj.experienceYears.max = req.body.experienceYears;
 
         console.log("Updating Job Post with data:", req.body);
 
