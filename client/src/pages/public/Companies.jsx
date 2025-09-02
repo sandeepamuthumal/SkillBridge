@@ -237,12 +237,16 @@ const Companies = () => {
                   <SelectValue placeholder="Industry" />
                 </SelectTrigger>
                 <SelectContent>
-                  {industries.map((industry) => (
-                    <SelectItem key={industry.value} value={industry.value}>
-                      {industry.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+                    <SelectItem value="all">All Industries</SelectItem>
+                    <SelectItem value="technology">Technology</SelectItem>
+                    <SelectItem value="software">Software Development</SelectItem>
+                    <SelectItem value="finance">Finance & Banking</SelectItem>
+                    <SelectItem value="healthcare">Healthcare</SelectItem>
+                    <SelectItem value="education">Education</SelectItem>
+                    <SelectItem value="ecommerce">E-commerce</SelectItem>
+                    <SelectItem value="consulting">Consulting</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
               </Select>
 
               {/* Company Size Select */}
@@ -344,63 +348,63 @@ const Companies = () => {
                 className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg bg-white overflow-hidden transform hover:-translate-y-2"
               >
                 {/* Company Cover Image */}
-               <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={company.coverImage}
-                      alt={company.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <div className="absolute top-4 right-4 flex gap-2">
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={company.coverImage}
+                    alt={company.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="bg-white/90 hover:bg-white transition-colors"
+                      onClick={() => toggleFollow(company.id)}
+                      aria-label={`${followedCompanies.has(company.id) ? "Unfollow" : "Follow"
+                        } ${company.name}`}
+                    >
+                      <Heart
+                        className={`h-4 w-4 ${followedCompanies.has(company.id)
+                          ? "fill-current text-red-500"
+                          : "text-gray-600"
+                          }`}
+                      />
+                    </Button>
+                    <Link to={`/companies/${company.id}`}>
                       <Button
                         size="sm"
                         variant="secondary"
                         className="bg-white/90 hover:bg-white transition-colors"
-                        onClick={() => toggleFollow(company.id)}
-                        aria-label={`${followedCompanies.has(company.id) ? "Unfollow" : "Follow"
-                          } ${company.name}`}
+                        aria-label={`View ${company.name}`}
                       >
-                        <Heart
-                          className={`h-4 w-4 ${followedCompanies.has(company.id)
-                            ? "fill-current text-red-500"
-                            : "text-gray-600"
-                            }`}
-                        />
+                        <Eye className="h-4 w-4 text-gray-600" />
                       </Button>
-                      <Link  to={`/companies/${company.id}`}>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="bg-white/90 hover:bg-white transition-colors"
-                          aria-label={`View ${company.name}`}
-                        >
-                          <Eye className="h-4 w-4 text-gray-600" />
-                        </Button>
-                      </Link>
+                    </Link>
+                  </div>
+                  <Badge className="absolute top-4 left-4 bg-purple-100 text-purple-800 border-purple-200 border font-medium px-3 py-1">
+                    {getSizeLabel(company.employees)}
+                  </Badge>
+                  {/* Company Logo and Basic Info Overlay */}
+                  <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-xl flex items-center justify-center text-xl shadow-sm">
+                      {company.logo ? (
+                        <img src={company.logo} alt={company.logo} className="w-10 h-10 " />
+                      ) : (
+                        <span className="text-3xl">{company.name.charAt(0)}</span>
+                      )
+                      }
                     </div>
-                    <Badge className="absolute top-4 left-4 bg-purple-100 text-purple-800 border-purple-200 border font-medium px-3 py-1">
-                      {getSizeLabel(company.employees)}
-                    </Badge>
-                    {/* Company Logo and Basic Info Overlay */}
-                    <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-xl flex items-center justify-center text-xl shadow-sm">
-                        {company.logo ? (
-                          <img src={company.logo} alt={company.logo} className="w-10 h-10 " />
-                        ) : (
-                          <span className="text-3xl">{company.name.charAt(0)}</span>
-                        )
-                        }
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-white text-xl font-bold mb-1 group-hover:text-yellow-300 transition-colors">
-                          {company.name}
-                        </h3>
-                        <p className="text-white/90 font-medium">
-                          {company.industry}
-                        </p>
-                      </div>
+                    <div className="flex-1">
+                      <h3 className="text-white text-xl font-bold mb-1 group-hover:text-yellow-300 transition-colors">
+                        {company.name}
+                      </h3>
+                      <p className="text-white/90 font-medium">
+                        {company.industry}
+                      </p>
                     </div>
                   </div>
+                </div>
 
 
                 <CardContent className="p-6">

@@ -198,6 +198,7 @@ const ApplicationModal = ({ isOpen, onClose, job, onSubmit }) => {
                             ) : (
                                 'Submit Application'
                             )}
+
                         </button>
                     </div>
                 </form>
