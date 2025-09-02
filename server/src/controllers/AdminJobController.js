@@ -22,8 +22,8 @@ export const getAllJobPostsAdmin = async (req, res, next) => {
         if (statusFilterParam) {
             if (statusFilterParam === 'pending') {
                 query.isApproved = false;
-                query.status = 'Paused'; // As per your definition
-                console.log('SERVER: Filter applied: Pending Approval (isApproved:false, status:Paused)');
+                query.status = { $in: ['Draft', 'Paused'] };
+                console.log('SERVER: Filter applied: Pending Approval (isApproved:false, status:{ $in: [\'Draft\', \'Paused\']})');
             } else if (statusFilterParam === 'Closed') {
                 query.status = statusFilterParam;
                 query.isActive = false; // Override isActive to show inactive 'Closed' posts

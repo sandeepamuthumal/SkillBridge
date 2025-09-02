@@ -55,7 +55,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 }) {
+function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 5 }) {
   const location = useLocation(); // Get current location
 
   // Helper function to check if a path is active
@@ -140,9 +140,9 @@ function AppSidebar({ userRole = '', userInfo = {}, autoCollapseThreshold = 4 })
             },
             {
               title: "Reports & Analytics",
-              url: "/admin/reports",
+              url: "/admin/reports/jobs",
               icon: BarChart3,
-              isActive: isPathActive("/admin/reports", currentPath),
+              isActive: isPathActive("/admin/reports/jobs", currentPath),
               items: [
                 // { title: "User Analytics", url: "/admin/reports/users", isActive: isPathActive("/admin/reports/users", currentPath) },
                 { title: "Job Analytics", url: "/admin/reports/jobs", isActive: isPathActive("/admin/reports/jobs", currentPath) },
