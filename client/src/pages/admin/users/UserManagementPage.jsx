@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react'; 
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 const UserManagementPage = () => {
-  const { user, token, fetchAllUsers, updateUserStatus, adminResetUserPassword } = useAuth(); 
+  const { user, token, fetchAllUsers, updateUserStatus, adminResetUserPassword } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterRole, setFilterRole] = useState('All'); // 'All', 'Admin', 'Job Seeker', 'Employer'
@@ -22,11 +22,13 @@ const UserManagementPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [modalLoading, setModalLoading] = useState(false);
   const [statusChangeAction, setStatusChangeAction] = useState(''); // 'activate' or 'deactivate'
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetchAllUsers(); 
+      const response = await fetchAllUsers();
       if (response.success) {
         setUsers(response.data);
       } else {
@@ -76,7 +78,7 @@ const UserManagementPage = () => {
     }
 
     try {
-      const result = await adminResetUserPassword(selectedUser._id, newPassword); 
+      const result = await adminResetUserPassword(selectedUser._id, newPassword);
       if (result.success) {
         toast.success(`Password for ${selectedUser.firstName} reset successfully.`);
         setIsResetPasswordModalOpen(false);
@@ -95,11 +97,11 @@ const UserManagementPage = () => {
     setModalLoading(true);
     try {
       const newStatus = statusChangeAction === 'activate' ? 'active' : 'inactive';
-      const result = await updateUserStatus(selectedUser._id, newStatus); 
+      const result = await updateUserStatus(selectedUser._id, newStatus);
       if (result.success) {
         toast.success(`${selectedUser.firstName}'s account has been ${newStatus === 'active' ? 'activated' : 'deactivated'}.`);
         setIsStatusChangeModalOpen(false);
-        loadUsers(); 
+        loadUsers();
       } else {
         toast.error(result.error || 'Failed to update user status.');
       }
@@ -204,25 +206,41 @@ const UserManagementPage = () => {
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="col-span-3"
-                placeholder="Enter new password"
-              />
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="col-span-3 pr-10"
+                  placeholder="Enter new password"
+                />
+                <span
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </span>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
-              <Input
-                id="confirmNewPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="col-span-3"
-                placeholder="Confirm new password"
-              />
+              <div className="relative">
+                <Input
+                  id="confirmNewPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="col-span-3 pr-10"
+                  placeholder="Confirm new password"
+                />
+                <span
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </span>
+              </div>
             </div>
             {newPassword && confirmPassword && newPassword !== confirmPassword && (
               <p className="text-sm text-red-500">Passwords do not match.</p>
@@ -234,7 +252,11 @@ const UserManagementPage = () => {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="button" onClick={handleConfirmResetPassword} disabled={modalLoading || !newPassword || newPassword !== confirmPassword}>
+            <Button
+              type="button"
+              onClick={handleConfirmResetPassword}
+              disabled={modalLoading || !newPassword || newPassword !== confirmPassword}
+            >
               {modalLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Reset Password
             </Button>

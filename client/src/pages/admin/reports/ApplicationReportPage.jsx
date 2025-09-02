@@ -50,7 +50,8 @@ const ApplicationReportPage = () => {
             filtered = filtered.filter(app =>
                 (app.jobPostId?.title?.toLowerCase() || '').includes(filters.searchTerm.toLowerCase()) ||
                 (app.jobSeekerId?.userId?.firstName?.toLowerCase() || '').includes(filters.searchTerm.toLowerCase()) ||
-                (app.jobSeekerId?.userId?.lastName?.toLowerCase() || '').includes(filters.searchTerm.toLowerCase())
+                (app.jobSeekerId?.userId?.lastName?.toLowerCase() || '').includes(filters.searchTerm.toLowerCase()) ||
+                (app.jobPostId?.employerId?.companyName?.toLowerCase() || '').includes(filters.searchTerm.toLowerCase())
             );
         }
         setFilteredApplications(filtered);
@@ -119,7 +120,51 @@ const ApplicationReportPage = () => {
       </div>
 
       <Card className="shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200"><h3 className="text-lg font-semibold text-gray-900">Application List</h3></div>
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">Application List</h3>
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mt-4">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                type="text"
+                placeholder="Search by job title, job seeker or employer..."
+                className="pl-9 pr-4 py-2 rounded-md border border-gray-300 w-full focus:ring-blue-500 focus:border-blue-500"
+                value={filters.searchTerm}
+                onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Select onValueChange={(value) => handleFilterChange('status', value)} value={filters.status}>
+                <SelectTrigger className="w-[180px] md:w-auto">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="Applied">Applied</SelectItem>
+                  <SelectItem value="Under Review">Under Review</SelectItem>
+                  <SelectItem value="Shortlisted">Shortlisted</SelectItem>
+                  <SelectItem value="Interview Scheduled">Interview Scheduled</SelectItem>
+                  <SelectItem value="Interview Completed">Interview Completed</SelectItem>
+                  <SelectItem value="Offer Extended">Offer Extended</SelectItem>
+                  <SelectItem value="Offer Accepted">Offer Accepted</SelectItem>
+                  <SelectItem value="Rejected">Rejected</SelectItem>
+                  <SelectItem value="Withdrawn">Withdrawn</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select onValueChange={(value) => handleFilterChange('dateRange', value)} value={filters.dateRange}>
+                <SelectTrigger className="w-[180px] md:w-auto">
+                  <SelectValue placeholder="Date Range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="last30Days">Last 30 Days</SelectItem>
+                  <SelectItem value="last6Months">Last 6 Months</SelectItem>
+                  <SelectItem value="lastYear">Last Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-gray-50">
@@ -140,9 +185,9 @@ const ApplicationReportPage = () => {
                   <TableCell>{app.jobPostId?.employerId?.companyName || 'N/A'}</TableCell>
                   <TableCell>
                     <Badge variant={
-                      app.status === 'Shortlisted' ? 'success' :
-                      app.status === 'Rejected' ? 'destructive' :
-                      app.status === 'Interview Scheduled' ? 'warning' : 'secondary'
+                      app.status === 'Shortlisted' || app.status === 'Offer Extended' || app.status === 'Offer Accepted' ? 'success' :
+                      app.status === 'Rejected' || app.status === 'Withdrawn' ? 'destructive' :
+                      app.status === 'Interview Scheduled' || app.status === 'Interview Completed' || app.status === 'Under Review' ? 'warning' : 'secondary'
                     }>{app.status}</Badge>
                   </TableCell>
                   <TableCell>{new Date(app.appliedDate).toLocaleDateString()}</TableCell>
