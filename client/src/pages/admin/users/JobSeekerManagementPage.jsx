@@ -5,13 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, UserPlus, Eye, Mail, Lock, XCircle, Trash2, CheckCircle } from 'lucide-react';
+import { Loader2, Lock, XCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
-import { Link } from 'react-router-dom';
-import PasswordInput from '@/components/ui/PasswordInput';
 import { format } from 'date-fns';
-
 
 const JobSeekerManagementPage = () => {
     const { fetchAllUsers, updateUserStatus, adminResetUserPassword } = useAuth();
@@ -24,6 +21,10 @@ const JobSeekerManagementPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [actionType, setActionType] = useState('');
+
+    
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const loadJobSeekers = async () => {
         setLoading(true);
@@ -86,13 +87,12 @@ const JobSeekerManagementPage = () => {
     const handleConfirmPasswordReset = async () => {
         setModalLoading(true);
         try {
-            let result;
             if (newPassword !== confirmPassword) {
                 toast.error("Passwords do not match.");
                 setModalLoading(false);
                 return;
             }
-            result = await adminResetUserPassword(selectedJobSeeker._id, newPassword);
+            const result = await adminResetUserPassword(selectedJobSeeker._id, newPassword);
 
             if (result.success) {
                 toast.success(result.message);
@@ -146,11 +146,11 @@ const JobSeekerManagementPage = () => {
                                                 <TableCell className="font-medium">{jobSeeker.firstName} {jobSeeker.lastName || ''}</TableCell>
                                                 <TableCell>{jobSeeker.email}</TableCell>
                                                 <TableCell>
-                                                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                    jobSeeker.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                                  }`}>
-                                                    {jobSeeker.status === 'active' ? 'Active' : 'Inactive'}
-                                                  </span>
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                        jobSeeker.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                    }`}>
+                                                        {jobSeeker.status === 'active' ? 'Active' : 'Inactive'}
+                                                    </span>
                                                 </TableCell>
                                                 <TableCell>{format(new Date(jobSeeker.createdAt), 'PP')}</TableCell>
                                                 <TableCell className="text-right flex justify-end space-x-2">
@@ -196,28 +196,50 @@ const JobSeekerManagementPage = () => {
                         <DialogTitle>Reset Password for {selectedJobSeeker?.firstName}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
+                        {/* New Password */}
                         <div className="space-y-2">
                             <Label htmlFor="newPassword">New Password</Label>
-                            <Input
-                                id="newPassword"
-                                type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="col-span-3"
-                                placeholder="Enter new password"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="newPassword"
+                                    type={showNewPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="col-span-3 pr-10"
+                                    placeholder="Enter new password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+                                >
+                                    {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
+
+                        {/* Confirm Password */}
                         <div className="space-y-2">
                             <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
-                            <Input
-                                id="confirmNewPassword"
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="col-span-3"
-                                placeholder="Confirm new password"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="confirmNewPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="col-span-3 pr-10"
+                                    placeholder="Confirm new password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
+
                         {newPassword && confirmPassword && newPassword !== confirmPassword && (
                             <p className="text-sm text-red-500">Passwords do not match.</p>
                         )}
@@ -228,7 +250,11 @@ const JobSeekerManagementPage = () => {
                                 Cancel
                             </Button>
                         </DialogClose>
-                        <Button type="button" onClick={handleConfirmPasswordReset} disabled={modalLoading || !newPassword || newPassword !== confirmPassword}>
+                        <Button
+                            type="button"
+                            onClick={handleConfirmPasswordReset}
+                            disabled={modalLoading || !newPassword || newPassword !== confirmPassword}
+                        >
                             {modalLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             Reset Password
                         </Button>
@@ -236,7 +262,7 @@ const JobSeekerManagementPage = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Confirmation Dialog for both deactivate and reactivate */}
+            {/* Confirmation Dialog */}
             <Dialog open={confirmActionModalOpen} onOpenChange={setConfirmActionModalOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Lock, XCircle, CheckCircle } from 'lucide-react';
+import { Loader2, Lock, XCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
 import { format } from 'date-fns';
@@ -21,6 +21,10 @@ const EmployerManagementPage = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [actionType, setActionType] = useState('');
+
+   
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const loadEmployers = async () => {
         setLoading(true);
@@ -192,26 +196,50 @@ const EmployerManagementPage = () => {
                         <DialogTitle>Reset Password for {selectedEmployer?.firstName}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
+                        {/* New Password with eye toggle */}
                         <div className="space-y-2">
                             <Label htmlFor="newPassword">New Password</Label>
-                            <Input
-                                id="newPassword"
-                                type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                placeholder="Enter new password"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="newPassword"
+                                    type={showNewPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="Enter new password"
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+                                >
+                                    {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
+
+                        {/* Confirm Password with eye toggle */}
                         <div className="space-y-2">
                             <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
-                            <Input
-                                id="confirmNewPassword"
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Confirm new password"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="confirmNewPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="Confirm new password"
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
+
                         {newPassword && confirmPassword && newPassword !== confirmPassword && (
                             <p className="text-sm text-red-500">Passwords do not match.</p>
                         )}
