@@ -16,7 +16,7 @@ export const employerProfileAPI = {
             };
         }
     },
-    
+
     // Upload profile image
     uploadLogo: async(formData) => {
         try {
@@ -54,4 +54,20 @@ export const employerProfileAPI = {
             };
         }
     },
-};
+
+    getEmployerById: async(id) => {
+        try {
+            const response = await api.get(`/employer/${id}`);
+            console.log(response.data);
+            return {
+                success: true,
+                data: response.data
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    }
+}

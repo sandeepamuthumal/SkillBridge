@@ -63,12 +63,12 @@ const ApplicationsPage = () => {
   const serverUrl = import.meta.env.VITE_SERVER_URL;
   const navigate = useNavigate();
 
-  // Load all jobs
+  // Load all job applications on component mount
   useEffect(() => {
-    loadJobPosts();
+    loadApplications();
   }, []);
 
-  const loadJobPosts = async () => {
+  const loadApplications = async () => {
     setLoading(true);
     try {
       const result = await applicationAPI.getSeekerJobApplications();
@@ -331,6 +331,7 @@ const ApplicationsPage = () => {
       <ApplicationDetailView
         application={selectedApplication}
         onBack={() => setSelectedApplication(null)}
+        loadData={loadApplications}
       />
     );
   }

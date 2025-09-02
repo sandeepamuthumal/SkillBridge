@@ -6,7 +6,7 @@ import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { globalErrorHandler } from './middlewares/global-error-handler.js';
-import { authRouter, adminRouter } from './routes/admin.js'; 
+import { authRouter, adminRouter } from './routes/admin.js';
 import apiRouter from './routes/api.js';
 import jobseekerRouter from './routes/jobseeker.js';
 import professionalsRoutes from './routes/professionals.js';
@@ -17,7 +17,8 @@ import employerRouter from './routes/employer.js';
 import jobPostRouter from './routes/jobpost.js';
 import jobCategoryRouter from './routes/jobCategory.js';
 import jobTypeRouter from './routes/jobType.js';
-
+import adminReportRouter from './routes/adminReportRoutes.js';
+import adminDashboardRouter from './routes/adminDashboardRoutes.js';
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -73,14 +74,15 @@ app.use("/api/jobseeker", jobseekerRouter);
 app.use("/api/professionals", professionalsRoutes);
 app.use("/api/admin", adminRouter);
 app.use("/api/admin/jobs", adminJobRouter);
-app.use("/api/jobseeker", jobseekerRouter);
+app.use("/api/admin/reports", adminReportRouter);
+app.use("/api/admin/dashboard", adminDashboardRouter);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/employers', employerRoutes);
-app.use(globalErrorHandler);
-
 app.use("/api/employer", employerRouter);
 app.use("/api/jobpost", jobPostRouter);
 app.use("/api/jobcategory", jobCategoryRouter);
 app.use("/api/jobtype", jobTypeRouter);
+
+app.use(globalErrorHandler);
 
 export { app };

@@ -1,11 +1,6 @@
 import mongoose from 'mongoose';
 
 const feedbackSchema = new mongoose.Schema({
-    applicationId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Application',
-        required: true
-    },
     employerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Employer',
@@ -15,6 +10,10 @@ const feedbackSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'JobSeeker',
         required: true
+    },
+    jobTitle: {
+        type: String,
+        required: true,
     },
     rating: {
         type: Number,
@@ -27,8 +26,7 @@ const feedbackSchema = new mongoose.Schema({
         required: true,
         maxlength: 1000
     },
-    strengths: [String],
-    areasForImprovement: [String],
+    skills: [String],
     wouldRecommend: {
         type: Boolean,
         default: false

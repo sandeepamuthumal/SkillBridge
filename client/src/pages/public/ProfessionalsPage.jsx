@@ -244,13 +244,13 @@ const ProfessionalsPage = () => {
             {filteredProfessionals.length} Professional
             {filteredProfessionals.length !== 1 ? "s" : ""} Found
           </h2>
-          <Button
+          {/* <Button
             variant="outline"
             className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
           >
             <Filter className="h-4 w-4" />
             More Filters
-          </Button>
+          </Button> */}
         </div>
 
         {filteredProfessionals.length === 0 ? (

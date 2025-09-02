@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 const Companies = () => {
   const [companies, setCompanies] = useState([]);
@@ -38,6 +39,7 @@ const Companies = () => {
   const [selectedIndustry, setSelectedIndustry] = useState("all");
   const [selectedSize, setSelectedSize] = useState("all");
   const [followedCompanies, setFollowedCompanies] = useState(new Set());
+  const serverUrl = import.meta.env.VITE_SERVER_URL;
 
   // New state for scroll-to-top button visibility
   const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -74,7 +76,7 @@ const Companies = () => {
           id: company._id,
           name: company.companyName || "N/A",
           coverImage: company.coverImage || "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1740&auto=format&fit=crop", // Fallback cover image
-          logo: company.logoUrl || "https://placehold.co/100x100?text=Logo", // Fallback logo
+          logo: company.logoUrl ? serverUrl + company.logoUrl : "https://placehold.co/100x100?text=Logo", // Fallback logo
           industry: company.industry || "N/A",
           location: company.contactInfo?.address || "N/A", // Use optional chaining
           employees: company.companySize || "N/A", // The size string
@@ -118,7 +120,7 @@ const Companies = () => {
 
   const filteredCompanies = companies.filter((company) => {
     const lowerSearch = searchTerm.toLowerCase();
-    
+
     const companyName = company.name?.toLowerCase() || "";
     const companyIndustry = company.industry?.toLowerCase() || "";
 
@@ -269,22 +271,22 @@ const Companies = () => {
               {(searchTerm !== "" ||
                 selectedIndustry !== "all" ||
                 selectedSize !== "all") && (
-                <div className="md:col-span-4 flex justify-end mt-4 md:mt-0">
-                  <Button
-                    variant="ghost"
-                    className="text-purple-600 hover:text-purple-800 font-semibold"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedIndustry("all");
-                      setSelectedSize("all");
-                    }}
-                    aria-label="Reset all filters"
-                    title="Reset all filters"
-                  >
-                    Clear Filters &#x2715;
-                  </Button>
-                </div>
-              )}
+                  <div className="md:col-span-4 flex justify-end mt-4 md:mt-0">
+                    <Button
+                      variant="ghost"
+                      className="text-purple-600 hover:text-purple-800 font-semibold"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setSelectedIndustry("all");
+                        setSelectedSize("all");
+                      }}
+                      aria-label="Reset all filters"
+                      title="Reset all filters"
+                    >
+                      Clear Filters &#x2715;
+                    </Button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -296,13 +298,13 @@ const Companies = () => {
           <h2 className="text-3xl font-bold text-gray-900">
             {filteredCompanies.length} Companies Found
           </h2>
-          <Button
+          {/* <Button
             variant="outline"
             className="flex items-center gap-2 hover:bg-gray-50 transition-colors"
           >
             <Filter className="h-4 w-4" />
             More Filters
-          </Button>
+          </Button> */}
         </div>
 
         {/* Conditional Rendering based on state */}
@@ -342,64 +344,67 @@ const Companies = () => {
                 className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg bg-white overflow-hidden transform hover:-translate-y-2"
               >
                 {/* Company Cover Image */}
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={company.coverImage}
-                    alt={company.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white/90 hover:bg-white transition-colors"
-                      onClick={() => toggleFollow(company.id)}
-                      aria-label={`${
-                        followedCompanies.has(company.id) ? "Unfollow" : "Follow"
-                      } ${company.name}`}
-                    >
-                      <Heart
-                        className={`h-4 w-4 ${
-                          followedCompanies.has(company.id)
+               <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={company.coverImage}
+                      alt={company.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="bg-white/90 hover:bg-white transition-colors"
+                        onClick={() => toggleFollow(company.id)}
+                        aria-label={`${followedCompanies.has(company.id) ? "Unfollow" : "Follow"
+                          } ${company.name}`}
+                      >
+                        <Heart
+                          className={`h-4 w-4 ${followedCompanies.has(company.id)
                             ? "fill-current text-red-500"
                             : "text-gray-600"
-                        }`}
-                      />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="bg-white/90 hover:bg-white transition-colors"
-                      aria-label={`View ${company.name}`}
-                    >
-                      <Eye className="h-4 w-4 text-gray-600" />
-                    </Button>
-                  </div>
-                  <Badge className="absolute top-4 left-4 bg-purple-100 text-purple-800 border-purple-200 border font-medium px-3 py-1">
-                    {getSizeLabel(company.employees)}
-                  </Badge>
-                  {/* Company Logo and Basic Info Overlay */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
-                    <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
-                      <AvatarImage src={company.logo} alt={company.name} />
-                      <AvatarFallback className="text-lg font-bold bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                        {company.name?.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h3 className="text-white text-xl font-bold mb-1 group-hover:text-yellow-300 transition-colors">
-                        {company.name}
-                      </h3>
-                      <p className="text-white/90 font-medium">
-                        {company.industry}
-                      </p>
+                            }`}
+                        />
+                      </Button>
+                      <Link  to={`/companies/${company.id}`}>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="bg-white/90 hover:bg-white transition-colors"
+                          aria-label={`View ${company.name}`}
+                        >
+                          <Eye className="h-4 w-4 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </div>
+                    <Badge className="absolute top-4 left-4 bg-purple-100 text-purple-800 border-purple-200 border font-medium px-3 py-1">
+                      {getSizeLabel(company.employees)}
+                    </Badge>
+                    {/* Company Logo and Basic Info Overlay */}
+                    <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-xl flex items-center justify-center text-xl shadow-sm">
+                        {company.logo ? (
+                          <img src={company.logo} alt={company.logo} className="w-10 h-10 " />
+                        ) : (
+                          <span className="text-3xl">{company.name.charAt(0)}</span>
+                        )
+                        }
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-white text-xl font-bold mb-1 group-hover:text-yellow-300 transition-colors">
+                          {company.name}
+                        </h3>
+                        <p className="text-white/90 font-medium">
+                          {company.industry}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+
 
                 <CardContent className="p-6">
-                  <div className="flex items-center gap-4 mb-4 bg-gray-50 rounded-lg p-3">
+                  <div className="flex items-center gap-4 mb-4 bg-gray-50 rounded-lg p-3 justify-between">
                     <div className="flex items-center gap-4 text-sm text-gray-500 flex-1">
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4 text-green-600" />
@@ -410,11 +415,11 @@ const Companies = () => {
                         <span className="font-medium">{getSizeLabel(company.employees)}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
+                    {/* <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-medium">{company.rating}</span>
                       <span className="text-gray-400">({company.reviews})</span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <p className="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
@@ -480,10 +485,13 @@ const Companies = () => {
                         </span>
                       </div>
                     </div>
-                    <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white flex items-center gap-2 group px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all">
-                      View Company
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Button>
+                    <Link to={`/companies/${company.id}`} >
+                      <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white flex items-center gap-2 group px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        View Company
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+
                   </div>
                 </CardContent>
               </Card>
@@ -496,7 +504,7 @@ const Companies = () => {
         )}
 
         {/* Load More Section */}
-        <div className="text-center mt-16">
+        {/* <div className="text-center mt-16">
           <Button
             variant="outline"
             size="lg"
@@ -504,7 +512,7 @@ const Companies = () => {
           >
             Load More Companies
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Scroll-to-Top Button */}

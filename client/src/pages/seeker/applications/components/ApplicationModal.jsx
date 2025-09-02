@@ -62,16 +62,16 @@ const ApplicationModal = ({ isOpen, onClose, job, onSubmit }) => {
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <div className="flex items-start space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100 rounded-xl flex items-center justify-center text-xl">
-                            {job.employerId.logoUrl ? (
-                                <img src={serverUrl + job.employerId.logoUrl} alt={job.employerId.companyName} className="w-10 h-10 rounded-full" />
+                            {job.employerId?.logoUrl ? (
+                                <img src={serverUrl + job.employerId?.logoUrl} alt={job.employerId?.companyName} className="w-10 h-10 rounded-full" />
                             ) : (
-                                job.employerId.companyName.charAt(0).toUpperCase()
+                                job.employerId?.companyName.charAt(0).toUpperCase()
                             )
                             }
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-gray-900">Apply for Position</h2>
-                            <p className="text-gray-600">{job.title} at {job.employerId.companyName}</p>
+                            <p className="text-gray-600">{job.title} at {job.employerId?.companyName}</p>
                         </div>
                     </div>
                     <button

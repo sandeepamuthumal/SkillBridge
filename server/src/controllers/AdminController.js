@@ -318,3 +318,76 @@ export const adminResetJobSeekerPassword = async (req, res, next) => {
         next(error);
     }
 };
+
+// Get all employers
+export const getEmployers = async (req, res, next) => {
+    try {
+        const employers = await User.find({ role: 'Employer' })
+            .select('-password -emailVerificationToken -passwordResetToken -loginAttempts -lockUntil')
+            .lean();
+        res.status(200).json({
+            success: true,
+            message: 'Employers fetched successfully',
+            data: employers
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update employer status
+export const updateEmployerStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const employerToUpdate = await User.findById(id);
+        if (!employerToUpdate) {
+            throw new NotFoundError('Employer not found.');
+        }
+
+        if (employerToUpdate.status === status) {
+             throw new ValidationError(`Employer is already ${status}.`);
+        }
+        employerToUpdate.status = status;
+        await employerToUpdate.save();
+        res.status(200).json({
+            success: true,
+            message: `Employer status updated to '${status}' successfully`,
+            data: employerToUpdate.toJSON()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Admin reset employer password
+export const adminResetEmployerPassword = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { newPassword } = req.body;
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        const user = await User.findByIdAndUpdate(
+            id, {
+                password: hashedPassword,
+                passwordResetToken: undefined,
+                passwordResetExpires: undefined,
+                loginAttempts: 0,
+                lockUntil: undefined,
+                isEmailVerified: true,
+            }, {
+                new: true,
+                runValidators: true,
+                select: '-password -emailVerificationToken -passwordResetToken -loginAttempts -lockUntil'
+            }
+        );
+        if (!user) {
+            throw new NotFoundError('Employer not found');
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Employer password reset successfully.'
+        });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { auth, authorize } from "../middlewares/auth.js";
 import { createMulterUpload } from "../utils/multerConfig.js";
-import { deleteApplication, getAllPublicJobSeekers, getDashboardOverview, getJobRecommendations, seekerApplications, submitJobApplication } from "../controllers/JobSeekerController.js";
+import { deleteApplication, getAllPublicJobSeekers, getDashboardOverview, getJobRecommendations, submitJobApplication } from "../controllers/JobSeekerController.js";
 
 
 // Import JobSeekerController methods
@@ -19,6 +19,8 @@ import {
     uploadProfilePicture,
     getJobSeekerById // Still import it
 } from "../controllers/JobSeekerController.js";
+import { seekerApplications } from "../controllers/ApplicationController.js";
+import { getFeedbacks } from "../controllers/FeedbackController.js";
 
 const __filename = fileURLToPath(
     import.meta.url);
@@ -59,6 +61,9 @@ jobseekerRouter.delete("/job/applications/:id", auth, authorize('Job Seeker'), d
 //Job seeker jobs
 jobseekerRouter.get("/jobs/recommended", auth, authorize('Job Seeker'), getJobRecommendations);
 jobseekerRouter.get("/dashboard/overview", auth, authorize('Job Seeker'), getDashboardOverview);
+
+// Feedbacks
+jobseekerRouter.get("/feedbacks", auth, getFeedbacks);
 
 // GET job seeker profile by userId (most general, so it goes last)
 jobseekerRouter.get("/:seekerId", getJobSeekerById); // This is now in the correct position

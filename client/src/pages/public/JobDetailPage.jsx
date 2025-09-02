@@ -664,8 +664,8 @@ const JobDetailPage = () => {
                 <ApplicationModal
                     isOpen={showApplicationModal}
                     onClose={() => setShowApplicationModal(false)}
+                    job={job}
                     onSubmit={handleApplicationSubmit}
-                    jobId={jobId}
                 />
             )}
 

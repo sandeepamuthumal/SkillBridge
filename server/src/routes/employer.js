@@ -1,7 +1,9 @@
 import express from "express";
-import { createEmployer, updateEmployerProfile, uploadLogo, getEmployerProfile, getAllEmployers, getEmployerById, deleteEmployerById } from "../controllers/employerController.js";
+import { createEmployer, updateEmployerProfile, uploadLogo, getEmployerProfile, getAllEmployers, getEmployerById, deleteEmployerById, getJobPostsByEmployer, getSeekerSuggestions } from "../controllers/employerController.js";
 import { auth, authorize } from "../middlewares/auth.js";
 import { createMulterUpload } from "../utils/multerConfig.js";
+import { employerApplications, updateApplicationStatus } from "../controllers/ApplicationController.js";
+import { createFeedback } from "../controllers/FeedbackController.js";
 
 
 const employerRouter = express.Router();
@@ -17,8 +19,15 @@ employerRouter.get("/", getAllEmployers);
 employerRouter.get("/profile", auth, authorize('Employer'), getEmployerProfile);
 employerRouter.put("/profile", auth, authorize('Employer'), updateEmployerProfile);
 employerRouter.post("/profile/logo", auth, authorize('Employer'), profileUploader.single('logoImage'), uploadLogo);
-employerRouter.get("/:id", getEmployerById);
-// employerRouter.delete("/:id", deleteEmployerById);
 
+employerRouter.get("/jobposts/:id", getJobPostsByEmployer); // To fetch employer details along with job posts
+employerRouter.get("/jobseeker/suggestions/:id", auth, authorize('Employer'), getSeekerSuggestions);
+
+employerRouter.get("/applications", auth, authorize('Employer'), employerApplications); // To fetch employer applications
+employerRouter.post("/application/:id/status", auth, authorize('Employer'), updateApplicationStatus);
+
+employerRouter.post("/candidate-feedback", auth, authorize('Employer'), createFeedback);
+
+employerRouter.get("/:id", getEmployerById);
 
 export default employerRouter;

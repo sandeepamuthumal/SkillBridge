@@ -133,5 +133,21 @@ export const seekerProfileAPI = {
                 data: [] // Return empty array as fallback
             };
         }
+    },
+
+    getAllJobSeekers: async() => {
+        try {
+            const response = await api.get('/professionals');
+            return {
+                success: true,
+                data: response.data
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred while fetching job seekers',
+                data: [] // Return empty array as fallback
+            };
+        }
     }
 };
