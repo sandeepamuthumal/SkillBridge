@@ -1,33 +1,40 @@
-import api from './api';
+import api from "./api";
 
 export const jobPostAPI = {
-    getAllJobs: async() => {
+
+    getAllJobs: async(filters = {}) => {
         try {
-            const response = await api.get('/jobs');
+            const query = new URLSearchParams(filters).toString();
+            const response = await api.get(`/jobs?${query}`);
             return {
                 success: true,
-                data: response.data.data
-            }
+                data: response.data.data,
+            };
         } catch (error) {
-            console.error('Error fetching all jobs:', error);
+            console.error("Error fetching all jobs:", error);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
+
     getJobById: async(jobId) => {
         try {
             const response = await api.get(`/jobs/${jobId}`);
             return {
                 success: true,
-                data: response.data.data
-            }
+                data: response.data.data,
+            };
         } catch (error) {
             console.error(`Error fetching job with ID ${jobId}:`, error);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
@@ -37,13 +44,15 @@ export const jobPostAPI = {
             const response = await api.post(`/jobs/save/${jobId}`);
             return {
                 success: true,
-                message: response.data.message
-            }
+                message: response.data.message,
+            };
         } catch (error) {
             console.error(`Error saving job with ID ${jobId}:`, error);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
@@ -53,61 +62,69 @@ export const jobPostAPI = {
             const response = await api.delete(`/jobs/save/${jobId}`);
             return {
                 success: true,
-                message: response.data.message
-            }
+                message: response.data.message,
+            };
         } catch (error) {
             console.error(`Error unsaving job with ID ${jobId}:`, error);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
 
     getSavedJobs: async() => {
         try {
-            const response = await api.get('/jobs/saved');
+            const response = await api.get("/jobs/saved");
             return {
                 success: true,
-                data: response.data.data
-            }
+                data: response.data.data,
+            };
         } catch (error) {
-            console.error('Error fetching saved jobs:', error);
+            console.error("Error fetching saved jobs:", error);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
 
     getRecommendedJobs: async() => {
         try {
-            const response = await api.get('/jobseeker/jobs/recommended');
+            const response = await api.get("/jobseeker/jobs/recommended");
             return {
                 success: true,
-                data: response.data.data
-            }
+                data: response.data.data,
+            };
         } catch (error) {
-            console.error('Error fetching recommended jobs:', error);
+            console.error("Error fetching recommended jobs:", error);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
     createJobPost: async(jobPost) => {
         try {
-            const response = await api.post('/jobpost', jobPost);
+            const response = await api.post("/jobpost", jobPost);
             return {
                 success: true,
                 data: response.data.data,
-                message: response.data.message
-            }
+                message: response.data.message,
+            };
         } catch (error) {
-            console.error('Error creating job post:', error.response.data.message);
+            console.error("Error creating job post:", error.response.data.message);
             return {
                 success: false,
-                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+                error: error.response ?
+                    error.response.data.message :
+                    "An unexpected error occurred",
             };
         }
     },
