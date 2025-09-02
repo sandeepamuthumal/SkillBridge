@@ -56,6 +56,16 @@ export const getAllCompanies = async() => {
     return response.data;
 };
 
+export const getAllJobTypes = async() => {
+    const response = await api.get('/jobtype');
+    return response.data;
+};
+
+export const getJobPostsByEmployer = async() => {
+    const response = await api.get('/jobpost/employer');
+    return response.data;
+};
+
 export const getCompanyById = async(id) => {
     const response = await api.get(`/employer/${id}`);
     return response.data;

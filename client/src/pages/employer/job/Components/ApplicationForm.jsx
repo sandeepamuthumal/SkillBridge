@@ -1,24 +1,33 @@
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState, useRef, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Briefcase,
-  Award,
-  CheckCircle
+  Braces,
+  CheckCircle,
+  Wallet,
+  BookText
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import ArrayInputField from './ArrayInputField.jsx';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import { jobPostAPI } from '@/services/jobPostAPI.js';
 
 
 const ApplicationForm = () => {
@@ -46,33 +55,51 @@ const ApplicationForm = () => {
       errorMap: () => ({ message: "Experience level is required" }),
     }),
 
-    experienceYears: z.object({
-      min: z.number().min(0, "Minimum years cannot be negative").max(50, "Minimum years cannot exceed 50").optional(),
-      max: z.number().min(0, "Maximum years cannot be negative").max(50, "Maximum years cannot exceed 50").optional(),
-    }).partial(),
+    experienceYears: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : Number(val)),
+      z
+        .number({
+          required_error: "Experience years is required",
+          invalid_type_error: "Experience years must be a number",
+        })
+        .min(0, "Experience years cannot be negative")
+        .max(50, "Experience years cannot exceed 50")
+    ),
 
     salaryRange: z.object({
-      min: z.number({ invalid_type_error: "Salary minimum is required" }),
-      max: z.number({ invalid_type_error: "Salary maximum is required" }),
-      currency: z.string().default("USD"),
+      min: z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)), z.number({
+          required_error: "Salary minimum is required",
+          invalid_type_error: "Salary minimum invalid"
+        })),
+      max: z.preprocess(
+        (val) => (val === "" || val === undefined ? undefined : Number(val)), z.number({
+          required_error: "Salary maximum is required",
+          invalid_type_error: "Salary maximum invalid"
+        })),
+      currency: z.enum(["USD", "LKR", "INR", "EUR"], {
+        errorMap: () => ({ message: "Currency is required" }),
+      }),
       negotiable: z.boolean().default(false),
     }),
 
     benefits: z.array(z.string()).optional(),
 
-    workArrangement: z.enum(["On-site", "Remote", "Hybrid"]).default("On-site"),
+    workArrangement: z.enum(["On-site", "Remote", "Hybrid"],
+      { errorMap: () => ({ message: "Work Arrangement is required" }) }),
 
     deadline: z.preprocess(
       (val) => {
-        if (typeof val === "string" || typeof val === "number") {
-          return new Date(val);
+        if (val instanceof Date && !isNaN(val.getTime())) {
+          return val;
         }
         return undefined;
       },
       z.date({ required_error: "Deadline is required" })
     ),
 
-    maxApplications: z.number().default(100),
+    maxApplications: z.preprocess(
+      (val) => (val === "" || val === undefined ? undefined : Number(val)), z.number().default(100)),
 
     tags: z.array(z.string()).optional(),
   });
@@ -84,25 +111,51 @@ const ApplicationForm = () => {
       description: "",
       responsibilities: [],
       requirements: [],
+      preferredSkills: [],
+      tags: [],
+      experienceLevel: "",
+      experienceYears: undefined,
+      benefits: [],
+      salaryRange: {
+        min: undefined,
+        max: undefined,
+        currency: "",
+        negotiable: false,
+      },
+      workArrangement: "",
+      deadline: "",
+      maxApplications: undefined
     }
   });
+
+  const experienceLevelOptions = ["Entry Level", "Mid Level", "Senior Level", "Executive"];
+  const currencyOptions = ["USD", "LKR", "INR", "EUR"];
+  const workArrangementOptions = ["On-site", "Remote", "Hybrid"];
 
   const { control, handleSubmit, watch, setValue, formState: { errors, isValid, isDirty } } = form;
 
 
   const watchedValues = watch();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
-      await onSave?.(data);
-      toast.success('Post successfully submitted for admin review');
+      const result = await jobPostAPI.createJobPost(data);
+
+      if (result.success) {
+        toast.success(result.message || "Post successfully submitted for admin review");
+        form.reset();
+      } else {
+        toast.error(result.error || "Failed to submit post");
+      }
     } catch (error) {
-      toast.error('Failed to submit post');
-      console.error('Save error:', error);
+      toast.error("Unexpected error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -175,7 +228,7 @@ const ApplicationForm = () => {
                           <ArrayInputField
                             values={field.value || []} // bind to react-hook-form
                             onChange={field.onChange}  // updates RHF state
-                            placeholder="Add Responsibilities"
+                            placeholder="Add Responsibilities & Press Enter"
                           />
                         </FormControl>
                         <FormMessage />
@@ -194,9 +247,9 @@ const ApplicationForm = () => {
                         </FormLabel>
                         <FormControl>
                           <ArrayInputField
-                            values={field.value || []} 
-                            onChange={field.onChange}  
-                            placeholder="Add Requirements"
+                            values={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Add Requirements & Press Enter"
                           />
                         </FormControl>
                         <FormMessage />
@@ -204,6 +257,323 @@ const ApplicationForm = () => {
                     )}
                   />
                 </div>
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={control}
+                    name="preferredSkills"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Preferred Skills
+                        </FormLabel>
+                        <FormControl>
+                          <ArrayInputField
+                            values={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Add Preferred Skills & Press Enter"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="tags"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Tags
+                        </FormLabel>
+                        <FormControl>
+                          <ArrayInputField
+                            values={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Add Tags & Press Enter"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Braces className="h-5 w-5 text-blue-600" />
+                  <h4 className="text-lg font-semibold">Experience</h4>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={control}
+                    name="experienceLevel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Experience Level <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            {...field}
+                            onValueChange={(value) => field.onChange(value)}
+                            value={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Experience Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {experienceLevelOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="experienceYears"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Experience Years <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="number"
+                            placeholder="Add Experience Years" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                </div>
+              </div>
+
+              <div className="space-y-2">
+
+                <div className="flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-blue-600" />
+                  <h4 className="text-lg font-semibold">Compensation & Benefits</h4>
+                </div>
+
+                <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
+
+                  <FormField
+                    control={control}
+                    name="salaryRange.currency"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Currency <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            {...field}
+                            onValueChange={(value) => field.onChange(value)}
+                            value={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {currencyOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="salaryRange.min"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Minimum Salary <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="number"
+                            placeholder="Min" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="salaryRange.max"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Maximum Salary <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="number"
+                            placeholder="Max" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex items-center">
+                    <FormField
+                      control={control}
+                      name="salaryRange.negotiable"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center gap-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormLabel>Negotiable</FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                  </div>
+                </div>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <FormField
+                    control={control}
+                    name="benefits"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Benefits
+                        </FormLabel>
+                        <FormControl>
+                          <ArrayInputField
+                            values={field.value || []}
+                            onChange={field.onChange}
+                            placeholder="Add Benefits & Press Enter"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <BookText className="h-5 w-5 text-blue-600" />
+                  <h4 className="text-lg font-semibold">Application Details</h4>
+                </div>
+
+                <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
+
+                  <FormField
+                    control={control}
+                    name="workArrangement"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Work Arrangement <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            {...field}
+                            onValueChange={(value) => field.onChange(value)}
+                            value={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Work Arrangement" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {workArrangementOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="maxApplications"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Max Applications
+                        </FormLabel>
+                        <FormControl>
+                          <Input type="number"
+                            placeholder="Add Max Applications" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="deadline"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col gap-2">
+                        <FormLabel>
+                          Deadline <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-[240px] pl-3 font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a Deadline</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={(date) => field.onChange(date ?? undefined)}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+
+              <div className="space-y-2">
                 <div className="flex justify-end pt-4 border-t">
                   <Button
                     type="submit"
@@ -228,12 +598,9 @@ const ApplicationForm = () => {
             </form>
           </Form>
         </CardContent>
-      </Card>
+      </Card >
     </div >
   )
 }
 
 export default ApplicationForm
-
-
-// import { employerProfileAPI } from '@/services/employer/employerProfileAPI';

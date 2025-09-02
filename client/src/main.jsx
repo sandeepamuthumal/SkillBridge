@@ -42,6 +42,7 @@ import Settings from "./pages/seeker/settings/settings";
 
 // Employer Pages
 import PostJob from "./pages/employer/job/PostJob.jsx";
+import ManageJob from "./pages/employer/job/ManageJob.jsx";
 import ProfileManagementPage from "./pages/employer/profile/ProfileManagementPage.jsx";
 
 // Admin Pages
@@ -238,6 +239,11 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfileManagementPage />,
+      },
+      {
+        path: "jobs",
+        element: <ManageJob />
+
       }
     ],
   },
