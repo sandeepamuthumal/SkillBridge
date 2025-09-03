@@ -69,5 +69,20 @@ export const employerProfileAPI = {
                 error: error.response ? error.response.data.message : 'An unexpected error occurred'
             };
         }
-    }
+    },
+
+    getDashboardStats: async() => {
+        try {
+            const response = await api.get(`/employer/dashboard-stats`);
+            return {
+                success: true,
+                data: response.data.data
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response ? error.response.data.message : 'An unexpected error occurred'
+            };
+        }
+    },
 }

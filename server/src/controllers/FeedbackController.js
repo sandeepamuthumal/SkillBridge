@@ -18,10 +18,10 @@ export const getFeedbacks = async(req, res, next) => {
 
         let filter = {};
 
-        if (req.user.role === 'employer') {
+        if (req.user.role == 'Employer') {
             const employer = await Employer.findOne({ userId });
             filter.employerId = employer._id;
-        } else if (req.user.role === 'jobseeker') {
+        } else if (req.user.role == 'Job Seeker') {
             const jobSeeker = await JobSeeker.findOne({ userId });
             filter.jobSeekerId = jobSeeker._id;
         }
