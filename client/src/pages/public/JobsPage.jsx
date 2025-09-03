@@ -262,10 +262,11 @@ const JobsPage = () => {
 
   const applyNow = (jobId) => {
     if (!isAuthenticated) {
-      navigate('/login');
+      toast.error("You must be signed in to apply for a job.");
+      navigate("/signin", { state: { from: window.location.pathname } });
       return;
     }
-    navigate(`/jobs/${jobId}/apply`);
+    navigate(`/jobs/${jobId}`);
   };
 
   const handleLoadMore = () => setPage((prev) => prev + 1);
@@ -360,7 +361,7 @@ const JobsPage = () => {
                 Clear Filters <X className="h-4 w-4" />
               </Button>
             )}
-            
+
           </div>
         </div>
 

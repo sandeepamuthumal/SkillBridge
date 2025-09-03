@@ -5,6 +5,7 @@ import e from "express";
 import JobPost from "../models/JobPost.js";
 import JobSeeker from "../models/JobSeeker.js";
 import axios from "axios";
+import Application from "../models/Application.js";
 
 export const updateEmployerProfile = async(req, res, next) => {
     try {
@@ -324,3 +325,144 @@ export const getSeekerSuggestions = async(req, res, next) => {
         next(error);
     }
 }
+
+export const getDashboardStats = async(req, res, next) => {
+    try {
+        const userId = req.user._id;
+        const employer = await Employer.findOne({ userId });
+
+        if (!employer) {
+            throw new NotFoundError("Employer not found");
+        }
+
+        const stats = {};
+
+        // Get all job posts by this employer
+        const employerJobs = await JobPost.find({ employerId: employer._id });
+        const jobIds = employerJobs.map(job => job._id);
+
+        // Total job posts count
+        stats.allJobCount = employerJobs.length;
+
+        // Active jobs (published and not expired)
+        const activeJobs = await JobPost.countDocuments({
+            employerId: employer._id,
+            status: "Published",
+            isApproved: true,
+            deadline: { $gte: new Date() }
+        });
+        stats.activeJobCount = activeJobs;
+
+        // Date ranges for calculations
+        const now = new Date();
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+        const lastMonth = new Date();
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+        // Total applications for all employer's jobs
+        const totalApplications = await Application.countDocuments({
+            jobPostId: { $in: jobIds }
+        });
+        stats.totalApplications = totalApplications;
+
+        // Hired count (applications with status "Hired" or similar)
+        stats.hiredCount = await Application.countDocuments({
+            jobPostId: { $in: jobIds },
+            status: "Hired"
+        });
+
+        // Pending applications
+        stats.pendingApplications = await Application.countDocuments({
+            jobPostId: { $in: jobIds },
+            status: "Applied"
+        });
+
+        // Sum of job post views - Fixed aggregation
+        const viewCountResult = await JobPost.aggregate([
+            { $match: { employerId: employer._id } },
+            { $group: { _id: null, totalViews: { $sum: "$viewCount" } } }
+        ]);
+        stats.jobPostViewSum = viewCountResult.length > 0 ? viewCountResult[0].totalViews : 0;
+
+        // Response rate calculation - Fixed logic
+        const respondedApplications = await Application.countDocuments({
+            jobPostId: { $in: jobIds },
+            status: { $in: ["Shortlisted", "Interviewed", "Hired", "Rejected"] }
+        });
+        stats.responseRate = totalApplications > 0 ?
+            Math.round((respondedApplications / totalApplications) * 100) : 0;
+
+        // Recent applications from last week - Fixed date variable
+        stats.recentApplications = await Application.find({
+                jobPostId: { $in: jobIds },
+                createdAt: { $gte: lastWeek }
+            })
+            .populate({
+                path: 'jobPostId',
+                select: 'title salaryRange deadline status',
+                populate: [
+                    { path: 'employerId', select: 'companyName logoUrl' },
+                    { path: 'cityId', select: 'name' },
+                    { path: 'typeId', select: 'name' },
+                    { path: 'categoryId', select: 'name' }
+                ]
+            })
+            .populate({
+                path: 'jobSeekerId',
+                populate: [
+                    { path: 'userId', select: 'firstName lastName email profilePicture' },
+                    { path: 'cityId', select: 'name' },
+                ]
+            })
+            .sort({ createdAt: -1 })
+            .limit(5);
+
+        // Additional useful stats
+        const thisMonthApplications = await Application.countDocuments({
+            jobPostId: { $in: jobIds },
+            createdAt: { $gte: lastMonth }
+        });
+        stats.thisMonthApplications = thisMonthApplications;
+
+        // Interview scheduled count
+        stats.interviewsScheduled = await Application.countDocuments({
+            jobPostId: { $in: jobIds },
+            status: "Interviewed"
+        });
+
+        // Jobs posted this month
+        const thisMonthJobs = await JobPost.countDocuments({
+            employerId: employer._id,
+            createdAt: { $gte: lastMonth }
+        });
+        stats.thisMonthJobs = thisMonthJobs;
+
+        // Average response time (in days) - Optional calculation
+        const applicationsWithResponse = await Application.find({
+            jobPostId: { $in: jobIds },
+            status: { $in: ["Shortlisted", "Interviewed", "Hired", "Rejected"] },
+            updatedAt: { $exists: true }
+        }).select('createdAt updatedAt');
+
+        if (applicationsWithResponse.length > 0) {
+            const totalResponseTime = applicationsWithResponse.reduce((sum, app) => {
+                const responseTime = (app.updatedAt - app.createdAt) / (1000 * 60 * 60 * 24); // days
+                return sum + responseTime;
+            }, 0);
+            stats.averageResponseTime = Math.round(totalResponseTime / applicationsWithResponse.length * 10) / 10;
+        } else {
+            stats.averageResponseTime = 0;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: stats,
+        });
+
+    } catch (error) {
+        console.error('Error in getDashboardStats:', error);
+        next(error);
+    }
+};
