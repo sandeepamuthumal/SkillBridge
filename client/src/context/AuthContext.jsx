@@ -246,17 +246,20 @@ export const AuthProvider = ({ children }) => {
         return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
     };
 
-    const fetchAllUsers = async () => {
-        try {
-            const response = await authAPI.getAllUsers();
-            return { success: true, data: response.data.users };
-        } catch (error) {
-            const message = error.response?.data?.message || 'Failed to fetch users';
-            console.error('fetchAllUsers error:', message);
-            return { success: false, error: message };
-        }
-    };
-
+    const fetchAllUsers = async (page = 1, limit = 10, role = '', status = '', search = '') => {
+    try {
+        const response = await authAPI.getAllUsers(page, limit, role, status, search);
+        return { 
+            success: true, 
+            data: response.data.data,
+            pagination: response.data.pagination
+        };
+    } catch (error) {
+        const message = error.response?.data?.message || 'Failed to fetch users';
+        console.error('fetchAllUsers error:', message);
+        return { success: false, error: message };
+    }
+};
     const updateUserStatus = async (userId, status) => {
         try {
             const response = await authAPI.updateUserStatus(userId, { status });
@@ -323,10 +326,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const adminFetchAdmins = async () => {
+    const adminFetchAdmins = async (page = 1, limit = 10, status = '', search = '') => {
         try {
-            const response = await adminUserAPI.getAllAdmins();
-            return { success: true, data: response.data.data };
+            const response = await adminUserAPI.getAllAdmins(page, limit, status, search);
+            return { success: true, data: response.data.data, pagination: response.data.pagination };
         } catch (error) {
             const message = error.response?.data?.message || 'Failed to fetch admin users';
             console.error('adminFetchAdmins error:', message);
@@ -388,6 +391,36 @@ export const AuthProvider = ({ children }) => {
             return { success: false, error: message };
         }
     };
+    const adminFetchJobSeekers = async (page = 1, limit = 10, status = '', search = '') => {
+        try {
+            const response = await adminUserAPI.getAllJobSeekers(page, limit, status, search);
+            return { 
+                success: true, 
+                data: response.data.data,
+                pagination: response.data.pagination
+            };
+        } catch (error) {
+            const message = error.response?.data?.message || 'Failed to fetch job seekers';
+            console.error('adminFetchJobSeekers error:', message);
+            return { success: false, error: message };
+        }
+    };
+    const adminFetchEmployers = async (page = 1, limit = 10, status = '', search = '') => {
+        try {
+            const response = await adminUserAPI.getAllEmployers(page, limit, status, search);
+            return { 
+                success: true, 
+                data: response.data.data,
+                pagination: response.data.pagination
+            };
+        } catch (error) {
+            const message = error.response?.data?.message || 'Failed to fetch employers';
+            console.error('adminFetchEmployers error:', message);
+            return { success: false, error: message };
+        }
+    };
+
+    
 
     return (
         <AuthContext.Provider value={{
@@ -417,6 +450,8 @@ export const AuthProvider = ({ children }) => {
             adminApproveJobPost,
             adminDeleteJobPost,
             adminFetchAdmins,
+            adminFetchJobSeekers,
+            adminFetchEmployers,
             adminAddAdmin,
             adminUpdateAdminEmail,
             adminUpdateAdminPassword,
