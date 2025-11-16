@@ -1,10 +1,12 @@
-from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-
-from services.model_loader import model
+from services.model_loader import get_model
 
 def compute_embedding(text):
+    model = get_model()
     return model.encode([text])[0]
+
+def cosine_similarity_np(a, b):
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
 def get_match_label(score):
     if score >= 80:
@@ -15,9 +17,9 @@ def get_match_label(score):
         return "Fair match"
     else:
         return "Poor match"
-    
+
 def safe_float(val):
-    return float(np.round(val * 100, 2)) 
+    return float(np.round(val * 100, 2))
 
 def recommend_jobs(seeker, jobs):
     skill_text = " ".join(seeker.get("skills", []))
@@ -43,15 +45,17 @@ def recommend_jobs(seeker, jobs):
     results = []
 
     for job in jobs:
-        job_text = job["title"] + " " + job["description"] + " " + " ".join(job.get("requirements", []) + job.get("preferredSkills", []))
+        job_text = job["title"] + " " + job["description"] + " " + " ".join(
+            job.get("requirements", []) + job.get("preferredSkills", [])
+        )
         job_embedding = compute_embedding(job_text)
 
         scores = {
-            "skills": cosine_similarity([seeker_embeddings["skills"]], [job_embedding])[0][0],
-            "statement": cosine_similarity([seeker_embeddings["statement"]], [job_embedding])[0][0],
-            "projects": cosine_similarity([seeker_embeddings["projects"]], [job_embedding])[0][0],
-            "experience": cosine_similarity([seeker_embeddings["experience"]], [job_embedding])[0][0],
-            "fieldOfStudy": cosine_similarity([seeker_embeddings["fieldOfStudy"]], [job_embedding])[0][0]
+            "skills": cosine_similarity_np(seeker_embeddings["skills"], job_embedding),
+            "statement": cosine_similarity_np(seeker_embeddings["statement"], job_embedding),
+            "projects": cosine_similarity_np(seeker_embeddings["projects"], job_embedding),
+            "experience": cosine_similarity_np(seeker_embeddings["experience"], job_embedding),
+            "fieldOfStudy": cosine_similarity_np(seeker_embeddings["fieldOfStudy"], job_embedding),
         }
 
         weighted_score = (
@@ -62,15 +66,13 @@ def recommend_jobs(seeker, jobs):
             scores["fieldOfStudy"] * 0.1
         )
 
-        
-
         results.append({
             "id": job["id"],
             "title": job["title"],
             "description": job["description"],
             "similarity": safe_float(weighted_score),
             "matchLabel": get_match_label(weighted_score * 100),
-            "details": {key: safe_float(val) for key, val in scores.items()}
+            "details": {k: safe_float(v) for k, v in scores.items()}
         })
 
     return sorted(results, key=lambda x: x["similarity"], reverse=True)

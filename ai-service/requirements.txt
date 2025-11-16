@@ -4,6 +4,7 @@ python-multipart
 python-docx
 PyPDF2
 python-dateutil
-sentence-transformers
-scikit-learn
+numpy
+onnxruntime
+sentence-transformers[onnx]
 pydantic
