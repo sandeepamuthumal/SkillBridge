@@ -162,11 +162,11 @@ const Navbar = () => {
               <UserAvatar />
             ) : (
               <>
-                <a href="/signin">
+                <Link to="/signin">
                   <Button variant="ghost" className="text-gray-700">
                     Sign In
                   </Button>
-                </a>
+                </Link>
                 <Link to="/signup">
                   <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                     Get Started
