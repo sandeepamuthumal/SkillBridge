@@ -63,7 +63,7 @@ import Unauthorized from "./pages/errors/Unauthorized.jsx";
 import NotFound from "./pages/errors/NotFound.jsx";
 import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 import EmployerDashboard from "./pages/employer/dashboard/employerDashboard";
-import FeedbackPage from "./pages/seeker/feedbacks/feedbackPage";
+import FeedbackPage from "./pages/seeker/feedbacks/FeedbackPage";
 import CompanyDetailPage from "./pages/public/CompanyDetailPage";
 import EmployerApplications from "./pages/employer/applications/EmployerApplications";
 import CandidateFeedback from "./pages/employer/feedbacks/CandidateFeedback";
