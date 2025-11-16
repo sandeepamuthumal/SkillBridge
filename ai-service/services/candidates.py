@@ -1,8 +1,7 @@
-from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
+from services.model_loader import model
 
 def compute_embedding(text):
     return model.encode([text])[0]
