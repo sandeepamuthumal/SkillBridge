@@ -37,7 +37,7 @@ import SeekerProfile from "./pages/seeker/profile/SeekerProfile";
 import AllJobs from "./pages/seeker/jobs/AllJobs";
 import SavedJobs from "./pages/seeker/jobs/SavedJobs";
 import RecommendedJobs from "./pages/seeker/jobs/RecommendedJobs";
-import Settings from "./pages/seeker/settings/settings";
+import Settings from "./pages/seeker/settings/Settings";
 
 // Employer Pages
 import PostJob from "./pages/employer/job/PostJob.jsx";
