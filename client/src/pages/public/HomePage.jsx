@@ -5,10 +5,10 @@ import { Element, animateScroll as scroll } from 'react-scroll';
 import { ArrowUp } from 'lucide-react'; // Import the ArrowUp icon
 
 // Section components
-import Hero from "../../components/sections/Hero";
-import Features from "../../components/sections/Features";
-import HowItWorks from "../../components/sections/HowItWorks";
-import Stats from "../../components/sections/Stats";
+import Hero from "../../components/Sections/Hero";
+import Features from "../../components/Sections/Features";
+import HowItWorks from "../../components/Sections/HowItWorks";
+import Stats from "../../components/Sections/Stats";
 
 const HomePage = () => {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
