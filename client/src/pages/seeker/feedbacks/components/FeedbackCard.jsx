@@ -27,11 +27,11 @@ const FeedbackCard = ({ feedback }) => {
         <div className="flex items-center gap-3">
           <img
             src={serverUrl + feedback.employerId.logoUrl}
-            alt={feedback.employerId.name}
+            alt={feedback.employerId.companyName}
             className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
           />
           <div>
-            <h3 className="font-semibold text-gray-900">{feedback.jobSeekerId.userId.firstName + ' ' + feedback.jobSeekerId.userId.lastName}</h3>
+            <h3 className="font-semibold text-gray-900">{feedback.employerId.companyName}</h3>
             <p className="text-sm text-gray-600 flex items-center gap-1">
               <Building2 size={14} />
               {feedback.jobTitle}
