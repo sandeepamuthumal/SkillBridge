@@ -98,7 +98,7 @@ SkillBridge is a modern job marketplace platform that leverages artificial intel
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/skillbridge.git
+git clone https://github.com/sandeepamuthumal/SkillBridge.git
 cd skillbridge
 ```
 
